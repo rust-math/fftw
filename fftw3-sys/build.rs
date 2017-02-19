@@ -1,4 +1,5 @@
 
+extern crate pkg_config;
 extern crate bindgen;
 
 use bindgen::builder;
@@ -12,4 +13,10 @@ fn main() {
         .generate()
         .unwrap();
     bindings.write_to_file("src/fftw3.rs").unwrap();
+
+    match pkg_config::find_library("fftw3") {
+        Ok(_) => return,
+        Err(_) => {}
+    }
+
 }

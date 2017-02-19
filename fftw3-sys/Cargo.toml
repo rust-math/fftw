@@ -10,3 +10,4 @@ links = "fftw3"
 
 [build-dependencies]
 bindgen = "*"
+pkg-config = "*"
