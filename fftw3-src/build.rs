@@ -1,8 +1,8 @@
+
 use std::env::{remove_var, var};
 use std::path::PathBuf;
 use std::process::Command;
 
-macro_rules! feature(($name:expr) => (var(concat!("CARGO_FEATURE_", $name)).is_ok()));
 macro_rules! variable(($name:expr) => (var($name).unwrap()));
 
 fn main() {
