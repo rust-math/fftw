@@ -4,25 +4,40 @@ extern crate fftw3_sys as ffi;
 
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
-/// see http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transform-Kinds.html
-pub fn inverse(kind: R2R_KIND) -> R2R_KIND {
+fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
-        R2R_KIND::FFTW_R2HC => R2R_KIND::FFTW_HC2R,
+        R2R_KIND::FFTW_R2HC => R2R_KIND::FFTW_R2HC,
         R2R_KIND::FFTW_HC2R => R2R_KIND::FFTW_R2HC,
         R2R_KIND::FFTW_DHT => R2R_KIND::FFTW_DHT,
         R2R_KIND::FFTW_REDFT00 => R2R_KIND::FFTW_REDFT00,
         R2R_KIND::FFTW_REDFT01 => R2R_KIND::FFTW_REDFT10,
-        R2R_KIND::FFTW_REDFT10 => R2R_KIND::FFTW_REDFT01,
+        R2R_KIND::FFTW_REDFT10 => R2R_KIND::FFTW_REDFT10,
         R2R_KIND::FFTW_REDFT11 => R2R_KIND::FFTW_REDFT11,
         R2R_KIND::FFTW_RODFT00 => R2R_KIND::FFTW_RODFT00,
         R2R_KIND::FFTW_RODFT01 => R2R_KIND::FFTW_RODFT10,
+        R2R_KIND::FFTW_RODFT10 => R2R_KIND::FFTW_RODFT10,
+        R2R_KIND::FFTW_RODFT11 => R2R_KIND::FFTW_RODFT11,
+    }
+}
+
+fn backward(kind: R2R_KIND) -> R2R_KIND {
+    match kind {
+        R2R_KIND::FFTW_R2HC => R2R_KIND::FFTW_HC2R,
+        R2R_KIND::FFTW_HC2R => R2R_KIND::FFTW_HC2R,
+        R2R_KIND::FFTW_DHT => R2R_KIND::FFTW_DHT,
+        R2R_KIND::FFTW_REDFT00 => R2R_KIND::FFTW_REDFT00,
+        R2R_KIND::FFTW_REDFT01 => R2R_KIND::FFTW_REDFT01,
+        R2R_KIND::FFTW_REDFT10 => R2R_KIND::FFTW_REDFT01,
+        R2R_KIND::FFTW_REDFT11 => R2R_KIND::FFTW_REDFT11,
+        R2R_KIND::FFTW_RODFT00 => R2R_KIND::FFTW_RODFT00,
+        R2R_KIND::FFTW_RODFT01 => R2R_KIND::FFTW_RODFT01,
         R2R_KIND::FFTW_RODFT10 => R2R_KIND::FFTW_RODFT01,
         R2R_KIND::FFTW_RODFT11 => R2R_KIND::FFTW_RODFT11,
     }
 }
 
 /// see http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transform-Kinds.html
-pub fn logical_size(n: usize, kind: R2R_KIND) -> usize {
+fn logical_size(n: usize, kind: R2R_KIND) -> usize {
     match kind {
         R2R_KIND::FFTW_R2HC => n,
         R2R_KIND::FFTW_HC2R => n,
@@ -80,8 +95,8 @@ pub enum FLAG {
 pub struct Plan<'a, 'b, A>
     where A: 'a + 'b
 {
-    pub input: &'a mut [A],
-    pub output: &'b mut [A],
+    pub field: &'a mut [A],
+    pub coef: &'b mut [A],
     forward: ffi::fftw_plan,
     backward: ffi::fftw_plan,
 }
@@ -89,13 +104,13 @@ pub struct Plan<'a, 'b, A>
 impl<'a, 'b, A> Plan<'a, 'b, A>
     where A: 'a + 'b
 {
-    /// [input] -> [output]
+    /// [field] -> [coef]
     pub fn forward(&self) {
         unsafe {
             ffi::fftw_execute(self.forward);
         }
     }
-    /// [input] <- [output]
+    /// [field] <- [coef]
     pub fn backward(&self) {
         unsafe {
             ffi::fftw_execute(self.backward);
@@ -119,19 +134,19 @@ impl<'a, 'b> Plan<'a, 'b, f64> {
             ffi::fftw_plan_r2r_1d(n as i32,
                                   in_.as_mut_ptr(),
                                   out.as_mut_ptr(),
-                                  kind,
+                                  forward(kind),
                                   flag as u32)
         };
         let backward = unsafe {
             ffi::fftw_plan_r2r_1d(n as i32,
                                   out.as_mut_ptr(),
                                   in_.as_mut_ptr(),
-                                  inverse(kind),
+                                  backward(kind),
                                   flag as u32)
         };
         Plan {
-            input: in_,
-            output: out,
+            field: in_,
+            coef: out,
             forward: forward,
             backward: backward,
         }
