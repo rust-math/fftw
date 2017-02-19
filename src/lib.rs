@@ -97,6 +97,7 @@ pub struct Plan<'a, 'b, A>
 {
     pub field: &'a mut [A],
     pub coef: &'b mut [A],
+    logical_size: usize,
     forward: ffi::fftw_plan,
     backward: ffi::fftw_plan,
 }
@@ -128,25 +129,26 @@ impl<'a, 'b, A> Drop for Plan<'a, 'b, A> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, f64> {
-    pub fn r2r_1d(in_: &'a mut [f64], out: &'b mut [f64], kind: R2R_KIND, flag: FLAG) -> Self {
-        let n = in_.len();
+    pub fn r2r_1d(field: &'a mut [f64], coef: &'b mut [f64], kind: R2R_KIND, flag: FLAG) -> Self {
+        let n = field.len();
         let forward = unsafe {
             ffi::fftw_plan_r2r_1d(n as i32,
-                                  in_.as_mut_ptr(),
-                                  out.as_mut_ptr(),
+                                  field.as_mut_ptr(),
+                                  coef.as_mut_ptr(),
                                   forward(kind),
                                   flag as u32)
         };
         let backward = unsafe {
             ffi::fftw_plan_r2r_1d(n as i32,
-                                  out.as_mut_ptr(),
-                                  in_.as_mut_ptr(),
+                                  coef.as_mut_ptr(),
+                                  field.as_mut_ptr(),
                                   backward(kind),
                                   flag as u32)
         };
         Plan {
-            field: in_,
-            coef: out,
+            field: field,
+            coef: coef,
+            logical_size: logical_size(n, kind),
             forward: forward,
             backward: backward,
         }
