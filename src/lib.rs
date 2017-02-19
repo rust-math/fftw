@@ -1,57 +1,11 @@
 #![allow(non_camel_case_types)]
 
 extern crate fftw3_sys as ffi;
+pub mod plan;
+mod r2r;
 
-pub use ffi::fftw_r2r_kind as R2R_KIND;
-
-fn forward(kind: R2R_KIND) -> R2R_KIND {
-    match kind {
-        R2R_KIND::FFTW_R2HC => R2R_KIND::FFTW_R2HC,
-        R2R_KIND::FFTW_HC2R => R2R_KIND::FFTW_R2HC,
-        R2R_KIND::FFTW_DHT => R2R_KIND::FFTW_DHT,
-        R2R_KIND::FFTW_REDFT00 => R2R_KIND::FFTW_REDFT00,
-        R2R_KIND::FFTW_REDFT01 => R2R_KIND::FFTW_REDFT10,
-        R2R_KIND::FFTW_REDFT10 => R2R_KIND::FFTW_REDFT10,
-        R2R_KIND::FFTW_REDFT11 => R2R_KIND::FFTW_REDFT11,
-        R2R_KIND::FFTW_RODFT00 => R2R_KIND::FFTW_RODFT00,
-        R2R_KIND::FFTW_RODFT01 => R2R_KIND::FFTW_RODFT10,
-        R2R_KIND::FFTW_RODFT10 => R2R_KIND::FFTW_RODFT10,
-        R2R_KIND::FFTW_RODFT11 => R2R_KIND::FFTW_RODFT11,
-    }
-}
-
-fn backward(kind: R2R_KIND) -> R2R_KIND {
-    match kind {
-        R2R_KIND::FFTW_R2HC => R2R_KIND::FFTW_HC2R,
-        R2R_KIND::FFTW_HC2R => R2R_KIND::FFTW_HC2R,
-        R2R_KIND::FFTW_DHT => R2R_KIND::FFTW_DHT,
-        R2R_KIND::FFTW_REDFT00 => R2R_KIND::FFTW_REDFT00,
-        R2R_KIND::FFTW_REDFT01 => R2R_KIND::FFTW_REDFT01,
-        R2R_KIND::FFTW_REDFT10 => R2R_KIND::FFTW_REDFT01,
-        R2R_KIND::FFTW_REDFT11 => R2R_KIND::FFTW_REDFT11,
-        R2R_KIND::FFTW_RODFT00 => R2R_KIND::FFTW_RODFT00,
-        R2R_KIND::FFTW_RODFT01 => R2R_KIND::FFTW_RODFT01,
-        R2R_KIND::FFTW_RODFT10 => R2R_KIND::FFTW_RODFT01,
-        R2R_KIND::FFTW_RODFT11 => R2R_KIND::FFTW_RODFT11,
-    }
-}
-
-/// see http://www.fftw.org/fftw3_doc/Real_002dto_002dReal-Transform-Kinds.html
-fn logical_size(n: usize, kind: R2R_KIND) -> usize {
-    match kind {
-        R2R_KIND::FFTW_R2HC => n,
-        R2R_KIND::FFTW_HC2R => n,
-        R2R_KIND::FFTW_DHT => n,
-        R2R_KIND::FFTW_REDFT00 => 2 * (n - 1),
-        R2R_KIND::FFTW_REDFT01 => 2 * n,
-        R2R_KIND::FFTW_REDFT10 => 2 * n,
-        R2R_KIND::FFTW_REDFT11 => 2 * n,
-        R2R_KIND::FFTW_RODFT00 => 2 * (n + 1),
-        R2R_KIND::FFTW_RODFT01 => 2 * n,
-        R2R_KIND::FFTW_RODFT10 => 2 * n,
-        R2R_KIND::FFTW_RODFT11 => 2 * n,
-    }
-}
+pub use plan::*;
+pub use r2r::R2R_KIND;
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -89,68 +43,4 @@ pub enum FLAG {
     FFTW_NO_SLOW = 1 << 18,
     FFTW_NO_FIXED_RADIX_LARGE_N = 1 << 19,
     FFTW_ALLOW_PRUNING = 1 << 20,
-}
-
-#[derive(Debug)]
-pub struct Plan<'a, 'b, A>
-    where A: 'a + 'b
-{
-    pub field: &'a mut [A],
-    pub coef: &'b mut [A],
-    logical_size: usize,
-    forward: ffi::fftw_plan,
-    backward: ffi::fftw_plan,
-}
-
-impl<'a, 'b, A> Plan<'a, 'b, A>
-    where A: 'a + 'b
-{
-    /// [field] -> [coef]
-    pub fn forward(&self) {
-        unsafe {
-            ffi::fftw_execute(self.forward);
-        }
-    }
-    /// [field] <- [coef]
-    pub fn backward(&self) {
-        unsafe {
-            ffi::fftw_execute(self.backward);
-        }
-    }
-}
-
-impl<'a, 'b, A> Drop for Plan<'a, 'b, A> {
-    fn drop(&mut self) {
-        unsafe {
-            ffi::fftw_destroy_plan(self.forward);
-            ffi::fftw_destroy_plan(self.backward);
-        }
-    }
-}
-
-impl<'a, 'b> Plan<'a, 'b, f64> {
-    pub fn r2r_1d(field: &'a mut [f64], coef: &'b mut [f64], kind: R2R_KIND, flag: FLAG) -> Self {
-        let n = field.len();
-        let forward = unsafe {
-            ffi::fftw_plan_r2r_1d(n as i32,
-                                  field.as_mut_ptr(),
-                                  coef.as_mut_ptr(),
-                                  forward(kind),
-                                  flag as u32)
-        };
-        let backward = unsafe {
-            ffi::fftw_plan_r2r_1d(n as i32,
-                                  coef.as_mut_ptr(),
-                                  field.as_mut_ptr(),
-                                  backward(kind),
-                                  flag as u32)
-        };
-        Plan {
-            field: field,
-            coef: coef,
-            logical_size: logical_size(n, kind),
-            forward: forward,
-            backward: backward,
-        }
-    }
 }
