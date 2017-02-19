@@ -10,10 +10,14 @@ fn main() {
     in_[0] = 1.0;
     let mut out = vec![0.0; n];
     let plan = Plan::r2r_1d(&mut in_, &mut out, R2R_KIND::FFTW_HC2R, FLAG::FFTW_ESTIMATE);
-    plan.execute();
+    plan.forward();
     plan.input[n - 1] = 2.0;
-    plan.execute();
+    plan.forward();
     for val in plan.output.iter() {
+        println!("{:?}", val);
+    }
+    plan.backward();
+    for val in plan.input.iter() {
         println!("{:?}", val);
     }
 }
