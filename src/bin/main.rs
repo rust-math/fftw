@@ -1,23 +1,19 @@
 
 extern crate fftw3_sys as ffi;
 extern crate fftw3;
+extern crate num_traits;
 
+use num_traits::*;
 use fftw3::*;
 
 fn main() {
     let n = 128;
-    let mut in_ = vec![0.0; n];
-    let mut out = vec![0.0; n];
-    let plan = Plan::r2r_1d(&mut in_, &mut out, R2R_KIND::FFTW_HC2R, FLAG::FFTW_ESTIMATE);
-    plan.coef[0] = 1.0;
-    plan.coef[1] = 1.0;
-    plan.coef[n - 1] = 1.0;
-    plan.backward();
-    for (i, val) in plan.field.iter().enumerate() {
-        println!("field[{}] = {}", i, val);
-    }
+    let mut in_ = vec![c64::zero(); n];
+    let mut out = vec![c64::zero(); n];
+    in_[1] = c64::one();
+    let plan = Plan::dft_1d(&mut in_, &mut out, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
     plan.forward();
-    for (i, val) in plan.coef.iter().enumerate() {
-        println!("coef[{}] = {}", i, val);
-    }
+    println!("{:?}", plan.coef);
+    plan.backward();
+    println!("{:?}", plan.field);
 }

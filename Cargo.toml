@@ -4,4 +4,5 @@ version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
+num-traits = "*"
 fftw3-sys = { path = "fftw3-sys" }

@@ -1,10 +1,14 @@
 #![allow(non_camel_case_types)]
 
 extern crate fftw3_sys as ffi;
+extern crate num_traits;
+
 pub mod plan;
+pub mod complex;
 mod r2r;
 
 pub use plan::*;
+pub use complex::c64;
 pub use r2r::R2R_KIND;
 
 #[repr(i32)]
