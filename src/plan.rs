@@ -2,6 +2,7 @@
 use ffi;
 use super::r2r::*;
 use super::{c64, FLAG, SIGN};
+use std::ops::MulAssign;
 
 #[derive(Debug)]
 pub struct Plan<'a, 'b, A, B>
@@ -17,15 +18,23 @@ pub struct Plan<'a, 'b, A, B>
 
 impl<'a, 'b, A, B> Plan<'a, 'b, A, B> {
     /// [field] -> [coef]
-    pub fn forward(&self) {
+    pub fn forward(&mut self) {
         unsafe {
             ffi::fftw_execute(self.forward);
         }
     }
     /// [field] <- [coef]
-    pub fn backward(&self) {
+    pub fn backward(&mut self) {
         unsafe {
             ffi::fftw_execute(self.backward);
+        }
+    }
+    pub fn normalize(&mut self)
+        where A: MulAssign<f64>
+    {
+        let n = 1.0 / self.logical_size as f64;
+        for val in self.field.iter_mut() {
+            *val *= n;
         }
     }
 }
