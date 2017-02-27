@@ -93,3 +93,29 @@ impl<'a, 'b> Plan<'a, 'b, c64, c64> {
 
     }
 }
+
+impl<'a, 'b> Plan<'a, 'b, f64, c64> {
+    pub fn r2c_1d(field: &'a mut [f64], coef: &'b mut [c64], flag: FLAG) -> Self {
+        let n = field.len();
+        let forward = unsafe {
+            ffi::fftw_plan_dft_r2c_1d(n as i32,
+                                      field.as_mut_ptr(),
+                                      coef.as_mut_ptr() as *mut ffi::fftw_complex,
+                                      flag as u32)
+        };
+        let backward = unsafe {
+            ffi::fftw_plan_dft_c2r_1d(n as i32,
+                                      coef.as_mut_ptr() as *mut ffi::fftw_complex,
+                                      field.as_mut_ptr(),
+                                      flag as u32)
+        };
+        Plan {
+            field: field,
+            coef: coef,
+            logical_size: n,
+            forward: forward,
+            backward: backward,
+        }
+
+    }
+}
