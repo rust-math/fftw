@@ -1,7 +1,7 @@
 
 use ffi;
 use num_traits::{One, Zero};
-use std::ops::{Add, Mul, Deref, DerefMut};
+use std::ops::{Add, Mul, MulAssign, Deref, DerefMut};
 
 #[allow(non_camel_case_types)]
 #[derive(Clone, Debug, Copy)]
@@ -41,6 +41,13 @@ impl Mul for c64 {
     fn mul(self, other: Self) -> Self {
         c64([self.re() * other.re() - self.im() * other.im(),
              self.re() * other.im() + self.im() * other.re()])
+    }
+}
+
+impl MulAssign<f64> for c64 {
+    fn mul_assign(&mut self, rhs: f64) {
+        self[0] *= rhs;
+        self[1] *= rhs;
     }
 }
 

@@ -16,7 +16,9 @@ pub struct Plan<'a, 'b, A, B>
     backward: ffi::fftw_plan,
 }
 
-impl<'a, 'b, A, B> Plan<'a, 'b, A, B> {
+impl<'a, 'b, A, B> Plan<'a, 'b, A, B>
+    where A: MulAssign<f64>
+{
     /// [field] -> [coef]
     pub fn forward(&mut self) {
         unsafe {
@@ -28,10 +30,9 @@ impl<'a, 'b, A, B> Plan<'a, 'b, A, B> {
         unsafe {
             ffi::fftw_execute(self.backward);
         }
+        self.normalize();
     }
-    pub fn normalize(&mut self)
-        where A: MulAssign<f64>
-    {
+    fn normalize(&mut self) {
         let n = 1.0 / self.logical_size as f64;
         for val in self.field.iter_mut() {
             *val *= n;

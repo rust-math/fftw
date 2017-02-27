@@ -6,3 +6,6 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 [dependencies]
 num-traits = "*"
 fftw3-sys = { path = "fftw3-sys" }
+
+[dev-dependencies]
+float-cmp = "*"
