@@ -1,7 +1,7 @@
 
 use ffi;
 use super::r2r::*;
-use super::{c64, FLAG, SIGN};
+use super::{c64, FLAG, SIGN, FFTW_MUTEX};
 use std::ops::MulAssign;
 
 #[derive(Debug)]
@@ -41,7 +41,9 @@ impl<'a, 'b, A, B> Plan<'a, 'b, A, B>
 }
 
 impl<'a, 'b, A, B> Drop for Plan<'a, 'b, A, B> {
+    #[allow(unused_variables)]
     fn drop(&mut self) {
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe {
             ffi::fftw_destroy_plan(self.forward);
             ffi::fftw_destroy_plan(self.backward);
@@ -50,8 +52,10 @@ impl<'a, 'b, A, B> Drop for Plan<'a, 'b, A, B> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, f64, f64> {
+    #[allow(unused_variables)]
     pub fn r2r_1d(field: &'a mut [f64], coef: &'b mut [f64], kind: R2R_KIND, flag: FLAG) -> Self {
         let n = field.len();
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let forward = unsafe {
             ffi::fftw_plan_r2r_1d(n as i32,
                                   field.as_mut_ptr(),
@@ -77,8 +81,10 @@ impl<'a, 'b> Plan<'a, 'b, f64, f64> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, c64, c64> {
+    #[allow(unused_variables)]
     pub fn dft_1d(field: &'a mut [c64], coef: &'b mut [c64], sign: SIGN, flag: FLAG) -> Self {
         let n = field.len();
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let forward = unsafe {
             ffi::fftw_plan_dft_1d(n as i32,
                                   field.as_mut_ptr() as *mut ffi::fftw_complex,
@@ -105,8 +111,10 @@ impl<'a, 'b> Plan<'a, 'b, c64, c64> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, f64, c64> {
+    #[allow(unused_variables)]
     pub fn r2c_1d(field: &'a mut [f64], coef: &'b mut [c64], flag: FLAG) -> Self {
         let n = field.len();
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let forward = unsafe {
             ffi::fftw_plan_dft_r2c_1d(n as i32,
                                       field.as_mut_ptr(),

@@ -5,6 +5,7 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 [dependencies]
 num-traits = "*"
+lazy_static = "*"
 fftw3-sys = { path = "fftw3-sys" }
 
 [dev-dependencies]
