@@ -11,7 +11,7 @@ fn main() {
     let mut in_ = vec![c64::zero(); n];
     let mut out = vec![c64::zero(); n];
     in_[1] = c64::one();
-    let plan = Plan::dft_1d(&mut in_, &mut out, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
+    let mut plan = Plan::dft_1d(&mut in_, &mut out, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
     plan.forward();
     println!("{:?}", plan.coef);
     plan.backward();
