@@ -52,7 +52,7 @@ impl Sub for c64 {
 impl Neg for c64 {
     type Output = c64;
     fn neg(self) -> Self {
-        c64([-self[0], self[1]])
+        c64([-self[0], -self[1]])
     }
 }
 
