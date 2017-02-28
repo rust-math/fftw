@@ -2,18 +2,13 @@
 
 extern crate fftw3_sys as ffi;
 extern crate num_traits;
-
 #[macro_use]
 extern crate lazy_static;
-use std::sync::Mutex;
-
-lazy_static! {
-    pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
-}
 
 pub mod plan;
 pub mod complex;
 mod r2r;
+mod util;
 
 pub use plan::*;
 pub use complex::c64;

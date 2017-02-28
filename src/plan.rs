@@ -1,8 +1,9 @@
 
 use ffi;
 use super::r2r::*;
-use super::{c64, FLAG, SIGN, FFTW_MUTEX};
+use super::{c64, FLAG, SIGN};
 use std::ops::MulAssign;
+use super::util::FFTW_MUTEX;
 
 #[derive(Debug)]
 pub struct Plan<'a, 'b, A, B>
