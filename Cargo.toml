@@ -6,7 +6,7 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 [dependencies]
 num-traits = "*"
 lazy_static = "*"
-fftw-sys = { path = "fftw-sys" }
+fftw-sys = "0.1.0"
 
 [dev-dependencies]
-float-cmp = "*"
+float-cmp = "0.2.3"
