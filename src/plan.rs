@@ -18,7 +18,8 @@ pub struct Plan<'a, 'b, A, B>
 }
 
 impl<'a, 'b, A, B> Plan<'a, 'b, A, B>
-    where A: MulAssign<f64>
+    where A: MulAssign<f64>,
+          B: MulAssign<f64>
 {
     /// [field] -> [coef]
     pub fn forward(&mut self) {
@@ -31,11 +32,14 @@ impl<'a, 'b, A, B> Plan<'a, 'b, A, B>
         unsafe {
             ffi::fftw_execute(self.backward);
         }
-        self.normalize();
     }
-    fn normalize(&mut self) {
-        let n = 1.0 / self.logical_size as f64;
+    pub fn normalize_field_by(&mut self, n: f64) {
         for val in self.field.iter_mut() {
+            *val *= n;
+        }
+    }
+    pub fn normalize_coef_by(&mut self, n: f64) {
+        for val in self.coef.iter_mut() {
             *val *= n;
         }
     }
@@ -82,7 +86,7 @@ impl<'a, 'b> Plan<'a, 'b, f64, f64> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, c64, c64> {
-    pub fn dft_1d(field: &'a mut [c64], coef: &'b mut [c64], sign: SIGN, flag: FLAG) -> Self {
+    pub fn c2c_1d(field: &'a mut [c64], coef: &'b mut [c64], sign: SIGN, flag: FLAG) -> Self {
         let n = field.len();
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let forward = unsafe {
