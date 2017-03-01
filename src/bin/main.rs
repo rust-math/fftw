@@ -1,8 +1,8 @@
 
-extern crate fftw3_sys as ffi;
-extern crate fftw3;
+extern crate fftw_sys as ffi;
+extern crate fftw;
 
-use fftw3::*;
+use fftw::*;
 use std::f64::consts::PI;
 
 fn main() {
