@@ -11,7 +11,6 @@ pub mod complex;
 mod r2r;
 mod util;
 
-pub use plan::*;
 pub use pair::*;
 pub use complex::c64;
 pub use r2r::R2R_KIND;
