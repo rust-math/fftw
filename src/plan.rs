@@ -86,7 +86,7 @@ impl<'a, 'b> Plan<'a, 'b, f64, f64> {
 }
 
 impl<'a, 'b> Plan<'a, 'b, c64, c64> {
-    pub fn dft_1d(field: &'a mut [c64], coef: &'b mut [c64], sign: SIGN, flag: FLAG) -> Self {
+    pub fn c2c_1d(field: &'a mut [c64], coef: &'b mut [c64], sign: SIGN, flag: FLAG) -> Self {
         let n = field.len();
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let forward = unsafe {
