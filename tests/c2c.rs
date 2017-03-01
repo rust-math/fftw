@@ -16,6 +16,7 @@ fn c2c2c() {
     }
     plan.forward();
     plan.backward();
+    plan.normalize_field_by(1.0 / n as f64);
     for (i, val) in plan.field.iter().enumerate() {
         let ans = c64::new((i + 1) as f64, (i + 2) as f64);
         if (ans - *val).abs() / ans.abs() > 1e-7 {

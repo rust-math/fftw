@@ -1,19 +1,26 @@
 
 extern crate fftw3_sys as ffi;
 extern crate fftw3;
-extern crate num_traits;
 
-use num_traits::*;
 use fftw3::*;
+use std::f64::consts::PI;
 
 fn main() {
     let n = 128;
-    let mut in_ = vec![c64::zero(); n];
-    let mut out = vec![c64::zero(); n];
-    in_[1] = c64::one();
-    let mut plan = Plan::dft_1d(&mut in_, &mut out, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
-    plan.forward();
-    println!("{:?}", plan.coef);
-    plan.backward();
-    println!("{:?}", plan.field);
+    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    pair.coef[1] = 1.0;
+    pair.backward();
+    for val in pair.field.iter() {
+        println!("{}", val);
+    }
+    let ans: Vec<f64> = (0..n)
+        .map(|i| {
+            let x = 2.0 * PI * i as f64 / n as f64;
+            x.cos()
+        })
+        .collect();
+
+    for val in ans.iter() {
+        println!("{}", val);
+    }
 }
