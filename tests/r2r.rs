@@ -1,8 +1,8 @@
 
-extern crate fftw3;
+extern crate fftw;
 extern crate float_cmp;
 
-use fftw3::*;
+use fftw::*;
 use float_cmp::ApproxEqRatio;
 use std::f64::consts::PI;
 

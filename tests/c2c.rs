@@ -1,7 +1,7 @@
 
-extern crate fftw3;
+extern crate fftw;
 
-use fftw3::*;
+use fftw::*;
 
 #[test]
 fn c2c2c() {
