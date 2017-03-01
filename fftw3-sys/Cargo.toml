@@ -3,5 +3,10 @@ name = "fftw3-sys"
 version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
+description = "unsafe wrapper of FFTW3"
+repository = "https://github.com/termoshtt/rust-fftw3"
+keywords = ["fftw"]
+license = "GPL-2.0"
+
 [dependencies]
-fftw3-src = { path = "../fftw3-src" }
+fftw3-src = "0.1.0"
