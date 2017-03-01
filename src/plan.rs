@@ -18,24 +18,24 @@ pub struct Plan<'a, 'b, A, B>
 }
 
 impl<'a, 'b, A, B> Plan<'a, 'b, A, B>
-    where A: MulAssign<f64>
+    where B: MulAssign<f64>
 {
     /// [field] -> [coef]
     pub fn forward(&mut self) {
         unsafe {
             ffi::fftw_execute(self.forward);
         }
+        self.normalize_coef();
     }
     /// [field] <- [coef]
     pub fn backward(&mut self) {
         unsafe {
             ffi::fftw_execute(self.backward);
         }
-        self.normalize();
     }
-    fn normalize(&mut self) {
+    fn normalize_coef(&mut self) {
         let n = 1.0 / self.logical_size as f64;
-        for val in self.field.iter_mut() {
+        for val in self.coef.iter_mut() {
             *val *= n;
         }
     }
