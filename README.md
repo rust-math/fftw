@@ -1,10 +1,8 @@
 rust-fftw3
 ===========
 [![Build Status](https://travis-ci.org/termoshtt/rust-fftw3.svg?branch=master)](https://travis-ci.org/termoshtt/rust-fftw3)
-[![Crate](http://meritbadge.herokuapp.com/fftw)](https://crates.io/crates/fftw)
-[![docs.rs](https://docs.rs/fftw/badge.svg)](https://docs.rs/fftw)
 
-FFTW3 binding for Rust
+FFTW binding for Rust
 
 This repository includes three crates:
 
