@@ -3,9 +3,14 @@ name = "fftw"
 version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
+description = "safe wrapper of FFTW3"
+repository = "https://github.com/termoshtt/rust-fftw3"
+keywords = ["fftw"]
+license = "GPL-3.0"
+
 [dependencies]
-num-traits = "*"
-lazy_static = "*"
+num-traits = "0.1.36"
+lazy_static = "0.2.2"
 fftw-sys = "0.1.0"
 
 [dev-dependencies]
