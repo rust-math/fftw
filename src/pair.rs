@@ -51,6 +51,9 @@ fn alloc_real<'a>(n: usize) -> &'a mut [f64] {
         from_raw_parts_mut(ptr, n)
     };
     drop(lock);
+    for val in slice.iter_mut() {
+        *val = 0.0;
+    }
     slice
 }
 
