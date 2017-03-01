@@ -1,12 +1,13 @@
 [package]
-name = "fftw3-sys"
+name = "fftw-src"
 version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
-description = "unsafe wrapper of FFTW3"
+description = "Source of FFTW"
 repository = "https://github.com/termoshtt/rust-fftw3"
 keywords = ["fftw"]
 license = "GPL-2.0"
 
-[dependencies]
-fftw3-src = "0.1.0"
+build = "build.rs"
+links = "fftw3"
+
