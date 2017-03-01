@@ -6,6 +6,7 @@ extern crate num_traits;
 extern crate lazy_static;
 
 pub mod plan;
+pub mod pair;
 pub mod complex;
 mod r2r;
 mod util;
