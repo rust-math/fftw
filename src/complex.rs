@@ -42,10 +42,24 @@ impl Add for c64 {
     }
 }
 
+impl AddAssign for c64 {
+    fn add_assign(&mut self, other: Self) {
+        self[0] += other[0];
+        self[1] += other[1];
+    }
+}
+
 impl Sub for c64 {
     type Output = c64;
     fn sub(self, other: Self) -> Self {
         c64([self.re() - other.re(), self.im() - other.im()])
+    }
+}
+
+impl SubAssign for c64 {
+    fn sub_assign(&mut self, other: Self) {
+        self[0] -= other[0];
+        self[1] -= other[1];
     }
 }
 
@@ -61,6 +75,27 @@ impl Mul for c64 {
     fn mul(self, other: Self) -> Self {
         c64([self.re() * other.re() - self.im() * other.im(),
              self.re() * other.im() + self.im() * other.re()])
+    }
+}
+
+impl MulAssign for c64 {
+    fn mul_assign(&mut self, other: Self) {
+        let a = self.re();
+        let b = self.im();
+        self[0] = a * other.re() - b * other.im();
+        self[1] = a * other.im() + b * other.re();
+    }
+}
+
+impl Div for c64 {
+    type Output = c64;
+    fn div(self, other: Self) -> Self {
+        let a = other.re();
+        let b = other.im();
+        let c = self.re();
+        let d = self.im();
+        let abs = a * a + b * b;
+        c64([(a * c + b * d) / abs, (a * d - b * c) / abs])
     }
 }
 
