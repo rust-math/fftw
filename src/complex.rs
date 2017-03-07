@@ -73,8 +73,7 @@ impl Neg for c64 {
 impl Mul for c64 {
     type Output = c64;
     fn mul(self, other: Self) -> Self {
-        c64([self.re() * other.re() - self.im() * other.im(),
-             self.re() * other.im() + self.im() * other.re()])
+        c64([self.re() * other.re() - self.im() * other.im(), self.re() * other.im() + self.im() * other.re()])
     }
 }
 
