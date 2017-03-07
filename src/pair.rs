@@ -33,15 +33,11 @@ impl<'a, 'b, A, B> Drop for Pair<'a, 'b, A, B> {
 
 impl<'a, 'b, A, B> Deref for Pair<'a, 'b, A, B> {
     type Target = Plan<'a, 'b, A, B>;
-    fn deref(&self) -> &Self::Target {
-        &self.plan
-    }
+    fn deref(&self) -> &Self::Target { &self.plan }
 }
 
 impl<'a, 'b, A, B> DerefMut for Pair<'a, 'b, A, B> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.plan
-    }
+    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.plan }
 }
 
 fn alloc_real<'a>(n: usize) -> &'a mut [f64] {
