@@ -1,6 +1,7 @@
 
 use ffi;
 use num_traits::{One, Zero};
+use num_extra::Exponential;
 use std::ops::*;
 
 #[allow(non_camel_case_types)]
@@ -113,4 +114,14 @@ impl One for c64 {
 impl Zero for c64 {
     fn zero() -> Self { c64([0.0, 0.0]) }
     fn is_zero(&self) -> bool { self.re().is_zero() && self.im().is_zero() }
+}
+
+impl Exponential for c64 {
+    fn exp(self) -> Self {
+        let a = self.re();
+        let b = self.im();
+        let (s, c) = b.sin_cos();
+        let ea = a.exp();
+        c64([ea * c, ea * s])
+    }
 }

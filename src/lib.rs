@@ -2,6 +2,7 @@
 
 extern crate fftw_sys as ffi;
 extern crate num_traits;
+extern crate num_extra;
 #[macro_use]
 extern crate lazy_static;
 
