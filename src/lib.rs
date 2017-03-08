@@ -9,11 +9,13 @@ pub mod plan;
 pub mod pair;
 pub mod complex;
 mod r2r;
+mod raw_vec;
 mod util;
 
 pub use pair::*;
 pub use complex::c64;
 pub use r2r::R2R_KIND;
+pub use raw_vec::RawVec;
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
