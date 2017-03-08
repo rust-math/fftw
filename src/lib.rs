@@ -5,15 +5,14 @@ extern crate num_traits;
 #[macro_use]
 extern crate lazy_static;
 
-mod pair;
-mod complex;
-mod r2r;
-mod raw_vec;
-mod plan;
-mod enums;
+pub mod pair;
+pub mod complex;
+pub mod r2r;
+pub mod raw_vec;
+pub mod plan;
+pub mod enums;
 mod util;
 
 pub use pair::*;
 pub use complex::c64;
 pub use enums::*;
-pub use raw_vec::RawVec;

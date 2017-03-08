@@ -1,11 +1,22 @@
 
 pub use ffi::fftw_r2r_kind as R2R_KIND;
+use std::ops::Neg;
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum SIGN {
     FFTW_FORWARD = -1,
     FFTW_BACKWARD = 1,
+}
+
+impl Neg for SIGN {
+    type Output = SIGN;
+    fn neg(self) -> Self::Output {
+        match self {
+            SIGN::FFTW_FORWARD => SIGN::FFTW_BACKWARD,
+            SIGN::FFTW_BACKWARD => SIGN::FFTW_FORWARD,
+        }
+    }
 }
 
 #[repr(u32)]
