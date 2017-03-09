@@ -16,8 +16,11 @@ pub struct Pair<A, B> {
 }
 
 impl<A, B> Pair<A, B> {
+    pub fn logical_size(&self) -> usize { self.logical_size }
+
     pub fn forward(&mut self) {
         unsafe {
+
             self.forward.execute();
         }
     }

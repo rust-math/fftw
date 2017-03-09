@@ -1,3 +1,4 @@
+#![allow(non_camel_case_types)]
 
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 use std::ops::Neg;

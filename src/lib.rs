@@ -1,4 +1,3 @@
-#![allow(non_camel_case_types)]
 
 extern crate fftw_sys as ffi;
 extern crate num_traits;
