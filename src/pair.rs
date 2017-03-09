@@ -1,94 +1,97 @@
 
-use ffi;
+use super::complex::c64;
+use super::raw_vec::RawVec;
 use super::plan::Plan;
-use super::{R2R_KIND, FLAG, SIGN, c64};
-use super::util::FFTW_MUTEX;
+use super::enums::*;
+use super::r2r::*;
 
-use num_traits::Zero;
-use std::slice::from_raw_parts_mut;
-use std::ops::{Deref, DerefMut};
-use std::os::raw::c_void;
+use std::ops::MulAssign;
 
-/// Field and Coefficient pair
-///
-/// - This struct is a wrapper of `Plan`
-/// - This struct uses fftw_malloc to enable SIMD optimization in FFTW.
-pub struct Pair<'a, 'b, A, B>
-    where A: 'a,
-          B: 'b
-{
-    plan: Plan<'a, 'b, A, B>,
+pub struct Pair<A, B> {
+    pub field: RawVec<A>,
+    pub coef: RawVec<B>,
+    logical_size: usize,
+    forward: Plan,
+    backward: Plan,
 }
 
-impl<'a, 'b, A, B> Drop for Pair<'a, 'b, A, B> {
-    fn drop(&mut self) {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+impl<A, B> Pair<A, B> {
+    pub fn logical_size(&self) -> usize { self.logical_size }
+
+    pub fn forward(&mut self) {
         unsafe {
-            ffi::fftw_free(self.plan.field.as_mut_ptr() as *mut c_void);
-            ffi::fftw_free(self.plan.coef.as_mut_ptr() as *mut c_void);
+
+            self.forward.execute();
         }
-        drop(lock);
+    }
+
+    pub fn backward(&mut self) {
+        unsafe {
+            self.backward.execute();
+        }
+    }
+
+    pub fn normalize_field_by(&mut self, factor: f64)
+        where A: MulAssign<f64>
+    {
+        for val in self.field.iter_mut() {
+            *val *= factor;
+        }
+    }
+
+    pub fn normalize_coef_by(&mut self, factor: f64)
+        where B: MulAssign<f64>
+    {
+        for val in self.coef.iter_mut() {
+            *val *= factor;
+        }
     }
 }
 
-impl<'a, 'b, A, B> Deref for Pair<'a, 'b, A, B> {
-    type Target = Plan<'a, 'b, A, B>;
-    fn deref(&self) -> &Self::Target { &self.plan }
-}
-
-impl<'a, 'b, A, B> DerefMut for Pair<'a, 'b, A, B> {
-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.plan }
-}
-
-fn alloc_real<'a>(n: usize) -> &'a mut [f64] {
-    let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-    let slice = unsafe {
-        let ptr = ffi::fftw_alloc_real(n);
-        from_raw_parts_mut(ptr, n)
-    };
-    drop(lock);
-    for val in slice.iter_mut() {
-        *val = 0.0;
-    }
-    slice
-}
-
-fn alloc_complex<'a>(n: usize) -> &'a mut [c64] {
-    let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-    let slice = unsafe {
-        let ptr = ffi::fftw_alloc_complex(n) as *mut c64;
-        from_raw_parts_mut(ptr, n)
-    };
-    drop(lock);
-    for val in slice.iter_mut() {
-        *val = c64::zero();
-    }
-    slice
-}
-
-impl<'a, 'b> Pair<'a, 'b, f64, f64> {
+impl Pair<f64, f64> {
     pub fn r2r_1d(n: usize, kind: R2R_KIND, flag: FLAG) -> Self {
-        let field = alloc_real(n);
-        let coef = alloc_real(n);
-        let plan = Plan::r2r_1d(field, coef, kind, flag);
-        Pair { plan: plan }
+        let mut field = RawVec::<f64>::new(n);
+        let mut coef = RawVec::<f64>::new(n);
+        let forward = Plan::r2r_1d(n, &mut field, &mut coef, forward(kind), flag);
+        let backward = Plan::r2r_1d(n, &mut coef, &mut field, backward(kind), flag);
+        Pair {
+            field: field,
+            coef: coef,
+            logical_size: logical_size(n, kind),
+            forward: forward,
+            backward: backward,
+        }
     }
 }
 
-impl<'a, 'b> Pair<'a, 'b, f64, c64> {
+impl Pair<f64, c64> {
     pub fn r2c_1d(n: usize, flag: FLAG) -> Self {
-        let field = alloc_real(n);
-        let coef = alloc_complex(n / 2 + 1);
-        let plan = Plan::r2c_1d(field, coef, flag);
-        Pair { plan: plan }
+        let mut field = RawVec::<f64>::new(n);
+        let mut coef = RawVec::<c64>::new(n / 2 + 1);
+        let forward = Plan::r2c_1d(n, &mut field, &mut coef, flag);
+        let backward = Plan::c2r_1d(n, &mut coef, &mut field, flag);
+        Pair {
+            field: field,
+            coef: coef,
+            logical_size: n,
+            forward: forward,
+            backward: backward,
+        }
     }
 }
 
-impl<'a, 'b> Pair<'a, 'b, c64, c64> {
+impl Pair<c64, c64> {
     pub fn c2c_1d(n: usize, sign: SIGN, flag: FLAG) -> Self {
-        let field = alloc_complex(n);
-        let coef = alloc_complex(n);
-        let plan = Plan::c2c_1d(field, coef, sign, flag);
-        Pair { plan: plan }
+        let mut field = RawVec::<c64>::new(n);
+        let mut coef = RawVec::<c64>::new(n);
+        let forward = Plan::c2c_1d(n, &mut field, &mut coef, sign, flag);
+        let backward = Plan::c2c_1d(n, &mut coef, &mut field, -sign, flag);
+        Pair {
+            field: field,
+            coef: coef,
+            logical_size: n,
+            forward: forward,
+            backward: backward,
+        }
     }
 }
