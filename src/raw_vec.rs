@@ -20,6 +20,8 @@ impl<T> RawVec<T> {
     pub fn as_ptr(&self) -> *const T { self.data }
     pub fn as_mut_ptr(&mut self) -> *mut T { self.data }
 
+    pub fn len(&self) -> usize { self.n }
+
     pub fn iter<'a>(&'a self) -> Iter<'a, T> { self.as_slice().iter() }
     pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, T> { self.as_mut_slice().iter_mut() }
 }
