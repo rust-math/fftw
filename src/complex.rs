@@ -5,7 +5,7 @@ use num_extra::Exponential;
 use std::ops::*;
 
 #[allow(non_camel_case_types)]
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, RustcEncodable, RustcDecodable)]
 pub struct c64(ffi::fftw_complex);
 
 impl Deref for c64 {

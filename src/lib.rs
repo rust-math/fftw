@@ -4,6 +4,7 @@ extern crate num_traits;
 extern crate num_extra;
 #[macro_use]
 extern crate lazy_static;
+extern crate rustc_serialize;
 
 pub mod pair;
 pub mod complex;
