@@ -1,11 +1,11 @@
 
-use super::complex::c64;
 use super::raw_vec::RawVec;
 use super::plan::Plan;
 use super::enums::*;
 use super::r2r::*;
 
-use std::ops::MulAssign;
+use num_complex::Complex64 as c64;
+use std::ops::Mul;
 
 pub struct Pair<A, B> {
     pub field: RawVec<A>,
@@ -20,7 +20,6 @@ impl<A, B> Pair<A, B> {
 
     pub fn forward(&mut self) {
         unsafe {
-
             self.forward.execute();
         }
     }
@@ -32,18 +31,18 @@ impl<A, B> Pair<A, B> {
     }
 
     pub fn normalize_field_by(&mut self, factor: f64)
-        where A: MulAssign<f64>
+        where A: Mul<f64, Output = A> + Copy
     {
         for val in self.field.iter_mut() {
-            *val *= factor;
+            *val = *val * factor;
         }
     }
 
     pub fn normalize_coef_by(&mut self, factor: f64)
-        where B: MulAssign<f64>
+        where B: Mul<f64, Output = B> + Copy
     {
         for val in self.coef.iter_mut() {
-            *val *= factor;
+            *val = *val * factor;
         }
     }
 }
