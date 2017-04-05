@@ -1,10 +1,10 @@
 
-use super::complex::c64;
 use super::raw_vec::RawVec;
 use super::plan::Plan;
 use super::enums::*;
 use super::r2r::*;
 
+use num_complex::Complex64 as c64;
 use std::ops::MulAssign;
 
 pub struct Pair<A, B> {

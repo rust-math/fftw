@@ -1,9 +1,10 @@
 
 use ffi;
 use super::enums::*;
-use super::complex::c64;
 use super::raw_vec::RawVec;
 use super::util::FFTW_MUTEX;
+
+use num_complex::Complex64 as c64;
 
 pub struct Plan {
     plan: ffi::fftw_plan,
