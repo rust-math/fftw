@@ -1,7 +1,9 @@
 
 extern crate fftw;
+extern crate num_complex;
 
 use fftw::*;
+use num_complex::Complex64 as c64;
 
 #[test]
 fn c2c2c() {
@@ -15,7 +17,7 @@ fn c2c2c() {
     pair.normalize_field_by(1.0 / n as f64);
     for (i, val) in pair.field.iter().enumerate() {
         let ans = c64::new((i + 1) as f64, (i + 2) as f64);
-        if (ans - *val).abs() / ans.abs() > 1e-7 {
+        if (ans - *val).norm() / ans.norm() > 1e-7 {
             panic!("Not equal: ans={:?}/val={:?}", ans, val);
         }
     }

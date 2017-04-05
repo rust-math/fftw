@@ -1,7 +1,9 @@
 
 extern crate fftw;
+extern crate num_complex;
 
 use fftw::*;
+use num_complex::Complex64 as c64;
 
 #[test]
 fn r2c2r() {
@@ -34,9 +36,9 @@ fn c2r2c() {
     for (i, val) in pair.coef.iter().enumerate() {
         let mut ans = c64::new((i + 1) as f64, (i + 2) as f64);
         if i == 0 || i == n / 2 {
-            ans[1] = 0.0;
+            ans.im = 0.0;
         }
-        if (ans - *val).abs() / ans.abs() > 1e-7 {
+        if (ans - *val).norm() / ans.norm() > 1e-7 {
             panic!("Not equal: i={}, ans={:?}/val={:?}", i, ans, val);
         }
     }
