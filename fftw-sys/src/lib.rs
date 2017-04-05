@@ -1,4 +1,4 @@
-#![allow(non_snake_case, non_camel_case_types, dead_code)]
+#![allow(non_camel_case_types)]
 
 extern crate fftw_src;
 extern crate libc;
