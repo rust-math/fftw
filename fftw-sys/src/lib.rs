@@ -1,6 +1,8 @@
 #![allow(non_camel_case_types)]
 
+#[cfg(feature = "source")]
 extern crate fftw_src;
+
 extern crate libc;
 extern crate num_complex;
 
@@ -51,6 +53,7 @@ pub type fftw_read_char_func = ::std::option::Option<unsafe extern "C" fn(arg1: 
 pub struct fftw_plan_s([u8; 0]);
 pub type fftw_plan = *mut fftw_plan_s;
 
+#[link(name = "fftw3")]
 extern "C" {
     pub fn fftw_execute(p: fftw_plan);
     pub fn fftw_plan_dft(rank: ::std::os::raw::c_int,
@@ -387,6 +390,7 @@ pub use self::fftw_r2r_kind as fftwf_r2r_kind;
 pub type fftwf_write_char_func = fftw_write_char_func;
 pub type fftwf_read_char_func = fftw_read_char_func;
 
+#[link(name = "fftw3")]
 extern "C" {
     pub fn fftwf_execute(p: fftwf_plan);
     pub fn fftwf_plan_dft(rank: ::std::os::raw::c_int,
