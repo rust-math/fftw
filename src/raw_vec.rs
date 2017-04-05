@@ -39,7 +39,11 @@ impl RawVec<f64> {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let ptr = unsafe { ffi::fftw_alloc_real(n) };
         drop(lock);
-        RawVec { n: n, data: ptr }
+        let mut vec = RawVec { n: n, data: ptr };
+        for v in vec.iter_mut() {
+            *v = 0.0;
+        }
+        vec
     }
 }
 
@@ -48,7 +52,11 @@ impl RawVec<c64> {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let ptr = unsafe { ffi::fftw_alloc_complex(n) } as *mut c64;
         drop(lock);
-        RawVec { n: n, data: ptr }
+        let mut vec = RawVec { n: n, data: ptr };
+        for v in vec.iter_mut() {
+            *v = c64::new(0.0, 0.0);
+        }
+        vec
     }
 }
 
