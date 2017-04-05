@@ -10,3 +10,4 @@ license = "GPL-2.0"
 
 [dependencies]
 fftw-src = "0.1.0"
+libc = "*"
