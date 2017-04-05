@@ -23,25 +23,21 @@ pub enum fftw_r2r_kind {
     FFTW_RODFT11 = 10,
 }
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct fftw_iodim {
     pub n: ::std::os::raw::c_int,
     pub is: ::std::os::raw::c_int,
     pub os: ::std::os::raw::c_int,
 }
-impl Clone for fftw_iodim {
-    fn clone(&self) -> Self { *self }
-}
+
 #[repr(C)]
-#[derive(Debug, Copy)]
+#[derive(Debug, Copy, Clone)]
 pub struct fftw_iodim64 {
     pub n: isize,
     pub is: isize,
     pub os: isize,
 }
-impl Clone for fftw_iodim64 {
-    fn clone(&self) -> Self { *self }
-}
+
 pub type fftw_write_char_func = ::std::option::Option<unsafe extern "C" fn(c: ::std::os::raw::c_char,
                                                                              arg1: *mut ::std::os::raw::c_void)>;
 pub type fftw_read_char_func = ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)
