@@ -2,10 +2,12 @@
 
 extern crate fftw_src;
 extern crate libc;
+extern crate num_complex;
 
 mod test;
 
 use libc::FILE;
+pub use num_complex::Complex64 as fftw_complex;
 
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -42,7 +44,7 @@ pub type fftw_write_char_func = ::std::option::Option<unsafe extern "C" fn(c: ::
                                                                              arg1: *mut ::std::os::raw::c_void)>;
 pub type fftw_read_char_func = ::std::option::Option<unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)
                                                                             -> ::std::os::raw::c_int>;
-pub type fftw_complex = [f64; 2usize];
+
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
