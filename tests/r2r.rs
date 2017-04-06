@@ -9,7 +9,7 @@ use std::f64::consts::PI;
 #[test]
 fn r2hc2r() {
     let n = 128;
-    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    let mut pair = Pair::<f64, f64>::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
     for (i, val) in pair.field.iter_mut().enumerate() {
         *val = (i + 1) as f64;
     }
@@ -27,7 +27,7 @@ fn r2hc2r() {
 #[test]
 fn hc2r2hc() {
     let n = 128;
-    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    let mut pair = Pair::<f64, f64>::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
     for (i, val) in pair.coef.iter_mut().enumerate() {
         *val = (i + 1) as f64;
     }
@@ -45,7 +45,7 @@ fn hc2r2hc() {
 #[test]
 fn hc2r() {
     let n = 128;
-    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    let mut pair = Pair::<f64, f64>::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
     pair.coef[0] = 2.0;
     pair.coef[1] = 1.0;
     pair.backward();
