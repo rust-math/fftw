@@ -8,11 +8,20 @@ repository = "https://github.com/termoshtt/rust-fftw3"
 keywords = ["fftw"]
 license = "GPL-3.0"
 
+[features]
+default = ["source"]
+system = ["fftw-sys/system"]
+source = ["fftw-sys/source"]
+
 [dependencies]
 num-traits = "0.1.36"
 num-complex= { git = "http://github.com/rust-num/num" }
 lazy_static = "0.2.2"
-fftw-sys = { path = "fftw-sys", features = ["system"], default-features = false }
+
+[dependencies.fftw-sys]
+path = "fftw-sys"
+# version = "0.2.0"
+default-features = false
 
 [dev-dependencies]
 float-cmp = "0.2.3"
