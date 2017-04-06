@@ -39,24 +39,14 @@ impl Plan {
 
     pub fn r2c_1d(n: usize, in_: &mut RawVec<f64>, out: &mut RawVec<c64>, flag: FLAG) -> Self {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe {
-            ffi::fftw_plan_dft_r2c_1d(n as i32,
-                                      in_.as_mut_ptr(),
-                                      out.as_mut_ptr() as *mut ffi::fftw_complex,
-                                      flag as u32)
-        };
+        let plan = unsafe { ffi::fftw_plan_dft_r2c_1d(n as i32, in_.as_mut_ptr(), out.as_mut_ptr(), flag as u32) };
         drop(lock);
         Plan { plan: plan }
     }
 
     pub fn c2r_1d(n: usize, in_: &mut RawVec<c64>, out: &mut RawVec<f64>, flag: FLAG) -> Self {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe {
-            ffi::fftw_plan_dft_c2r_1d(n as i32,
-                                      in_.as_mut_ptr() as *mut ffi::fftw_complex,
-                                      out.as_mut_ptr(),
-                                      flag as u32)
-        };
+        let plan = unsafe { ffi::fftw_plan_dft_c2r_1d(n as i32, in_.as_mut_ptr(), out.as_mut_ptr(), flag as u32) };
         drop(lock);
         Plan { plan: plan }
     }
@@ -65,8 +55,8 @@ impl Plan {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let plan = unsafe {
             ffi::fftw_plan_dft_1d(n as i32,
-                                  in_.as_mut_ptr() as *mut ffi::fftw_complex,
-                                  out.as_mut_ptr() as *mut ffi::fftw_complex,
+                                  in_.as_mut_ptr(),
+                                  out.as_mut_ptr(),
                                   sign as i32,
                                   flag as u32)
         };

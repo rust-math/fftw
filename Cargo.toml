@@ -10,9 +10,9 @@ license = "GPL-3.0"
 
 [dependencies]
 num-traits = "0.1.36"
-num-complex= "0.1.36"
+num-complex= { git = "http://github.com/rust-num/num" }
 lazy_static = "0.2.2"
-fftw-sys = "0.1.0"
+fftw-sys = { path = "fftw-sys" }
 
 [dev-dependencies]
 float-cmp = "0.2.3"
