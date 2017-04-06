@@ -11,8 +11,8 @@ pub struct Pair<A, B> {
     pub field: RawVec<A>,
     pub coef: RawVec<B>,
     logical_size: usize,
-    forward: Plan,
-    backward: Plan,
+    forward: Plan<A, B>,
+    backward: Plan<B, A>,
 }
 
 impl<A, B> Pair<A, B> {
@@ -47,12 +47,28 @@ impl<A, B> Pair<A, B> {
     }
 }
 
+impl Pair<f32, f32> {
+    pub fn r2r_1d(n: usize, kind: R2R_KIND, flag: FLAG) -> Self {
+        let mut field = RawVec::<f32>::new(n);
+        let mut coef = RawVec::<f32>::new(n);
+        let forward = Plan::<f32, f32>::r2r_1d(n, &mut field, &mut coef, forward(kind), flag);
+        let backward = Plan::<f32, f32>::r2r_1d(n, &mut coef, &mut field, backward(kind), flag);
+        Pair {
+            field: field,
+            coef: coef,
+            logical_size: logical_size(n, kind),
+            forward: forward,
+            backward: backward,
+        }
+    }
+}
+
 impl Pair<f64, f64> {
     pub fn r2r_1d(n: usize, kind: R2R_KIND, flag: FLAG) -> Self {
         let mut field = RawVec::<f64>::new(n);
         let mut coef = RawVec::<f64>::new(n);
-        let forward = Plan::r2r_1d(n, &mut field, &mut coef, forward(kind), flag);
-        let backward = Plan::r2r_1d(n, &mut coef, &mut field, backward(kind), flag);
+        let forward = Plan::<f64, f64>::r2r_1d(n, &mut field, &mut coef, forward(kind), flag);
+        let backward = Plan::<f64, f64>::r2r_1d(n, &mut coef, &mut field, backward(kind), flag);
         Pair {
             field: field,
             coef: coef,
