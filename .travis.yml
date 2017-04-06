@@ -24,7 +24,7 @@ addons:
       - kubuntu-backports
     packages:
       - make
-      - fftw3
+      - libfftw3-dev
 
 env:
   - RUST_BACKTRACE=1 FEATURE=system
