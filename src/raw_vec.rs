@@ -2,6 +2,7 @@
 use ffi;
 use super::util::FFTW_MUTEX;
 
+use num_complex::Complex32 as c32;
 use num_complex::Complex64 as c64;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 use std::os::raw::c_void;
@@ -34,6 +35,19 @@ impl<T> Drop for RawVec<T> {
     }
 }
 
+impl RawVec<f32> {
+    pub fn new(n: usize) -> Self {
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        let ptr = unsafe { ffi::fftwf_alloc_real(n) };
+        drop(lock);
+        let mut vec = RawVec { n: n, data: ptr };
+        for v in vec.iter_mut() {
+            *v = 0.0;
+        }
+        vec
+    }
+}
+
 impl RawVec<f64> {
     pub fn new(n: usize) -> Self {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
@@ -42,6 +56,19 @@ impl RawVec<f64> {
         let mut vec = RawVec { n: n, data: ptr };
         for v in vec.iter_mut() {
             *v = 0.0;
+        }
+        vec
+    }
+}
+
+impl RawVec<c32> {
+    pub fn new(n: usize) -> Self {
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        let ptr = unsafe { ffi::fftwf_alloc_complex(n) } as *mut c32;
+        drop(lock);
+        let mut vec = RawVec { n: n, data: ptr };
+        for v in vec.iter_mut() {
+            *v = c32::new(0.0, 0.0);
         }
         vec
     }
