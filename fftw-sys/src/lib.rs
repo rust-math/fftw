@@ -380,10 +380,7 @@ extern "C" {
     pub fn fftw_alignment_of(p: *mut f64) -> ::std::os::raw::c_int;
 }
 
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct fftwf_plan_s([u8; 0]);
-pub type fftwf_plan = *mut fftwf_plan_s;
+pub type fftwf_plan = *mut fftw_plan_s;
 pub type fftwf_iodim = fftw_iodim;
 pub type fftwf_iodim64 = fftw_iodim64;
 pub use self::fftw_r2r_kind as fftwf_r2r_kind;
