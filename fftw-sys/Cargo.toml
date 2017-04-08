@@ -14,8 +14,8 @@ system = []
 source = ["fftw-src"]
 
 [dependencies]
-libc = "*"
-num-complex = { git = "https://github.com/rust-num/num" }
+libc = "0.2.21"
+num-complex = { git = "http://github.com/rust-num/num" }
 
 [dependencies.fftw-src]
 version = "0.1.0"

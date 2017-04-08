@@ -3,9 +3,8 @@ use ffi;
 use super::enums::*;
 use super::raw_vec::RawVec;
 use super::util::FFTW_MUTEX;
+use super::{c32, c64};
 
-use num_complex::Complex64 as c64;
-use num_complex::Complex32 as c32;
 use std::marker::PhantomData;
 
 pub struct Plan<A, B> {
