@@ -7,7 +7,7 @@ use std::f64::consts::PI;
 
 fn main() {
     let n = 128;
-    let mut pair = Pair::<f64, f64>::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
     pair.coef[1] = 1.0;
     pair.backward();
     for val in pair.field.iter() {

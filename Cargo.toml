@@ -14,7 +14,7 @@ system = ["fftw-sys/system"]
 source = ["fftw-sys/source"]
 
 [dependencies]
-num-traits = "0.1.36"
+num-traits = { git = "http://github.com/rust-num/num" }
 num-complex = { git = "http://github.com/rust-num/num" }
 # num-complex = "0.1.37"
 lazy_static = "0.2.2"

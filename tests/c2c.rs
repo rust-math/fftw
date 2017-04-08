@@ -8,7 +8,7 @@ use num_complex::Complex64 as c64;
 #[test]
 fn c2c2c() {
     let n = 128;
-    let mut pair = Pair::c2c_1d(n, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
+    let mut pair = Pair::<c64, c64>::c2c_1d(n, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
     for (i, val) in pair.field.iter_mut().enumerate() {
         *val = c64::new((i + 1) as f64, (i + 2) as f64);
     }
