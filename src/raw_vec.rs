@@ -76,5 +76,7 @@ impl<T> Index<isize> for RawVec<T> {
 }
 
 impl<T> IndexMut<isize> for RawVec<T> {
-    fn index_mut(&mut self, index: isize) -> &mut Self::Output { unsafe { &mut *self.data.offset(index) } }
+    fn index_mut(&mut self, index: isize) -> &mut Self::Output {
+        unsafe { &mut *self.data.offset(index) }
+    }
 }
