@@ -1,9 +1,8 @@
 
 use ffi;
 use super::util::FFTW_MUTEX;
+use super::{c32, c64};
 
-use num_complex::Complex32 as c32;
-use num_complex::Complex64 as c64;
 use num_traits::Zero;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 use std::os::raw::c_void;

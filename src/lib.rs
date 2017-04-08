@@ -14,3 +14,5 @@ mod util;
 
 pub use pair::*;
 pub use enums::*;
+pub use ffi::fftw_complex as c64;
+pub use ffi::fftwf_complex as c32;
