@@ -16,6 +16,7 @@ matrix:
     - rust: nightly
 
 script:
+  - cargo update
   - cargo test -vv --no-default-features --features=$FEATURE
 
 addons:
