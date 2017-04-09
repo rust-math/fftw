@@ -31,6 +31,7 @@ fn main() {
     println!("cargo:rustc-link-search={}",
              output.join("usr/local/lib").display());
     println!("cargo:rustc-link-lib=dylib=fftw3");
+    println!("cargo:rustc-link-lib=dylib=fftw3f");
 }
 
 fn run(command: &mut Command) {
