@@ -19,14 +19,14 @@ Usage
 
 ```
 [dependencies]
-fftw = 0.1.0
+fftw = 0.2.0
 ```
 
 If you want use system's libfftw3
 
 ```
 [dependencies.fftw-sys]
-version = "0.1.0"
+version = "0.2.0"
 features = ["system"]
 default-features = false
 ```
@@ -35,7 +35,7 @@ or
 
 ```
 [dependencies]
-fftw-sys = { version = "0.1.0", features = ["system"], default-features = false }
+fftw-sys = { version = "0.2.0", features = ["system"], default-features = false }
 ```
 
 LICENSE
