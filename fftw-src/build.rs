@@ -17,7 +17,9 @@ fn main() {
             .current_dir(&root));
         run(Command::new("tar").args(&["zxvf", "fftw-3.3.6-pl1.tar.gz"]).current_dir(&root));
     }
-    run(Command::new("./configure").arg("--enable-shared").current_dir(&source));
+    run(Command::new("./configure")
+        .args(&["--enable-shared", "--enable-single"])
+        .current_dir(&source));
 
     run(Command::new("make")
         .arg(format!("-j{}", variable!("NUM_JOBS")))
