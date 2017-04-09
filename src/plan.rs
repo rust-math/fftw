@@ -7,11 +7,6 @@ use super::{c32, c64};
 
 use std::marker::PhantomData;
 
-pub enum RawPlan {
-    _64(ffi::fftw_plan),
-    _32(ffi::fftwf_plan),
-}
-
 pub struct Plan<A, B> {
     plan: RawPlan,
     phantom: PhantomData<(A, B)>,
@@ -19,25 +14,7 @@ pub struct Plan<A, B> {
 
 impl<A, B> Plan<A, B> {
     /// this function modifys the array referred in plan creation
-    pub unsafe fn execute(&self) {
-        match self.plan {
-            RawPlan::_64(p) => ffi::fftw_execute(p),
-            RawPlan::_32(p) => ffi::fftwf_execute(p),
-        }
-    }
-}
-
-impl<A, B> Drop for Plan<A, B> {
-    fn drop(&mut self) {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        unsafe {
-            match self.plan {
-                RawPlan::_64(p) => ffi::fftw_destroy_plan(p),
-                RawPlan::_32(p) => ffi::fftwf_destroy_plan(p),
-            }
-        }
-        drop(lock);
-    }
+    pub unsafe fn execute(&self) { self.plan.execute() }
 }
 
 impl<T: R2RPlanCreate> Plan<T, T> {
@@ -102,6 +79,33 @@ impl<R, C> Plan<R, C>
     }
 }
 
+pub enum RawPlan {
+    _64(ffi::fftw_plan),
+    _32(ffi::fftwf_plan),
+}
+
+impl RawPlan {
+    pub unsafe fn execute(&self) {
+        match *self {
+            RawPlan::_64(p) => ffi::fftw_execute(p),
+            RawPlan::_32(p) => ffi::fftwf_execute(p),
+        }
+    }
+}
+
+impl Drop for RawPlan {
+    fn drop(&mut self) {
+        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        unsafe {
+            match *self {
+                RawPlan::_64(p) => ffi::fftw_destroy_plan(p),
+                RawPlan::_32(p) => ffi::fftwf_destroy_plan(p),
+            }
+        }
+        drop(lock);
+    }
+}
+
 pub trait R2RPlanCreate: Sized {
     unsafe fn r2r_1d(n: usize,
                      in_: &mut RawVec<Self>,
@@ -110,37 +114,6 @@ pub trait R2RPlanCreate: Sized {
                      FLAG)
                      -> RawPlan;
 }
-
-impl R2RPlanCreate for f64 {
-    unsafe fn r2r_1d(n: usize,
-                     in_: &mut RawVec<Self>,
-                     out: &mut RawVec<Self>,
-                     kind: R2R_KIND,
-                     flag: FLAG)
-                     -> RawPlan {
-        RawPlan::_64(ffi::fftw_plan_r2r_1d(n as i32,
-                                           in_.as_mut_ptr(),
-                                           out.as_mut_ptr(),
-                                           kind,
-                                           flag as u32))
-    }
-}
-
-impl R2RPlanCreate for f32 {
-    unsafe fn r2r_1d(n: usize,
-                     in_: &mut RawVec<Self>,
-                     out: &mut RawVec<Self>,
-                     kind: R2R_KIND,
-                     flag: FLAG)
-                     -> RawPlan {
-        RawPlan::_32(ffi::fftwf_plan_r2r_1d(n as i32,
-                                            in_.as_mut_ptr(),
-                                            out.as_mut_ptr(),
-                                            kind,
-                                            flag as u32))
-    }
-}
-
 pub trait C2CPlanCreate: Sized {
     unsafe fn c2c_1d(n: usize,
                      in_: &mut RawVec<Self>,
@@ -148,36 +121,6 @@ pub trait C2CPlanCreate: Sized {
                      SIGN,
                      FLAG)
                      -> RawPlan;
-}
-
-impl C2CPlanCreate for c64 {
-    unsafe fn c2c_1d(n: usize,
-                     i: &mut RawVec<Self>,
-                     o: &mut RawVec<Self>,
-                     s: SIGN,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_64(ffi::fftw_plan_dft_1d(n as i32,
-                                           i.as_mut_ptr(),
-                                           o.as_mut_ptr(),
-                                           s as i32,
-                                           f as u32))
-    }
-}
-
-impl C2CPlanCreate for c32 {
-    unsafe fn c2c_1d(n: usize,
-                     i: &mut RawVec<Self>,
-                     o: &mut RawVec<Self>,
-                     s: SIGN,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_32(ffi::fftwf_plan_dft_1d(n as i32,
-                                            i.as_mut_ptr(),
-                                            o.as_mut_ptr(),
-                                            s as i32,
-                                            f as u32))
-    }
 }
 
 pub trait C2RPlanCreate {
@@ -195,40 +138,46 @@ pub trait C2RPlanCreate {
                      -> RawPlan;
 }
 
-impl C2RPlanCreate for (c64, f64) {
-    type Real = f64;
-    type Complex = c64;
-    unsafe fn r2c_1d(n: usize,
-                     i: &mut RawVec<Self::Real>,
-                     o: &mut RawVec<Self::Complex>,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_64(ffi::fftw_plan_dft_r2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
-    }
-    unsafe fn c2r_1d(n: usize,
-                     i: &mut RawVec<Self::Complex>,
-                     o: &mut RawVec<Self::Real>,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_64(ffi::fftw_plan_dft_c2r_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+macro_rules! impl_plan_create {
+    ($bit:ident, $float:ty, $complex:ty,
+     $r2r_1d:ident, $r2c_1d:ident, $c2r_1d:ident, $c2c_1d:ident) => {
+
+impl R2RPlanCreate for $float {
+    unsafe fn r2r_1d(n: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, kind: R2R_KIND, flag: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2r_1d(n as i32, in_.as_mut_ptr(), out.as_mut_ptr(), kind, flag as u32))
     }
 }
 
-impl C2RPlanCreate for (c32, f32) {
-    type Real = f32;
-    type Complex = c32;
-    unsafe fn r2c_1d(n: usize,
-                     i: &mut RawVec<Self::Real>,
-                     o: &mut RawVec<Self::Complex>,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_32(ffi::fftwf_plan_dft_r2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
-    }
-    unsafe fn c2r_1d(n: usize,
-                     i: &mut RawVec<Self::Complex>,
-                     o: &mut RawVec<Self::Real>,
-                     f: FLAG)
-                     -> RawPlan {
-        RawPlan::_32(ffi::fftwf_plan_dft_c2r_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+impl C2CPlanCreate for $complex {
+    unsafe fn c2c_1d(n: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
     }
 }
+
+impl C2RPlanCreate for ($complex, $float) {
+    type Real = $float;
+    type Complex = $complex;
+    unsafe fn r2c_1d(n: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
+    unsafe fn c2r_1d(n: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2r_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
+}
+
+}} // impl_plan_create
+
+impl_plan_create!(_64,
+                  f64,
+                  c64,
+                  fftw_plan_r2r_1d,
+                  fftw_plan_dft_r2c_1d,
+                  fftw_plan_dft_c2r_1d,
+                  fftw_plan_dft_1d);
+impl_plan_create!(_32,
+                  f32,
+                  c32,
+                  fftwf_plan_r2r_1d,
+                  fftwf_plan_dft_r2c_1d,
+                  fftwf_plan_dft_c2r_1d,
+                  fftwf_plan_dft_1d);
