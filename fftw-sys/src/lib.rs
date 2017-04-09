@@ -390,7 +390,7 @@ pub use self::fftw_r2r_kind as fftwf_r2r_kind;
 pub type fftwf_write_char_func = fftw_write_char_func;
 pub type fftwf_read_char_func = fftw_read_char_func;
 
-#[link(name = "fftw3")]
+#[link(name = "fftw3f")]
 extern "C" {
     pub fn fftwf_execute(p: fftwf_plan);
     pub fn fftwf_plan_dft(rank: ::std::os::raw::c_int,
