@@ -5,7 +5,6 @@ use super::enums::*;
 use super::r2r::*;
 
 use num_traits::Zero;
-use std::ops::Mul;
 
 pub struct Pair<A, B> {
     pub field: RawVec<A>,
@@ -27,22 +26,6 @@ impl<A, B> Pair<A, B> {
     pub fn backward(&mut self) {
         unsafe {
             self.backward.execute();
-        }
-    }
-
-    pub fn normalize_field_by(&mut self, factor: f64)
-        where A: Mul<f64, Output = A> + Copy
-    {
-        for val in self.field.iter_mut() {
-            *val = *val * factor;
-        }
-    }
-
-    pub fn normalize_coef_by(&mut self, factor: f64)
-        where B: Mul<f64, Output = B> + Copy
-    {
-        for val in self.coef.iter_mut() {
-            *val = *val * factor;
         }
     }
 }
