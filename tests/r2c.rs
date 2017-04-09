@@ -2,22 +2,28 @@
 extern crate fftw;
 extern crate num_complex;
 
+macro_rules! impl_test{
+    ($modname:ident, $float:ident, $complex:ident, $th:expr) => {
+
+mod $modname {
+
 use fftw::*;
-use num_complex::Complex64 as c64;
 
 #[test]
 fn r2c2r() {
     let n = 128;
     let mut pair = Pair::r2c_1d(n, FLAG::FFTW_ESTIMATE);
     for (i, val) in pair.field.iter_mut().enumerate() {
-        *val = (i + 1) as f64;
+        *val = (i + 1) as $float;
     }
     pair.forward();
     pair.backward();
-    pair.normalize_field_by(1.0 / n as f64);
+    for x in pair.field.iter_mut() {
+        *x /= n as $float;
+    }
     for (i, val) in pair.field.iter().enumerate() {
-        let ans = (i + 1) as f64;
-        if (ans - *val).abs() / ans.abs() > 1e-7 {
+        let ans = (i + 1) as $float;
+        if (ans - *val).abs() / ans.abs() > $th {
             panic!("Not equal: ans={:?}/val={:?}", ans, val);
         }
     }
@@ -28,18 +34,26 @@ fn c2r2c() {
     let n = 128;
     let mut pair = Pair::r2c_1d(n, FLAG::FFTW_ESTIMATE);
     for (i, val) in pair.coef.iter_mut().enumerate() {
-        *val = c64::new((i + 1) as f64, (i + 2) as f64);
+        *val = $complex::new((i + 1) as $float, (i + 2) as $float);
     }
     pair.backward();
     pair.forward();
-    pair.normalize_coef_by(1.0 / n as f64);
+    for x in pair.coef.iter_mut() {
+        *x = *x / n as $float;
+    }
     for (i, val) in pair.coef.iter().enumerate() {
-        let mut ans = c64::new((i + 1) as f64, (i + 2) as f64);
+        let mut ans = $complex::new((i + 1) as $float, (i + 2) as $float);
         if i == 0 || i == n / 2 {
             ans.im = 0.0;
         }
-        if (ans - *val).norm() / ans.norm() > 1e-7 {
+        if (ans - *val).norm() / ans.norm() > $th {
             panic!("Not equal: i={}, ans={:?}/val={:?}", i, ans, val);
         }
     }
 }
+
+} // mod
+}} // impl_test
+
+impl_test!(_32, f32, c32, 1e-4);
+impl_test!(_64, f64, c64, 1e-7);

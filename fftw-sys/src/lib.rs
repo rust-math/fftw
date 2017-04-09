@@ -380,14 +380,17 @@ extern "C" {
     pub fn fftw_alignment_of(p: *mut f64) -> ::std::os::raw::c_int;
 }
 
-pub type fftwf_plan = *mut fftw_plan_s;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct fftwf_plan_s([u8; 0]);
+pub type fftwf_plan = *mut fftwf_plan_s;
 pub type fftwf_iodim = fftw_iodim;
 pub type fftwf_iodim64 = fftw_iodim64;
 pub use self::fftw_r2r_kind as fftwf_r2r_kind;
 pub type fftwf_write_char_func = fftw_write_char_func;
 pub type fftwf_read_char_func = fftw_read_char_func;
 
-#[link(name = "fftw3")]
+#[link(name = "fftw3f")]
 extern "C" {
     pub fn fftwf_execute(p: fftwf_plan);
     pub fn fftwf_plan_dft(rank: ::std::os::raw::c_int,
