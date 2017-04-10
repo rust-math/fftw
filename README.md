@@ -10,10 +10,10 @@ This repository includes three crates:
   [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw)
   fftw: safe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-sys)](https://crates.io/crates/fftw-sys)
-  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw-sys)
+  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw_sys)
   fftw-sys: unsafe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-src)](https://crates.io/crates/fftw-src)
-  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw-src)
+  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw_src)
   fftw-src: source of FFTW
 
 
