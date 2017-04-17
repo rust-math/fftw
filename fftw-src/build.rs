@@ -17,14 +17,26 @@ fn main() {
             .current_dir(&root));
         run(Command::new("tar").args(&["zxvf", "fftw-3.3.6-pl1.tar.gz"]).current_dir(&root));
     }
+
+    // build for f32
     run(Command::new("./configure")
         .args(&["--enable-shared", "--enable-single"])
         .current_dir(&source));
-
     run(Command::new("make")
         .arg(format!("-j{}", variable!("NUM_JOBS")))
         .current_dir(&source));
+    run(Command::new("make")
+        .arg("install")
+        .arg(format!("DESTDIR={}", output.display()))
+        .current_dir(&source));
 
+    // build for f64
+    run(Command::new("./configure")
+        .args(&["--enable-shared"])
+        .current_dir(&source));
+    run(Command::new("make")
+        .arg(format!("-j{}", variable!("NUM_JOBS")))
+        .current_dir(&source));
     run(Command::new("make")
         .arg("install")
         .arg(format!("DESTDIR={}", output.display()))
@@ -32,6 +44,7 @@ fn main() {
 
     println!("cargo:rustc-link-search={}",
              output.join("usr/local/lib").display());
+
     println!("cargo:rustc-link-lib=dylib=fftw3");
     println!("cargo:rustc-link-lib=dylib=fftw3f");
 }
