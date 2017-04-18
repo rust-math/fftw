@@ -70,13 +70,13 @@ impl<T> RawVec<T>
     }
 }
 
-impl<T> Index<isize> for RawVec<T> {
+impl<T> Index<usize> for RawVec<T> {
     type Output = T;
-    fn index(&self, index: isize) -> &Self::Output { unsafe { &*self.data.offset(index) } }
+    fn index(&self, index: usize) -> &Self::Output { unsafe { &*self.data.offset(index) } }
 }
 
-impl<T> IndexMut<isize> for RawVec<T> {
-    fn index_mut(&mut self, index: isize) -> &mut Self::Output {
+impl<T> IndexMut<usize> for RawVec<T> {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { &mut *self.data.offset(index) }
     }
 }
