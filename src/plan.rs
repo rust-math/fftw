@@ -113,9 +113,42 @@ pub trait R2RPlanCreate: Sized {
                      R2R_KIND,
                      FLAG)
                      -> RawPlan;
+    unsafe fn r2r_2d(n0: usize,
+                     n1: usize,
+                     in_: &mut RawVec<Self>,
+                     out: &mut RawVec<Self>,
+                     R2R_KIND,
+                     R2R_KIND,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn r2r_3d(n0: usize,
+                     n1: usize,
+                     n2: usize,
+                     in_: &mut RawVec<Self>,
+                     out: &mut RawVec<Self>,
+                     R2R_KIND,
+                     R2R_KIND,
+                     R2R_KIND,
+                     FLAG)
+                     -> RawPlan;
 }
 pub trait C2CPlanCreate: Sized {
     unsafe fn c2c_1d(n: usize,
+                     in_: &mut RawVec<Self>,
+                     out: &mut RawVec<Self>,
+                     SIGN,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn c2c_2d(n0: usize,
+                     n1: usize,
+                     in_: &mut RawVec<Self>,
+                     out: &mut RawVec<Self>,
+                     SIGN,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn c2c_3d(n0: usize,
+                     n1: usize,
+                     n2: usize,
                      in_: &mut RawVec<Self>,
                      out: &mut RawVec<Self>,
                      SIGN,
@@ -136,21 +169,61 @@ pub trait C2RPlanCreate {
                      out: &mut RawVec<Self::Real>,
                      FLAG)
                      -> RawPlan;
+    unsafe fn r2c_2d(n0: usize,
+                     n1: usize,
+                     in_: &mut RawVec<Self::Real>,
+                     out: &mut RawVec<Self::Complex>,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn c2r_2d(n0: usize,
+                     n1: usize,
+                     in_: &mut RawVec<Self::Complex>,
+                     out: &mut RawVec<Self::Real>,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn r2c_3d(n0: usize,
+                     n1: usize,
+                     n2: usize,
+                     in_: &mut RawVec<Self::Real>,
+                     out: &mut RawVec<Self::Complex>,
+                     FLAG)
+                     -> RawPlan;
+    unsafe fn c2r_3d(n0: usize,
+                     n1: usize,
+                     n2: usize,
+                     in_: &mut RawVec<Self::Complex>,
+                     out: &mut RawVec<Self::Real>,
+                     FLAG)
+                     -> RawPlan;
 }
 
 macro_rules! impl_plan_create {
     ($bit:ident, $float:ty, $complex:ty,
-     $r2r_1d:ident, $r2c_1d:ident, $c2r_1d:ident, $c2c_1d:ident) => {
+     $r2r_1d:ident, $r2c_1d:ident, $c2r_1d:ident, $c2c_1d:ident,
+     $r2r_2d:ident, $r2c_2d:ident, $c2r_2d:ident, $c2c_2d:ident,
+     $r2r_3d:ident, $r2c_3d:ident, $c2r_3d:ident, $c2c_3d:ident) => {
 
 impl R2RPlanCreate for $float {
     unsafe fn r2r_1d(n: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, kind: R2R_KIND, flag: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2r_1d(n as i32, in_.as_mut_ptr(), out.as_mut_ptr(), kind, flag as u32))
+    }
+    unsafe fn r2r_2d(n0: usize, n1: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, k0: R2R_KIND, k1: R2R_KIND, flag: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2r_2d(n0 as i32, n1 as i32, in_.as_mut_ptr(), out.as_mut_ptr(), k0, k1, flag as u32))
+    }
+    unsafe fn r2r_3d(n0: usize, n1: usize, n2: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, k0: R2R_KIND, k1: R2R_KIND, k2: R2R_KIND, flag: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2r_3d(n0 as i32, n1 as i32, n2 as i32, in_.as_mut_ptr(), out.as_mut_ptr(), k0, k1, k2, flag as u32))
     }
 }
 
 impl C2CPlanCreate for $complex {
     unsafe fn c2c_1d(n: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
+    }
+    unsafe fn c2c_2d(n0: usize, n1: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2c_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
+    }
+    unsafe fn c2c_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2c_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
     }
 }
 
@@ -163,6 +236,18 @@ impl C2RPlanCreate for ($complex, $float) {
     unsafe fn c2r_1d(n: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2r_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
+    unsafe fn r2c_2d(n0: usize, n1: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2c_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
+    unsafe fn c2r_2d(n0: usize, n1: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2r_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
+    unsafe fn r2c_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$r2c_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
+    unsafe fn c2r_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+        RawPlan::$bit(ffi::$c2r_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
+    }
 }
 
 }} // impl_plan_create
@@ -173,11 +258,27 @@ impl_plan_create!(_64,
                   fftw_plan_r2r_1d,
                   fftw_plan_dft_r2c_1d,
                   fftw_plan_dft_c2r_1d,
-                  fftw_plan_dft_1d);
+                  fftw_plan_dft_1d,
+                  fftw_plan_r2r_2d,
+                  fftw_plan_dft_r2c_2d,
+                  fftw_plan_dft_c2r_2d,
+                  fftw_plan_dft_2d,
+                  fftw_plan_r2r_3d,
+                  fftw_plan_dft_r2c_3d,
+                  fftw_plan_dft_c2r_3d,
+                  fftw_plan_dft_3d);
 impl_plan_create!(_32,
                   f32,
                   c32,
                   fftwf_plan_r2r_1d,
                   fftwf_plan_dft_r2c_1d,
                   fftwf_plan_dft_c2r_1d,
-                  fftwf_plan_dft_1d);
+                  fftwf_plan_dft_1d,
+                  fftwf_plan_r2r_2d,
+                  fftwf_plan_dft_r2c_2d,
+                  fftwf_plan_dft_c2r_2d,
+                  fftwf_plan_dft_2d,
+                  fftwf_plan_r2r_3d,
+                  fftwf_plan_dft_r2c_3d,
+                  fftwf_plan_dft_c2r_3d,
+                  fftwf_plan_dft_3d);
