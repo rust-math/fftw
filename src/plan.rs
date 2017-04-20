@@ -24,11 +24,9 @@ impl<T: R2RPlanCreate> Plan<T, T> {
                   kind: R2R_KIND,
                   flag: FLAG)
                   -> Self {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe { T::r2r_1d(n, &mut in_, &mut out, kind, flag) };
-        drop(lock);
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
-            plan: plan,
+            plan: unsafe { T::r2r_1d(n, &mut in_, &mut out, kind, flag) },
             phantom: PhantomData,
         }
     }
@@ -41,11 +39,9 @@ impl<T: C2CPlanCreate> Plan<T, T> {
                   sign: SIGN,
                   flag: FLAG)
                   -> Self {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe { T::c2c_1d(n, &mut in_, &mut out, sign, flag) };
-        drop(lock);
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
-            plan: plan,
+            plan: unsafe { T::c2c_1d(n, &mut in_, &mut out, sign, flag) },
             phantom: PhantomData,
         }
     }
@@ -55,11 +51,9 @@ impl<C, R> Plan<C, R>
     where (C, R): C2RPlanCreate<Real = R, Complex = C>
 {
     pub fn c2r_1d(n: usize, in_: &mut RawVec<C>, out: &mut RawVec<R>, flag: FLAG) -> Self {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe { <(C, R)>::c2r_1d(n, in_, out, flag) };
-        drop(lock);
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
-            plan: plan,
+            plan: unsafe { <(C, R)>::c2r_1d(n, in_, out, flag) },
             phantom: PhantomData,
         }
     }
@@ -69,11 +63,9 @@ impl<R, C> Plan<R, C>
     where (C, R): C2RPlanCreate<Real = R, Complex = C>
 {
     pub fn r2c_1d(n: usize, in_: &mut RawVec<R>, out: &mut RawVec<C>, flag: FLAG) -> Self {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let plan = unsafe { <(C, R)>::r2c_1d(n, in_, out, flag) };
-        drop(lock);
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
-            plan: plan,
+            plan: unsafe { <(C, R)>::r2c_1d(n, in_, out, flag) },
             phantom: PhantomData,
         }
     }
@@ -95,14 +87,13 @@ impl RawPlan {
 
 impl Drop for RawPlan {
     fn drop(&mut self) {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe {
             match *self {
                 RawPlan::_64(p) => ffi::fftw_destroy_plan(p),
                 RawPlan::_32(p) => ffi::fftwf_destroy_plan(p),
             }
         }
-        drop(lock);
     }
 }
 
