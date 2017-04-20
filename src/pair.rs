@@ -7,13 +7,13 @@ use super::r2r::*;
 
 use num_traits::Zero;
 
-//! Safe-interface corresponding to out-place transform
-//!
-//! FFTW interface modifies an array in `fftw_execute` function
-//! which does not takes the array as its arguments.
-//! It is not compatible to the programing model of safe Rust.
-//! `Pair` interface composes the array and plan to manage
-//! mutability in the safe Rust way.
+/// Safe-interface corresponding to out-place transform
+///
+/// FFTW interface modifies an array in `fftw_execute` function
+/// which does not takes the array as its arguments.
+/// It is not compatible to the programing model of safe Rust.
+/// `Pair` interface composes the array and plan to manage
+/// mutability in the safe Rust way.
 pub struct Pair<A, B> {
     pub field: RawVec<A>,
     pub coef: RawVec<B>,
