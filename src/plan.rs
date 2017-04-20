@@ -30,6 +30,36 @@ impl<T: R2RPlanCreate> Plan<T, T> {
             phantom: PhantomData,
         }
     }
+    pub fn r2r_2d(n0: usize,
+                  n1: usize,
+                  mut in_: &mut RawVec<T>,
+                  mut out: &mut RawVec<T>,
+                  k0: R2R_KIND,
+                  k1: R2R_KIND,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { T::r2r_2d(n0, n1, &mut in_, &mut out, k0, k1, flag) },
+            phantom: PhantomData,
+        }
+    }
+    pub fn r2r_3d(n0: usize,
+                  n1: usize,
+                  n2: usize,
+                  mut in_: &mut RawVec<T>,
+                  mut out: &mut RawVec<T>,
+                  k0: R2R_KIND,
+                  k1: R2R_KIND,
+                  k2: R2R_KIND,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { T::r2r_3d(n0, n1, n2, &mut in_, &mut out, k0, k1, k2, flag) },
+            phantom: PhantomData,
+        }
+    }
 }
 
 impl<T: C2CPlanCreate> Plan<T, T> {
@@ -45,6 +75,33 @@ impl<T: C2CPlanCreate> Plan<T, T> {
             phantom: PhantomData,
         }
     }
+    pub fn c2c_2d(n0: usize,
+                  n1: usize,
+                  mut in_: &mut RawVec<T>,
+                  mut out: &mut RawVec<T>,
+                  sign: SIGN,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { T::c2c_2d(n0, n1, &mut in_, &mut out, sign, flag) },
+            phantom: PhantomData,
+        }
+    }
+    pub fn c2c_3d(n0: usize,
+                  n1: usize,
+                  n2: usize,
+                  mut in_: &mut RawVec<T>,
+                  mut out: &mut RawVec<T>,
+                  sign: SIGN,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { T::c2c_3d(n0, n1, n2, &mut in_, &mut out, sign, flag) },
+            phantom: PhantomData,
+        }
+    }
 }
 
 impl<C, R> Plan<C, R>
@@ -57,6 +114,31 @@ impl<C, R> Plan<C, R>
             phantom: PhantomData,
         }
     }
+    pub fn c2r_2d(n0: usize,
+                  n1: usize,
+                  in_: &mut RawVec<C>,
+                  out: &mut RawVec<R>,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { <(C, R)>::c2r_2d(n0, n1, in_, out, flag) },
+            phantom: PhantomData,
+        }
+    }
+    pub fn c2r_3d(n0: usize,
+                  n1: usize,
+                  n2: usize,
+                  in_: &mut RawVec<C>,
+                  out: &mut RawVec<R>,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { <(C, R)>::c2r_3d(n0, n1, n2, in_, out, flag) },
+            phantom: PhantomData,
+        }
+    }
 }
 
 impl<R, C> Plan<R, C>
@@ -66,6 +148,31 @@ impl<R, C> Plan<R, C>
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::r2c_1d(n, in_, out, flag) },
+            phantom: PhantomData,
+        }
+    }
+    pub fn r2c_2d(n0: usize,
+                  n1: usize,
+                  in_: &mut RawVec<R>,
+                  out: &mut RawVec<C>,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { <(C, R)>::r2c_2d(n0, n1, in_, out, flag) },
+            phantom: PhantomData,
+        }
+    }
+    pub fn r2c_3d(n0: usize,
+                  n1: usize,
+                  n2: usize,
+                  in_: &mut RawVec<R>,
+                  out: &mut RawVec<C>,
+                  flag: FLAG)
+                  -> Self {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        Plan {
+            plan: unsafe { <(C, R)>::r2c_3d(n0, n1, n2, in_, out, flag) },
             phantom: PhantomData,
         }
     }
