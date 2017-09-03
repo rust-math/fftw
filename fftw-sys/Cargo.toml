@@ -12,6 +12,7 @@ license = "GPL-2.0"
 default = ["source"]
 system = []
 source = ["fftw-src"]
+intel-mkl = ["intel-mkl-src"]
 
 [dependencies]
 libc = "0.2.21"
@@ -20,4 +21,8 @@ num-complex = "0.1.37"
 [dependencies.fftw-src]
 path = "../fftw-src"
 version = "0.2.1"
+optional = true
+
+[dependencies.intel-mkl-src]
+git = "https://github.com/termoshtt/rust-intel-mkl"
 optional = true
