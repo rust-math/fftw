@@ -17,27 +17,12 @@ This repository includes three crates:
   fftw-src: source of FFTW
 
 
-Usage
-------
+Feature flags
+--------------
 
-```
-[dependencies]
-fftw = 0.2.0
-```
-
-- use system's libfftw3
-
-```
-[dependencies]
-fftw-sys = { version = "0.2.0", features = ["system"], default-features = false }
-```
-
-- use Intel MKL backend through [intel-mkl-src crate](https://github.com/termoshtt/rust-intel-mkl)
-
-```
-[dependencies]
-fftw-sys = { version = "0.2.0", features = ["intel-mkl"], default-features = false }
-```
+- `source`: download and complie FFTW (defualt)
+- `system`: use system's libfftw3 (experimental)
+- `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl) (experimental)
 
 LICENSE
 --------
