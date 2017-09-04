@@ -30,3 +30,4 @@ addons:
 env:
   - RUST_BACKTRACE=1 FEATURE=system
   - RUST_BACKTRACE=1 FEATURE=source
+  - RUST_BACKTRACE=1 FEATURE=intel-mkl
