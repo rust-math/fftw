@@ -1,4 +1,3 @@
-
 use super::enums::R2R_KIND;
 
 pub fn forward(kind: R2R_KIND) -> R2R_KIND {

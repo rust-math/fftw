@@ -1,9 +1,9 @@
 //! Safe-interface corresponding to out-place transform
 
-use super::raw_vec::*;
-use super::plan::*;
 use super::enums::*;
+use super::plan::*;
 use super::r2r::*;
+use super::raw_vec::*;
 
 use num_traits::Zero;
 
@@ -23,7 +23,9 @@ pub struct Pair<A, B> {
 }
 
 impl<A, B> Pair<A, B> {
-    pub fn logical_size(&self) -> usize { self.logical_size }
+    pub fn logical_size(&self) -> usize {
+        self.logical_size
+    }
 
     /// Execute forward transformation
     pub fn forward(&mut self) {
@@ -41,7 +43,8 @@ impl<A, B> Pair<A, B> {
 }
 
 impl<R> Pair<R, R>
-    where R: R2RPlanCreate + AlignedAllocable + Zero
+where
+    R: R2RPlanCreate + AlignedAllocable + Zero,
 {
     /// Create one-dimensional Real-to-Real transformation pair
     pub fn r2r_1d(n: usize, kind: R2R_KIND, flag: FLAG) -> Self {
@@ -60,7 +63,8 @@ impl<R> Pair<R, R>
 }
 
 impl<C> Pair<C, C>
-    where C: C2CPlanCreate + AlignedAllocable + Zero
+where
+    C: C2CPlanCreate + AlignedAllocable + Zero,
 {
     /// Create one-dimensional Complex-to-Complex transformation pair
     pub fn c2c_1d(n: usize, sign: SIGN, flag: FLAG) -> Self {
@@ -79,9 +83,10 @@ impl<C> Pair<C, C>
 }
 
 impl<R, C> Pair<R, C>
-    where (C, R): C2RPlanCreate<Real = R, Complex = C>,
-          R: AlignedAllocable + Zero,
-          C: AlignedAllocable + Zero
+where
+    (C, R): C2RPlanCreate<Real = R, Complex = C>,
+    R: AlignedAllocable + Zero,
+    C: AlignedAllocable + Zero,
 {
     /// Create one-dimensional Real-to-Complex transformation pair
     pub fn r2c_1d(n: usize, flag: FLAG) -> Self {
