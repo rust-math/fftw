@@ -3,6 +3,9 @@
 #[cfg(feature = "source")]
 extern crate fftw_src;
 
+#[cfg(feature = "intel-mkl")]
+extern crate intel_mkl_src;
+
 extern crate libc;
 extern crate num_complex;
 
