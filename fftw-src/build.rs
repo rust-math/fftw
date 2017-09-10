@@ -1,8 +1,25 @@
 use std::env::{remove_var, var};
-use std::path::PathBuf;
+use std::path::*;
 use std::process::Command;
 
 macro_rules! variable(($name:expr) => (var($name).unwrap()));
+
+fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
+    run(Command::new("./configure").args(flags).current_dir(
+        &src_dir,
+    ));
+    run(
+        Command::new("make")
+            .arg(format!("-j{}", variable!("NUM_JOBS")))
+            .current_dir(&src_dir),
+    );
+    run(
+        Command::new("make")
+            .arg("install")
+            .arg(format!("DESTDIR={}", out_dir.display()))
+            .current_dir(&src_dir),
+    );
+}
 
 fn main() {
     let root = PathBuf::from(".");
@@ -23,41 +40,8 @@ fn main() {
         );
     }
 
-    // build for f32
-    run(
-        Command::new("./configure")
-            .args(&["--enable-shared", "--enable-single"])
-            .current_dir(&source),
-    );
-    run(
-        Command::new("make")
-            .arg(format!("-j{}", variable!("NUM_JOBS")))
-            .current_dir(&source),
-    );
-    run(
-        Command::new("make")
-            .arg("install")
-            .arg(format!("DESTDIR={}", output.display()))
-            .current_dir(&source),
-    );
-
-    // build for f64
-    run(
-        Command::new("./configure")
-            .args(&["--enable-shared"])
-            .current_dir(&source),
-    );
-    run(
-        Command::new("make")
-            .arg(format!("-j{}", variable!("NUM_JOBS")))
-            .current_dir(&source),
-    );
-    run(
-        Command::new("make")
-            .arg("install")
-            .arg(format!("DESTDIR={}", output.display()))
-            .current_dir(&source),
-    );
+    build_fftw(&["--enable-shared", "--enable-single"], &source, &output);
+    build_fftw(&["--enable-shared"], &source, &output);
 
     println!(
         "cargo:rustc-link-search={}",
