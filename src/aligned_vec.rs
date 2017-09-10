@@ -1,15 +1,17 @@
-
 use super::{c32, c64};
 use super::util::FFTW_MUTEX;
 use ffi;
 
 use num_traits::Zero;
-use std::ops::{Index, IndexMut};
+use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
-use std::slice::{Iter, IterMut};
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
-pub struct RawVec<T> {
+/// Array with SIMD alignment
+///
+/// This wraps `fftw_alloc` and `fftw_free`for SIMD feature
+/// http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html
+pub struct AlignedVec<T> {
     n: usize,
     data: *mut T,
 }
@@ -42,34 +44,31 @@ impl AlignedAllocable for c32 {
     }
 }
 
-impl<T> RawVec<T> {
+impl<T> AlignedVec<T> {
+    /// Recast to Rust's immutable slice
     pub fn as_slice(&self) -> &[T] {
         unsafe { from_raw_parts(self.data, self.n) }
     }
+    /// Recast to Rust's mutable slice
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
     }
+}
 
-    pub fn as_ptr(&self) -> *const T {
-        self.data
-    }
-    pub fn as_mut_ptr(&mut self) -> *mut T {
-        self.data
-    }
-
-    pub fn len(&self) -> usize {
-        self.n
-    }
-
-    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        self.as_slice().iter()
-    }
-    pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, T> {
-        self.as_mut_slice().iter_mut()
+impl<T> Deref for AlignedVec<T> {
+    type Target = [T];
+    fn deref(&self) -> &[T] {
+        self.as_slice()
     }
 }
 
-impl<T> Drop for RawVec<T> {
+impl<T> DerefMut for AlignedVec<T> {
+    fn deref_mut(&mut self) -> &mut [T] {
+        self.as_mut_slice()
+    }
+}
+
+impl<T> Drop for AlignedVec<T> {
     fn drop(&mut self) {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe { ffi::fftw_free(self.data as *mut c_void) };
@@ -77,15 +76,16 @@ impl<T> Drop for RawVec<T> {
     }
 }
 
-impl<T> RawVec<T>
+impl<T> AlignedVec<T>
 where
     T: Zero + AlignedAllocable,
 {
+    /// Create array with `fftw_malloc` (`fftw_free` is automatically called when the arrya is `Drop`-ed)
     pub fn new(n: usize) -> Self {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let ptr = unsafe { T::alloc(n) };
         drop(lock);
-        let mut vec = RawVec { n: n, data: ptr };
+        let mut vec = AlignedVec { n: n, data: ptr };
         for v in vec.iter_mut() {
             *v = T::zero();
         }
@@ -93,14 +93,14 @@ where
     }
 }
 
-impl<T> Index<usize> for RawVec<T> {
+impl<T> Index<usize> for AlignedVec<T> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { &*self.data.offset(index as isize) }
     }
 }
 
-impl<T> IndexMut<usize> for RawVec<T> {
+impl<T> IndexMut<usize> for AlignedVec<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { &mut *self.data.offset(index as isize) }
     }
