@@ -27,7 +27,7 @@ Feature flags
 LICENSE
 --------
 
-The wrapper codes in this crate are licensed by GPLv3 (see [LICENSE](LICENSE)),
+The codes in this crate are licensed by MIT-License (see [LICENSE](LICENSE)),
 and the backends are redistributed under following licenses:
 
 - [FFTW](http://www.fftw.org/) is free software and distributed under GPLv2 ([License and Copyright](http://www.fftw.org/fftw3_doc/License-and-Copyright.html))
