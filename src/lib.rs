@@ -7,7 +7,7 @@ extern crate lazy_static;
 
 pub mod pair;
 pub mod r2r;
-pub mod raw_vec;
+pub mod aligned_vec;
 pub mod plan;
 pub mod enums;
 mod util;

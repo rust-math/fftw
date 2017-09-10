@@ -1,4 +1,3 @@
-
 use super::{c32, c64};
 use super::util::FFTW_MUTEX;
 use ffi;
@@ -9,7 +8,7 @@ use std::os::raw::c_void;
 use std::slice::{Iter, IterMut};
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
-pub struct RawVec<T> {
+pub struct AlignedVec<T> {
     n: usize,
     data: *mut T,
 }
@@ -42,7 +41,7 @@ impl AlignedAllocable for c32 {
     }
 }
 
-impl<T> RawVec<T> {
+impl<T> AlignedVec<T> {
     pub fn as_slice(&self) -> &[T] {
         unsafe { from_raw_parts(self.data, self.n) }
     }
@@ -69,7 +68,7 @@ impl<T> RawVec<T> {
     }
 }
 
-impl<T> Drop for RawVec<T> {
+impl<T> Drop for AlignedVec<T> {
     fn drop(&mut self) {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe { ffi::fftw_free(self.data as *mut c_void) };
@@ -77,7 +76,7 @@ impl<T> Drop for RawVec<T> {
     }
 }
 
-impl<T> RawVec<T>
+impl<T> AlignedVec<T>
 where
     T: Zero + AlignedAllocable,
 {
@@ -85,7 +84,7 @@ where
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let ptr = unsafe { T::alloc(n) };
         drop(lock);
-        let mut vec = RawVec { n: n, data: ptr };
+        let mut vec = AlignedVec { n: n, data: ptr };
         for v in vec.iter_mut() {
             *v = T::zero();
         }
@@ -93,14 +92,14 @@ where
     }
 }
 
-impl<T> Index<usize> for RawVec<T> {
+impl<T> Index<usize> for AlignedVec<T> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
         unsafe { &*self.data.offset(index as isize) }
     }
 }
 
-impl<T> IndexMut<usize> for RawVec<T> {
+impl<T> IndexMut<usize> for AlignedVec<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         unsafe { &mut *self.data.offset(index as isize) }
     }

@@ -1,7 +1,6 @@
-
 use super::{c32, c64};
 use super::enums::*;
-use super::raw_vec::RawVec;
+use super::aligned_vec::AlignedVec;
 use super::util::FFTW_MUTEX;
 use ffi;
 
@@ -20,7 +19,13 @@ impl<A, B> Plan<A, B> {
 }
 
 impl<T: R2RPlanCreate> Plan<T, T> {
-    pub fn r2r_1d(n: usize, mut in_: &mut RawVec<T>, mut out: &mut RawVec<T>, kind: R2R_KIND, flag: FLAG) -> Self {
+    pub fn r2r_1d(
+        n: usize,
+        mut in_: &mut AlignedVec<T>,
+        mut out: &mut AlignedVec<T>,
+        kind: R2R_KIND,
+        flag: FLAG,
+    ) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { T::r2r_1d(n, &mut in_, &mut out, kind, flag) },
@@ -30,8 +35,8 @@ impl<T: R2RPlanCreate> Plan<T, T> {
     pub fn r2r_2d(
         n0: usize,
         n1: usize,
-        mut in_: &mut RawVec<T>,
-        mut out: &mut RawVec<T>,
+        mut in_: &mut AlignedVec<T>,
+        mut out: &mut AlignedVec<T>,
         k0: R2R_KIND,
         k1: R2R_KIND,
         flag: FLAG,
@@ -46,8 +51,8 @@ impl<T: R2RPlanCreate> Plan<T, T> {
         n0: usize,
         n1: usize,
         n2: usize,
-        mut in_: &mut RawVec<T>,
-        mut out: &mut RawVec<T>,
+        mut in_: &mut AlignedVec<T>,
+        mut out: &mut AlignedVec<T>,
         k0: R2R_KIND,
         k1: R2R_KIND,
         k2: R2R_KIND,
@@ -62,7 +67,7 @@ impl<T: R2RPlanCreate> Plan<T, T> {
 }
 
 impl<T: C2CPlanCreate> Plan<T, T> {
-    pub fn c2c_1d(n: usize, mut in_: &mut RawVec<T>, mut out: &mut RawVec<T>, sign: SIGN, flag: FLAG) -> Self {
+    pub fn c2c_1d(n: usize, mut in_: &mut AlignedVec<T>, mut out: &mut AlignedVec<T>, sign: SIGN, flag: FLAG) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { T::c2c_1d(n, &mut in_, &mut out, sign, flag) },
@@ -72,8 +77,8 @@ impl<T: C2CPlanCreate> Plan<T, T> {
     pub fn c2c_2d(
         n0: usize,
         n1: usize,
-        mut in_: &mut RawVec<T>,
-        mut out: &mut RawVec<T>,
+        mut in_: &mut AlignedVec<T>,
+        mut out: &mut AlignedVec<T>,
         sign: SIGN,
         flag: FLAG,
     ) -> Self {
@@ -87,8 +92,8 @@ impl<T: C2CPlanCreate> Plan<T, T> {
         n0: usize,
         n1: usize,
         n2: usize,
-        mut in_: &mut RawVec<T>,
-        mut out: &mut RawVec<T>,
+        mut in_: &mut AlignedVec<T>,
+        mut out: &mut AlignedVec<T>,
         sign: SIGN,
         flag: FLAG,
     ) -> Self {
@@ -104,21 +109,28 @@ impl<C, R> Plan<C, R>
 where
     (C, R): C2RPlanCreate<Real = R, Complex = C>,
 {
-    pub fn c2r_1d(n: usize, in_: &mut RawVec<C>, out: &mut RawVec<R>, flag: FLAG) -> Self {
+    pub fn c2r_1d(n: usize, in_: &mut AlignedVec<C>, out: &mut AlignedVec<R>, flag: FLAG) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::c2r_1d(n, in_, out, flag) },
             phantom: PhantomData,
         }
     }
-    pub fn c2r_2d(n0: usize, n1: usize, in_: &mut RawVec<C>, out: &mut RawVec<R>, flag: FLAG) -> Self {
+    pub fn c2r_2d(n0: usize, n1: usize, in_: &mut AlignedVec<C>, out: &mut AlignedVec<R>, flag: FLAG) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::c2r_2d(n0, n1, in_, out, flag) },
             phantom: PhantomData,
         }
     }
-    pub fn c2r_3d(n0: usize, n1: usize, n2: usize, in_: &mut RawVec<C>, out: &mut RawVec<R>, flag: FLAG) -> Self {
+    pub fn c2r_3d(
+        n0: usize,
+        n1: usize,
+        n2: usize,
+        in_: &mut AlignedVec<C>,
+        out: &mut AlignedVec<R>,
+        flag: FLAG,
+    ) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::c2r_3d(n0, n1, n2, in_, out, flag) },
@@ -131,21 +143,28 @@ impl<R, C> Plan<R, C>
 where
     (C, R): C2RPlanCreate<Real = R, Complex = C>,
 {
-    pub fn r2c_1d(n: usize, in_: &mut RawVec<R>, out: &mut RawVec<C>, flag: FLAG) -> Self {
+    pub fn r2c_1d(n: usize, in_: &mut AlignedVec<R>, out: &mut AlignedVec<C>, flag: FLAG) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::r2c_1d(n, in_, out, flag) },
             phantom: PhantomData,
         }
     }
-    pub fn r2c_2d(n0: usize, n1: usize, in_: &mut RawVec<R>, out: &mut RawVec<C>, flag: FLAG) -> Self {
+    pub fn r2c_2d(n0: usize, n1: usize, in_: &mut AlignedVec<R>, out: &mut AlignedVec<C>, flag: FLAG) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::r2c_2d(n0, n1, in_, out, flag) },
             phantom: PhantomData,
         }
     }
-    pub fn r2c_3d(n0: usize, n1: usize, n2: usize, in_: &mut RawVec<R>, out: &mut RawVec<C>, flag: FLAG) -> Self {
+    pub fn r2c_3d(
+        n0: usize,
+        n1: usize,
+        n2: usize,
+        in_: &mut AlignedVec<R>,
+        out: &mut AlignedVec<C>,
+        flag: FLAG,
+    ) -> Self {
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         Plan {
             plan: unsafe { <(C, R)>::r2c_3d(n0, n1, n2, in_, out, flag) },
@@ -181,12 +200,12 @@ impl Drop for RawPlan {
 }
 
 pub trait R2RPlanCreate: Sized {
-    unsafe fn r2r_1d(n: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, R2R_KIND, FLAG) -> RawPlan;
+    unsafe fn r2r_1d(n: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, R2R_KIND, FLAG) -> RawPlan;
     unsafe fn r2r_2d(
         n0: usize,
         n1: usize,
-        in_: &mut RawVec<Self>,
-        out: &mut RawVec<Self>,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
         R2R_KIND,
         R2R_KIND,
         FLAG,
@@ -195,8 +214,8 @@ pub trait R2RPlanCreate: Sized {
         n0: usize,
         n1: usize,
         n2: usize,
-        in_: &mut RawVec<Self>,
-        out: &mut RawVec<Self>,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
         R2R_KIND,
         R2R_KIND,
         R2R_KIND,
@@ -204,14 +223,21 @@ pub trait R2RPlanCreate: Sized {
     ) -> RawPlan;
 }
 pub trait C2CPlanCreate: Sized {
-    unsafe fn c2c_1d(n: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, SIGN, FLAG) -> RawPlan;
-    unsafe fn c2c_2d(n0: usize, n1: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, SIGN, FLAG) -> RawPlan;
+    unsafe fn c2c_1d(n: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, SIGN, FLAG) -> RawPlan;
+    unsafe fn c2c_2d(
+        n0: usize,
+        n1: usize,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
+        SIGN,
+        FLAG,
+    ) -> RawPlan;
     unsafe fn c2c_3d(
         n0: usize,
         n1: usize,
         n2: usize,
-        in_: &mut RawVec<Self>,
-        out: &mut RawVec<Self>,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
         SIGN,
         FLAG,
     ) -> RawPlan;
@@ -220,36 +246,36 @@ pub trait C2CPlanCreate: Sized {
 pub trait C2RPlanCreate {
     type Real: Sized;
     type Complex: Sized;
-    unsafe fn r2c_1d(n: usize, in_: &mut RawVec<Self::Real>, out: &mut RawVec<Self::Complex>, FLAG) -> RawPlan;
-    unsafe fn c2r_1d(n: usize, in_: &mut RawVec<Self::Complex>, out: &mut RawVec<Self::Real>, FLAG) -> RawPlan;
+    unsafe fn r2c_1d(n: usize, in_: &mut AlignedVec<Self::Real>, out: &mut AlignedVec<Self::Complex>, FLAG) -> RawPlan;
+    unsafe fn c2r_1d(n: usize, in_: &mut AlignedVec<Self::Complex>, out: &mut AlignedVec<Self::Real>, FLAG) -> RawPlan;
     unsafe fn r2c_2d(
         n0: usize,
         n1: usize,
-        in_: &mut RawVec<Self::Real>,
-        out: &mut RawVec<Self::Complex>,
+        in_: &mut AlignedVec<Self::Real>,
+        out: &mut AlignedVec<Self::Complex>,
         FLAG,
     ) -> RawPlan;
     unsafe fn c2r_2d(
         n0: usize,
         n1: usize,
-        in_: &mut RawVec<Self::Complex>,
-        out: &mut RawVec<Self::Real>,
+        in_: &mut AlignedVec<Self::Complex>,
+        out: &mut AlignedVec<Self::Real>,
         FLAG,
     ) -> RawPlan;
     unsafe fn r2c_3d(
         n0: usize,
         n1: usize,
         n2: usize,
-        in_: &mut RawVec<Self::Real>,
-        out: &mut RawVec<Self::Complex>,
+        in_: &mut AlignedVec<Self::Real>,
+        out: &mut AlignedVec<Self::Complex>,
         FLAG,
     ) -> RawPlan;
     unsafe fn c2r_3d(
         n0: usize,
         n1: usize,
         n2: usize,
-        in_: &mut RawVec<Self::Complex>,
-        out: &mut RawVec<Self::Real>,
+        in_: &mut AlignedVec<Self::Complex>,
+        out: &mut AlignedVec<Self::Real>,
         FLAG,
     ) -> RawPlan;
 }
@@ -261,25 +287,25 @@ macro_rules! impl_plan_create {
      $r2r_3d:ident, $r2c_3d:ident, $c2r_3d:ident, $c2c_3d:ident) => {
 
 impl R2RPlanCreate for $float {
-    unsafe fn r2r_1d(n: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, kind: R2R_KIND, flag: FLAG) -> RawPlan {
+    unsafe fn r2r_1d(n: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, kind: R2R_KIND, flag: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2r_1d(n as i32, in_.as_mut_ptr(), out.as_mut_ptr(), kind, flag as u32))
     }
-    unsafe fn r2r_2d(n0: usize, n1: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, k0: R2R_KIND, k1: R2R_KIND, flag: FLAG) -> RawPlan {
+    unsafe fn r2r_2d(n0: usize, n1: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, k0: R2R_KIND, k1: R2R_KIND, flag: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2r_2d(n0 as i32, n1 as i32, in_.as_mut_ptr(), out.as_mut_ptr(), k0, k1, flag as u32))
     }
-    unsafe fn r2r_3d(n0: usize, n1: usize, n2: usize, in_: &mut RawVec<Self>, out: &mut RawVec<Self>, k0: R2R_KIND, k1: R2R_KIND, k2: R2R_KIND, flag: FLAG) -> RawPlan {
+    unsafe fn r2r_3d(n0: usize, n1: usize, n2: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, k0: R2R_KIND, k1: R2R_KIND, k2: R2R_KIND, flag: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2r_3d(n0 as i32, n1 as i32, n2 as i32, in_.as_mut_ptr(), out.as_mut_ptr(), k0, k1, k2, flag as u32))
     }
 }
 
 impl C2CPlanCreate for $complex {
-    unsafe fn c2c_1d(n: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+    unsafe fn c2c_1d(n: usize, i: &mut AlignedVec<Self>, o: &mut AlignedVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
     }
-    unsafe fn c2c_2d(n0: usize, n1: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+    unsafe fn c2c_2d(n0: usize, n1: usize, i: &mut AlignedVec<Self>, o: &mut AlignedVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2c_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
     }
-    unsafe fn c2c_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self>, o: &mut RawVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
+    unsafe fn c2c_3d(n0: usize, n1: usize, n2: usize, i: &mut AlignedVec<Self>, o: &mut AlignedVec<Self>, s: SIGN, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2c_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), s as i32, f as u32))
     }
 }
@@ -287,22 +313,22 @@ impl C2CPlanCreate for $complex {
 impl C2RPlanCreate for ($complex, $float) {
     type Real = $float;
     type Complex = $complex;
-    unsafe fn r2c_1d(n: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+    unsafe fn r2c_1d(n: usize, i: &mut AlignedVec<Self::Real>, o: &mut AlignedVec<Self::Complex>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2c_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
-    unsafe fn c2r_1d(n: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+    unsafe fn c2r_1d(n: usize, i: &mut AlignedVec<Self::Complex>, o: &mut AlignedVec<Self::Real>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2r_1d(n as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
-    unsafe fn r2c_2d(n0: usize, n1: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+    unsafe fn r2c_2d(n0: usize, n1: usize, i: &mut AlignedVec<Self::Real>, o: &mut AlignedVec<Self::Complex>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2c_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
-    unsafe fn c2r_2d(n0: usize, n1: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+    unsafe fn c2r_2d(n0: usize, n1: usize, i: &mut AlignedVec<Self::Complex>, o: &mut AlignedVec<Self::Real>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2r_2d(n0 as i32, n1 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
-    unsafe fn r2c_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self::Real>, o: &mut RawVec<Self::Complex>, f: FLAG) -> RawPlan {
+    unsafe fn r2c_3d(n0: usize, n1: usize, n2: usize, i: &mut AlignedVec<Self::Real>, o: &mut AlignedVec<Self::Complex>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$r2c_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
-    unsafe fn c2r_3d(n0: usize, n1: usize, n2: usize, i: &mut RawVec<Self::Complex>, o: &mut RawVec<Self::Real>, f: FLAG) -> RawPlan {
+    unsafe fn c2r_3d(n0: usize, n1: usize, n2: usize, i: &mut AlignedVec<Self::Complex>, o: &mut AlignedVec<Self::Real>, f: FLAG) -> RawPlan {
         RawPlan::$bit(ffi::$c2r_3d(n0 as i32, n1 as i32, n2 as i32, i.as_mut_ptr(), o.as_mut_ptr(), f as u32))
     }
 }
