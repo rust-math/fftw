@@ -7,6 +7,10 @@ use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
+/// Array with SIMD alignment
+///
+/// This wraps `fftw_alloc` and `fftw_free`for SIMD feature
+/// http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html
 pub struct AlignedVec<T> {
     n: usize,
     data: *mut T,
@@ -41,9 +45,11 @@ impl AlignedAllocable for c32 {
 }
 
 impl<T> AlignedVec<T> {
+    /// Recast to Rust's immutable slice
     pub fn as_slice(&self) -> &[T] {
         unsafe { from_raw_parts(self.data, self.n) }
     }
+    /// Recast to Rust's mutable slice
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
     }
@@ -74,6 +80,7 @@ impl<T> AlignedVec<T>
 where
     T: Zero + AlignedAllocable,
 {
+    /// Create array with `fftw_malloc` (`fftw_free` is automatically called when the arrya is `Drop`-ed)
     pub fn new(n: usize) -> Self {
         let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         let ptr = unsafe { T::alloc(n) };
