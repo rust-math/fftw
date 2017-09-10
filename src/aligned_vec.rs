@@ -3,9 +3,8 @@ use super::util::FFTW_MUTEX;
 use ffi;
 
 use num_traits::Zero;
-use std::ops::{Index, IndexMut};
+use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
-use std::slice::{Iter, IterMut};
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
 pub struct AlignedVec<T> {
@@ -48,23 +47,18 @@ impl<T> AlignedVec<T> {
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
     }
+}
 
-    pub fn as_ptr(&self) -> *const T {
-        self.data
+impl<T> Deref for AlignedVec<T> {
+    type Target = [T];
+    fn deref(&self) -> &[T] {
+        self.as_slice()
     }
-    pub fn as_mut_ptr(&mut self) -> *mut T {
-        self.data
-    }
+}
 
-    pub fn len(&self) -> usize {
-        self.n
-    }
-
-    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        self.as_slice().iter()
-    }
-    pub fn iter_mut<'a>(&'a mut self) -> IterMut<'a, T> {
-        self.as_mut_slice().iter_mut()
+impl<T> DerefMut for AlignedVec<T> {
+    fn deref_mut(&mut self) -> &mut [T] {
+        self.as_mut_slice()
     }
 }
 
