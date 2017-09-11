@@ -21,8 +21,11 @@ Feature flags
 --------------
 
 - `source`: download and complie FFTW (defualt)
+    - You need `curl` to download the source, and C-compiler and `make` to compile FFTW
 - `system`: use system's libfftw3 (experimental)
+    - You must install FFTW to your system before building this crate
 - `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl) (experimental)
+    - You need `curl` to download
 
 LICENSE
 --------
