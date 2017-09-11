@@ -1,13 +1,11 @@
 language: rust
-sudo: required
+dist: trusty
+sudo: false
 
 rust:
   - stable
   - beta
   - nightly
-
-os:
-  - linux
 
 cache: cargo
 
@@ -19,15 +17,16 @@ script:
   - cargo update
   - cargo test -vv --no-default-features --features=$FEATURE
 
-addons:
-  apt:
-    sources:
-      - kubuntu-backports
-    packages:
-      - make
-      - libfftw3-dev
-
-env:
-  - RUST_BACKTRACE=1 FEATURE=system
-  - RUST_BACKTRACE=1 FEATURE=source
-  - RUST_BACKTRACE=1 FEATURE=intel-mkl
+jobs:
+  include:
+    - env: RUST_BACKTRACE=1 FEATURE=source
+      addons:
+        apt:
+          packages:
+            - make
+    - env: RUST_BACKTRACE=1 FEATURE=system
+      addons:
+        apt:
+          packages:
+            - libfftw3-dev
+    - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
