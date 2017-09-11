@@ -11,6 +11,7 @@ use fftw::*;
 use float_cmp::ApproxEqRatio;
 use std::$float::consts::PI;
 
+#[cfg_attr(feature = "intel-mkl", should_panic)]
 #[test]
 fn r2hc2r() {
     let n = 128;
@@ -31,6 +32,7 @@ fn r2hc2r() {
     }
 }
 
+#[cfg_attr(feature = "intel-mkl", should_panic)]
 #[test]
 fn hc2r2hc() {
     let n = 128;
@@ -51,6 +53,7 @@ fn hc2r2hc() {
     }
 }
 
+#[cfg_attr(feature = "intel-mkl", should_panic)]
 #[test]
 fn hc2r() {
     let n = 128;

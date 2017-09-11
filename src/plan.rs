@@ -1,10 +1,12 @@
 use super::{c32, c64};
-use super::enums::*;
 use super::aligned_vec::AlignedVec;
+use super::enums::*;
 use super::util::FFTW_MUTEX;
 use ffi;
 
 use std::marker::PhantomData;
+use std::os::raw::c_void;
+use std::ptr::null;
 
 pub struct Plan<A, B> {
     plan: RawPlan,
@@ -180,9 +182,22 @@ pub enum RawPlan {
 
 impl RawPlan {
     pub unsafe fn execute(&self) {
+        self.null_check();
         match *self {
             RawPlan::_64(p) => ffi::fftw_execute(p),
             RawPlan::_32(p) => ffi::fftwf_execute(p),
+        }
+    }
+
+    fn null_check(&self) {
+        let p = match *self {
+            RawPlan::_64(p) => p as *const c_void,
+            RawPlan::_32(p) => p as *const c_void,
+        };
+        if p == null() {
+            panic!(
+                "Plan is NULL. If you use MKL binding, check here: https://software.intel.com/en-us/mkl-developer-reference-c-using-fftw3-wrappers"
+            );
         }
     }
 }
