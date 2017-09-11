@@ -60,8 +60,7 @@ pub type fftw_read_char_func = ::std::option::Option<
 pub struct fftw_plan_s([u8; 0]);
 pub type fftw_plan = *mut fftw_plan_s;
 
-#[cfg(feature = "system")]
-#[link(name = "fftw3")]
+#[cfg_attr(feature = "system", link(name = "fftw3"))]
 extern "C" {
     pub fn fftw_execute(p: fftw_plan);
     pub fn fftw_plan_dft(
@@ -433,8 +432,7 @@ pub use self::fftw_r2r_kind as fftwf_r2r_kind;
 pub type fftwf_write_char_func = fftw_write_char_func;
 pub type fftwf_read_char_func = fftw_read_char_func;
 
-#[cfg(feature = "system")]
-#[link(name = "fftw3f")]
+#[cfg_attr(feature = "system", link(name = "fftw3f"))]
 extern "C" {
     pub fn fftwf_execute(p: fftwf_plan);
     pub fn fftwf_plan_dft(
