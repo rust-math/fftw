@@ -1,20 +1,19 @@
-rust-fftw3
+rust-fftw3 [![Build Status](https://travis-ci.org/termoshtt/rust-fftw3.svg?branch=master)](https://travis-ci.org/termoshtt/rust-fftw3)
 ===========
-[![Build Status](https://travis-ci.org/termoshtt/rust-fftw3.svg?branch=master)](https://travis-ci.org/termoshtt/rust-fftw3)
 
 FFTW binding for Rust
 
 This repository includes three crates:
 
 - [![Crate](http://meritbadge.herokuapp.com/fftw)](https://crates.io/crates/fftw)
-  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw)
-  fftw: safe wrapper in Rust
+  [![docs.rs](https://docs.rs/fftw/badge.svg)](https://docs.rs/fftw)
+  `fftw`: safe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-sys)](https://crates.io/crates/fftw-sys)
-  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw_sys)
-  fftw-sys: unsafe wrapper in Rust
+  [![docs.rs](https://docs.rs/fftw-sys/badge.svg)](https://docs.rs/fftw-sys)
+  `fftw-sys`: unsafe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-src)](https://crates.io/crates/fftw-src)
-  [![docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://termoshtt.github.io/rust-fftw3/fftw_src)
-  fftw-src: source of FFTW
+  [![docs.rs](https://docs.rs/fftw-src/badge.svg)](https://docs.rs/fftw-src)
+  `fftw-src`: source of FFTW
 
 
 Feature flags
