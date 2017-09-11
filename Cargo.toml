@@ -1,6 +1,6 @@
 [package]
 name = "fftw"
-version = "0.2.2"
+version = "0.3.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 description = "safe wrapper of FFTW3"
@@ -21,7 +21,7 @@ lazy_static = "0.2.2"
 
 [dependencies.fftw-sys]
 path = "fftw-sys"
-version = "0.2.0"
+version = "0.3.0"
 default-features = false
 
 [dev-dependencies]

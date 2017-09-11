@@ -1,6 +1,6 @@
 [package]
 name = "fftw-sys"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 description = "unsafe wrapper of FFTW3"
@@ -20,9 +20,9 @@ num-complex = "0.1.37"
 
 [dependencies.fftw-src]
 path = "../fftw-src"
-version = "0.2.1"
+version = "0.2.2"
 optional = true
 
 [dependencies.intel-mkl-src]
-version = "0.2.1"
+version = "0.2.4"
 optional = true
