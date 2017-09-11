@@ -7,13 +7,13 @@ This repository includes three crates:
 
 - [![Crate](http://meritbadge.herokuapp.com/fftw)](https://crates.io/crates/fftw)
   [![docs.rs](https://docs.rs/fftw/badge.svg)](https://docs.rs/fftw)
-  fftw: safe wrapper in Rust
+  `fftw`: safe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-sys)](https://crates.io/crates/fftw-sys)
   [![docs.rs](https://docs.rs/fftw-sys/badge.svg)](https://docs.rs/fftw-sys)
-  fftw-sys: unsafe wrapper in Rust
+  `fftw-sys`: unsafe wrapper in Rust
 - [![Crate](http://meritbadge.herokuapp.com/fftw-src)](https://crates.io/crates/fftw-src)
   [![docs.rs](https://docs.rs/fftw-src/badge.svg)](https://docs.rs/fftw-src)
-  fftw-src: source of FFTW
+  `fftw-src`: source of FFTW
 
 
 Feature flags
