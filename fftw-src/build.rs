@@ -1,8 +1,6 @@
-use std::env::{remove_var, var};
+use std::env::var;
 use std::path::*;
 use std::process::Command;
-
-macro_rules! variable(($name:expr) => (var($name).unwrap()));
 
 fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
     run(Command::new("./configure").args(flags).current_dir(
@@ -10,7 +8,7 @@ fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
     ));
     run(
         Command::new("make")
-            .arg(format!("-j{}", variable!("NUM_JOBS")))
+            .arg(format!("-j{}", var("NUM_JOBS").unwrap()))
             .current_dir(&src_dir),
     );
     run(
@@ -24,9 +22,8 @@ fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
 fn main() {
     let root = PathBuf::from(".");
     let source = PathBuf::from("fftw-3.3.6-pl1");
-    let output = PathBuf::from(variable!("OUT_DIR").replace(r"\", "/"));
+    let output = PathBuf::from(var("OUT_DIR").unwrap());
 
-    remove_var("TARGET");
     if !source.exists() {
         run(
             Command::new("wget")
