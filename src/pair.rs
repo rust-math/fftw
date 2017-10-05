@@ -45,8 +45,10 @@ impl<A, B, D: Dimension> Pair<A, B, D> {
     }
 }
 
+/// Create a `Pair` from a setting struct e.g. `R2C1D`.
 pub trait ToPair<A, B> {
     type Dim: Dimension;
+    /// Generate `Pair` from a setting struct
     fn to_pair(&self) -> Pair<A, B, Self::Dim>;
 }
 
@@ -83,11 +85,21 @@ impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
     }
 }
 
+/// Setting for 1-dimensional C2C transform
 #[derive(Debug, Clone, Copy)]
 pub struct C2C1D {
     n: usize,
     sign: SIGN,
     flag: FLAG,
+}
+
+/// Utility function to generage 1-dimensional C2C setting
+pub fn c2c_1d(n: usize) -> C2C1D {
+    C2C1D {
+        n,
+        sign: SIGN::FFTW_FORWARD,
+        flag: FLAG::FFTW_MEASURE,
+    }
 }
 
 impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
@@ -108,10 +120,19 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
     }
 }
 
+/// Setting for 1-dimensional R2C transform
 #[derive(Debug, Clone, Copy)]
 pub struct R2C1D {
     n: usize,
     flag: FLAG,
+}
+
+/// Utility function to generage 1-dimensional R2C setting
+pub fn r2c_1d(n: usize) -> R2C1D {
+    R2C1D {
+        n,
+        flag: FLAG::FFTW_MEASURE,
+    }
 }
 
 impl<R, C> ToPair<R, C> for R2C1D
