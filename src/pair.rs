@@ -28,6 +28,24 @@ impl<A, B, D: Dimension> Pair<A, B, D> {
         self.logical_size
     }
 
+    pub fn forward_transform(&mut self, input: &[A]) -> &[B]
+    where
+        A: Copy,
+    {
+        self.field.copy_from_slice(input);
+        self.forward();
+        &self.coef
+    }
+
+    pub fn backward_transform(&mut self, input: &[B]) -> &[A]
+    where
+        B: Copy,
+    {
+        self.coef.copy_from_slice(input);
+        self.backward();
+        &self.field
+    }
+
     /// Execute forward transformation
     pub fn forward(&mut self) {
         unsafe {
