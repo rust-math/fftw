@@ -52,7 +52,7 @@ pub trait ToPair<A, B> {
     fn to_pair(&self) -> Pair<A, B, Self::Dim>;
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, new)]
 pub struct R2R1D {
     n: usize,
     kind: R2R_KIND,
@@ -86,7 +86,7 @@ impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
 }
 
 /// Setting for 1-dimensional C2C transform
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, new)]
 pub struct C2C1D {
     n: usize,
     sign: SIGN,
@@ -121,7 +121,7 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
 }
 
 /// Setting for 1-dimensional R2C transform
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, new)]
 pub struct R2C1D {
     n: usize,
     flag: FLAG,

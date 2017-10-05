@@ -2,6 +2,8 @@
 extern crate fftw_sys as ffi;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate derive_new;
 extern crate num_traits;
 extern crate num_complex;
 extern crate ndarray;
