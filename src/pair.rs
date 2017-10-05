@@ -1,9 +1,9 @@
 //! Safe-interface corresponding to out-place transform
 
+use super::aligned_vec::*;
 use super::enums::*;
 use super::plan::*;
 use super::r2r::*;
-use super::aligned_vec::*;
 
 use num_traits::Zero;
 

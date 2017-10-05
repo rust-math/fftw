@@ -1,9 +1,10 @@
 
 extern crate fftw_sys as ffi;
-extern crate num_traits;
-extern crate num_complex;
 #[macro_use]
 extern crate lazy_static;
+extern crate num_traits;
+extern crate num_complex;
+extern crate ndarray;
 
 pub mod pair;
 pub mod r2r;
