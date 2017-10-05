@@ -5,7 +5,9 @@ use super::enums::*;
 use super::plan::*;
 use super::r2r::*;
 
+use ndarray::*;
 use num_traits::Zero;
+use std::marker::PhantomData;
 
 /// Safe-interface corresponding to out-place transform
 ///
@@ -14,15 +16,16 @@ use num_traits::Zero;
 /// It is not compatible to the programing model of safe Rust.
 /// `Pair` interface composes the array and plan to manage
 /// mutability in the safe Rust way.
-pub struct Pair<A, B> {
+pub struct Pair<A, B, D> {
     pub field: AlignedVec<A>,
     pub coef: AlignedVec<B>,
     logical_size: usize,
-    forward: Plan<A, B>,
-    backward: Plan<B, A>,
+    forward: RawPlan,
+    backward: RawPlan,
+    phantom: PhantomData<D>,
 }
 
-impl<A, B> Pair<A, B> {
+impl<A, B, D: Dimension> Pair<A, B, D> {
     pub fn logical_size(&self) -> usize {
         self.logical_size
     }
@@ -42,64 +45,94 @@ impl<A, B> Pair<A, B> {
     }
 }
 
-impl<R> Pair<R, R>
-where
-    R: R2RPlanCreate + AlignedAllocable + Zero,
-{
-    /// Create one-dimensional Real-to-Real transformation pair
-    pub fn r2r_1d(n: usize, kind: R2R_KIND, flag: FLAG) -> Self {
-        let mut field = AlignedVec::new(n);
-        let mut coef = AlignedVec::new(n);
-        let forward = Plan::r2r_1d(n, &mut field, &mut coef, forward(kind), flag);
-        let backward = Plan::r2r_1d(n, &mut coef, &mut field, backward(kind), flag);
+pub trait ToPair<A, B> {
+    type Dim: Dimension;
+    fn to_pair(&self) -> Pair<A, B, Self::Dim>;
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct R2R1D {
+    n: usize,
+    kind: R2R_KIND,
+    flag: FLAG,
+}
+
+impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
+    type Dim = Ix1;
+    fn to_pair(&self) -> Pair<T, T, Ix1> {
+        let mut field = AlignedVec::new(self.n);
+        let mut coef = AlignedVec::new(self.n);
+        let forward = unsafe { T::r2r_1d(self.n, &mut field, &mut coef, forward(self.kind), self.flag) };
+        let backward = unsafe {
+            T::r2r_1d(
+                self.n,
+                &mut coef,
+                &mut field,
+                backward(self.kind),
+                self.flag,
+            )
+        };
         Pair {
             field: field,
             coef: coef,
-            logical_size: logical_size(n, kind),
+            logical_size: logical_size(self.n, self.kind),
             forward: forward,
             backward: backward,
+            phantom: PhantomData,
         }
     }
 }
 
-impl<C> Pair<C, C>
-where
-    C: C2CPlanCreate + AlignedAllocable + Zero,
-{
-    /// Create one-dimensional Complex-to-Complex transformation pair
-    pub fn c2c_1d(n: usize, sign: SIGN, flag: FLAG) -> Self {
-        let mut field = AlignedVec::new(n);
-        let mut coef = AlignedVec::new(n);
-        let forward = Plan::c2c_1d(n, &mut field, &mut coef, sign, flag);
-        let backward = Plan::c2c_1d(n, &mut coef, &mut field, -sign, flag);
+#[derive(Debug, Clone, Copy)]
+pub struct C2C1D {
+    n: usize,
+    sign: SIGN,
+    flag: FLAG,
+}
+
+impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
+    type Dim = Ix1;
+    fn to_pair(&self) -> Pair<T, T, Ix1> {
+        let mut field = AlignedVec::new(self.n);
+        let mut coef = AlignedVec::new(self.n);
+        let forward = unsafe { T::c2c_1d(self.n, &mut field, &mut coef, self.sign, self.flag) };
+        let backward = unsafe { T::c2c_1d(self.n, &mut coef, &mut field, -self.sign, self.flag) };
         Pair {
             field: field,
             coef: coef,
-            logical_size: n,
+            logical_size: self.n,
             forward: forward,
             backward: backward,
+            phantom: PhantomData,
         }
     }
 }
 
-impl<R, C> Pair<R, C>
+#[derive(Debug, Clone, Copy)]
+pub struct R2C1D {
+    n: usize,
+    flag: FLAG,
+}
+
+impl<R, C> ToPair<R, C> for R2C1D
 where
-    (C, R): C2RPlanCreate<Real = R, Complex = C>,
+    (C, R): C2R<Real = R, Complex = C>,
     R: AlignedAllocable + Zero,
     C: AlignedAllocable + Zero,
 {
-    /// Create one-dimensional Real-to-Complex transformation pair
-    pub fn r2c_1d(n: usize, flag: FLAG) -> Self {
-        let mut field = AlignedVec::<R>::new(n);
-        let mut coef = AlignedVec::<C>::new(n / 2 + 1);
-        let forward = Plan::r2c_1d(n, &mut field, &mut coef, flag);
-        let backward = Plan::c2r_1d(n, &mut coef, &mut field, flag);
+    type Dim = Ix1;
+    fn to_pair(&self) -> Pair<R, C, Ix1> {
+        let mut field = AlignedVec::<R>::new(self.n);
+        let mut coef = AlignedVec::<C>::new(self.n / 2 + 1);
+        let forward = unsafe { <(C, R) as C2R>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
+        let backward = unsafe { <(C, R) as C2R>::c2r_1d(self.n, &mut coef, &mut field, self.flag) };
         Pair {
             field: field,
             coef: coef,
-            logical_size: n,
+            logical_size: self.n,
             forward: forward,
             backward: backward,
+            phantom: PhantomData,
         }
     }
 }
