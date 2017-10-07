@@ -19,6 +19,10 @@ pub struct Pair<A, B, D: Dimension> {
     pub size: D::Pattern,
     pub(crate) forward: RawPlan,
     pub(crate) backward: RawPlan,
+    // normaliztion factors
+    // `None` means no normaliztion
+    pub(crate) factor_f: Option<B>,
+    pub(crate) factor_b: Option<A>,
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D> {

@@ -40,6 +40,8 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
             size: self.n,
             forward,
             backward,
+            factor_f: None,
+            factor_b: None,
         }.null_checked()
     }
 }

@@ -42,6 +42,8 @@ where
             size: self.n,
             forward,
             backward,
+            factor_f: None,
+            factor_b: None,
         }.null_checked()
     }
 }
