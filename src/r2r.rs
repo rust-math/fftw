@@ -9,7 +9,6 @@ pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
 use num_traits::Zero;
-use std::marker::PhantomData;
 
 fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
@@ -85,9 +84,9 @@ impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
         Pair {
             a,
             b,
+            size: self.n,
             forward,
             backward,
-            phantom: PhantomData,
         }.null_checked()
     }
 }

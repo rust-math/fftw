@@ -9,7 +9,6 @@ pub use ffi::SIGN;
 
 use ndarray::*;
 use num_traits::Zero;
-use std::marker::PhantomData;
 
 /// Setting for 1-dimensional C2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -38,9 +37,9 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
         Pair {
             a,
             b,
+            size: self.n,
             forward,
             backward,
-            phantom: PhantomData,
         }.null_checked()
     }
 }

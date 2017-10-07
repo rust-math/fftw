@@ -8,7 +8,6 @@ use ffi;
 
 use ndarray::*;
 use num_traits::Zero;
-use std::marker::PhantomData;
 
 /// Setting for 1-dimensional R2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -40,9 +39,9 @@ where
         Pair {
             a,
             b,
+            size: self.n,
             forward,
             backward,
-            phantom: PhantomData,
         }.null_checked()
     }
 }

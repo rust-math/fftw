@@ -5,7 +5,6 @@ use super::error::*;
 use super::plan::*;
 
 use ndarray::*;
-use std::marker::PhantomData;
 
 /// Safe-interface corresponding to out-place transform
 ///
@@ -14,12 +13,12 @@ use std::marker::PhantomData;
 /// It is not compatible to the programing model of safe Rust.
 /// `Pair` interface composes the array and plan to manage
 /// mutability in the safe Rust way.
-pub struct Pair<A, B, D> {
+pub struct Pair<A, B, D: Dimension> {
     pub a: AlignedVec<A>,
     pub b: AlignedVec<B>,
+    pub size: D::Pattern,
     pub(crate) forward: RawPlan,
     pub(crate) backward: RawPlan,
-    pub(crate) phantom: PhantomData<D>,
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D> {
