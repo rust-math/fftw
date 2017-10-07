@@ -13,9 +13,14 @@ pub mod r2r;
 pub mod aligned_vec;
 pub mod plan;
 pub mod enums;
-mod util;
 
 pub use enums::*;
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
 pub use pair::*;
+
+use std::sync::Mutex;
+
+lazy_static! {
+    pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
+}

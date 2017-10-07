@@ -1,7 +1,6 @@
-use super::{c32, c64};
+use super::{FFTW_MUTEX, c32, c64};
 use super::aligned_vec::AlignedVec;
 use super::enums::*;
-use super::util::FFTW_MUTEX;
 use ffi;
 
 use std::os::raw::c_void;
