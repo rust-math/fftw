@@ -2,7 +2,7 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::C2R;
+use super::plan::R2C;
 
 use ffi;
 
@@ -27,7 +27,7 @@ pub fn r2c_1d(n: usize) -> R2C1D {
 
 impl<R, C> ToPair<R, C> for R2C1D
 where
-    (C, R): C2R<Real = R, Complex = C>,
+    (R, C): R2C<Real = R, Complex = C>,
     R: AlignedAllocable + Zero,
     C: AlignedAllocable + Zero,
 {
@@ -35,8 +35,8 @@ where
     fn to_pair(&self) -> Result<Pair<R, C, Ix1>> {
         let mut field = AlignedVec::<R>::new(self.n);
         let mut coef = AlignedVec::<C>::new(self.n / 2 + 1);
-        let forward = unsafe { <(C, R) as C2R>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
-        let backward = unsafe { <(C, R) as C2R>::c2r_1d(self.n, &mut coef, &mut field, self.flag) };
+        let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
+        let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut coef, &mut field, self.flag) };
         Pair {
             field: field,
             coef: coef,
