@@ -1,18 +1,15 @@
 //! Safe-interface corresponding to out-place transform
 
-use super::{R2R_KIND, SIGN};
+use super::{FLAG, SIGN};
 use super::aligned_vec::*;
 use super::error::*;
 use super::plan::*;
-use super::r2r::*;
 
 use ffi;
 
 use ndarray::*;
 use num_traits::Zero;
 use std::marker::PhantomData;
-
-type FLAG = u32;
 
 /// Safe-interface corresponding to out-place transform
 ///
@@ -24,10 +21,10 @@ type FLAG = u32;
 pub struct Pair<A, B, D> {
     pub field: AlignedVec<A>,
     pub coef: AlignedVec<B>,
-    logical_size: usize,
-    forward: RawPlan,
-    backward: RawPlan,
-    phantom: PhantomData<D>,
+    pub(crate) logical_size: usize,
+    pub(crate) forward: RawPlan,
+    pub(crate) backward: RawPlan,
+    pub(crate) phantom: PhantomData<D>,
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D> {
@@ -49,7 +46,7 @@ impl<A, B, D: Dimension> Pair<A, B, D> {
         }
     }
 
-    fn null_checked(self) -> Result<Self> {
+    pub(crate) fn null_checked(self) -> Result<Self> {
         if self.forward.is_null() || self.backward.is_null() {
             Err(InvalidPlanError {}.into())
         } else {
@@ -63,47 +60,6 @@ pub trait ToPair<A, B> {
     type Dim: Dimension;
     /// Generate `Pair` from a setting struct
     fn to_pair(&self) -> Result<Pair<A, B, Self::Dim>>;
-}
-
-#[derive(Debug, Clone, Copy, new)]
-pub struct R2R1D {
-    n: usize,
-    kind: R2R_KIND,
-    flag: FLAG,
-}
-
-pub fn r2hc_1d(n: usize) -> R2R1D {
-    R2R1D {
-        n: n,
-        kind: R2R_KIND::FFTW_R2HC,
-        flag: ffi::FFTW_MEASURE,
-    }
-}
-
-impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
-    type Dim = Ix1;
-    fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
-        let mut field = AlignedVec::new(self.n);
-        let mut coef = AlignedVec::new(self.n);
-        let forward = unsafe { T::r2r_1d(self.n, &mut field, &mut coef, forward(self.kind), self.flag) };
-        let backward = unsafe {
-            T::r2r_1d(
-                self.n,
-                &mut coef,
-                &mut field,
-                backward(self.kind),
-                self.flag,
-            )
-        };
-        Pair {
-            field: field,
-            coef: coef,
-            logical_size: logical_size(self.n, self.kind),
-            forward: forward,
-            backward: backward,
-            phantom: PhantomData,
-        }.null_checked()
-    }
 }
 
 /// Setting for 1-dimensional C2C transform

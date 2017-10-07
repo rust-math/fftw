@@ -18,16 +18,17 @@ pub mod aligned_vec;
 pub mod plan;
 pub mod error;
 
-pub type FLAG = u32;
 pub use ffi::SIGN;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
+pub type FLAG = u32;
 
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
+
 pub use pair::*;
+pub use r2r::*;
 
 use std::sync::Mutex;
-
 lazy_static! {
     pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
 }
