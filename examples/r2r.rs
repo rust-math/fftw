@@ -7,7 +7,7 @@ use fftw::*;
 fn main() {
     let n = 128;
     // Create a pair of array for out-place transform of FFTW
-    let mut pair = Pair::r2r_1d(n, R2R_KIND::FFTW_R2HC, FLAG::FFTW_ESTIMATE);
+    let mut pair = r2hc_1d(n).to_pair().unwrap();
     // Initialize to `cos(x)` in coefficient space
     pair.coef[1] = 1.0;
     // execute rDCT

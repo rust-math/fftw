@@ -1,15 +1,22 @@
 
-extern crate fftw_sys as ffi;
-extern crate num_traits;
-extern crate num_complex;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate derive_new;
+#[macro_use]
+extern crate procedurals;
+
+extern crate num_traits;
+extern crate num_complex;
+extern crate ndarray;
+
+extern crate fftw_sys as ffi;
 
 pub mod pair;
 pub mod r2r;
 pub mod aligned_vec;
 pub mod plan;
-mod util;
+pub mod error;
 
 pub type FLAG = u32;
 pub use ffi::SIGN;
@@ -18,3 +25,9 @@ pub use ffi::fftw_r2r_kind as R2R_KIND;
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
 pub use pair::*;
+
+use std::sync::Mutex;
+
+lazy_static! {
+    pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
+}
