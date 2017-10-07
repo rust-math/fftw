@@ -59,6 +59,14 @@ pub struct R2R1D {
     flag: FLAG,
 }
 
+pub fn r2hc_1d(n: usize) -> R2R1D {
+    R2R1D {
+        n: n,
+        kind: R2R_KIND::FFTW_R2HC,
+        flag: FLAG::FFTW_MEASURE,
+    }
+}
+
 impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Pair<T, T, Ix1> {
