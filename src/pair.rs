@@ -1,14 +1,18 @@
 //! Safe-interface corresponding to out-place transform
 
+use super::{R2R_KIND, SIGN};
 use super::aligned_vec::*;
-use super::enums::*;
 use super::error::*;
 use super::plan::*;
 use super::r2r::*;
 
+use ffi;
+
 use ndarray::*;
 use num_traits::Zero;
 use std::marker::PhantomData;
+
+type FLAG = u32;
 
 /// Safe-interface corresponding to out-place transform
 ///
@@ -72,7 +76,7 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
     R2R1D {
         n: n,
         kind: R2R_KIND::FFTW_R2HC,
-        flag: FLAG::FFTW_MEASURE,
+        flag: ffi::FFTW_MEASURE,
     }
 }
 
@@ -115,7 +119,7 @@ pub fn c2c_1d(n: usize) -> C2C1D {
     C2C1D {
         n,
         sign: SIGN::FFTW_FORWARD,
-        flag: FLAG::FFTW_MEASURE,
+        flag: ffi::FFTW_MEASURE,
     }
 }
 
@@ -148,7 +152,7 @@ pub struct R2C1D {
 pub fn r2c_1d(n: usize) -> R2C1D {
     R2C1D {
         n,
-        flag: FLAG::FFTW_MEASURE,
+        flag: ffi::FFTW_MEASURE,
     }
 }
 
