@@ -1,11 +1,13 @@
 //! Safe-interface corresponding to out-place transform
 
-use super::enums::*;
+use super::{R2R_KIND, SIGN};
+use super::aligned_vec::*;
 use super::plan::*;
 use super::r2r::*;
-use super::aligned_vec::*;
 
 use num_traits::Zero;
+
+type FLAG = u32;
 
 /// Safe-interface corresponding to out-place transform
 ///

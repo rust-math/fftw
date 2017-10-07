@@ -1,4 +1,4 @@
-use super::enums::R2R_KIND;
+use super::R2R_KIND;
 
 pub fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
