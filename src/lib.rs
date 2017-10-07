@@ -14,6 +14,7 @@ extern crate fftw_sys as ffi;
 
 pub mod pair;
 pub mod r2r;
+pub mod c2c;
 pub mod aligned_vec;
 pub mod plan;
 pub mod error;
@@ -25,6 +26,7 @@ pub type FLAG = u32;
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
 
+pub use c2c::*;
 pub use pair::*;
 pub use r2r::*;
 
