@@ -14,6 +14,7 @@ extern crate fftw_sys as ffi;
 
 pub mod pair;
 pub mod r2r;
+pub mod r2c;
 pub mod c2c;
 pub mod aligned_vec;
 pub mod plan;
@@ -28,6 +29,7 @@ pub use ffi::fftwf_complex as c32;
 
 pub use c2c::*;
 pub use pair::*;
+pub use r2c::*;
 pub use r2r::*;
 
 use std::sync::Mutex;
