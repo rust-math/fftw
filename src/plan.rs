@@ -14,29 +14,30 @@ pub enum RawPlan {
 
 impl RawPlan {
     pub unsafe fn execute(&self) {
-        self.null_check();
+        if self.is_null() {
+            panic!("Plan is NULL");
+        }
         match *self {
             RawPlan::_64(p) => ffi::fftw_execute(p),
             RawPlan::_32(p) => ffi::fftwf_execute(p),
         }
     }
 
-    fn null_check(&self) {
+    pub fn is_null(&self) -> bool {
         let p = match *self {
             RawPlan::_64(p) => p as *const c_void,
             RawPlan::_32(p) => p as *const c_void,
         };
-        if p == null() {
-            panic!(
-                "Plan is NULL. If you use MKL binding, check here: https://software.intel.com/en-us/mkl-developer-reference-c-using-fftw3-wrappers"
-            );
-        }
+        p == null()
     }
 }
 
 impl Drop for RawPlan {
     fn drop(&mut self) {
-        self.null_check();
+        if self.is_null() {
+            // TODO warning
+            return;
+        }
         let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe {
             match *self {
