@@ -15,7 +15,7 @@ use std::$float::consts::PI;
 #[test]
 fn r2hc2r() {
     let n = 128;
-    let mut pair = r2hc_1d(n).to_pair();
+    let mut pair = r2hc_1d(n).to_pair().unwrap();
     for (i, val) in pair.field.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
@@ -36,7 +36,7 @@ fn r2hc2r() {
 #[test]
 fn hc2r2hc() {
     let n = 128;
-    let mut pair = r2hc_1d(n).to_pair();
+    let mut pair = r2hc_1d(n).to_pair().unwrap();
     for (i, val) in pair.coef.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
@@ -57,7 +57,7 @@ fn hc2r2hc() {
 #[test]
 fn hc2r() {
     let n = 128;
-    let mut pair = r2hc_1d(n).to_pair();
+    let mut pair = r2hc_1d(n).to_pair().unwrap();
     pair.coef[0] = 2.0;
     pair.coef[1] = 1.0;
     pair.backward();
