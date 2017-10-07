@@ -16,15 +16,15 @@ use std::$float::consts::PI;
 fn r2hc2r() {
     let n = 128;
     let mut pair = r2hc_1d(n).to_pair().unwrap();
-    for (i, val) in pair.field.iter_mut().enumerate() {
+    for (i, val) in pair.a.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
     pair.forward();
     pair.backward();
-    for x in pair.field.iter_mut() {
+    for x in pair.a.iter_mut() {
         *x /= n as $float;
     }
-    for (i, val) in pair.field.iter().enumerate() {
+    for (i, val) in pair.a.iter().enumerate() {
         let ans = (i + 1) as $float;
         if !val.approx_eq_ratio(&ans, $th) {
             panic!("Not equal: ans={}/val={}", ans, val);
@@ -37,15 +37,15 @@ fn r2hc2r() {
 fn hc2r2hc() {
     let n = 128;
     let mut pair = r2hc_1d(n).to_pair().unwrap();
-    for (i, val) in pair.coef.iter_mut().enumerate() {
+    for (i, val) in pair.b.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
     pair.backward();
     pair.forward();
-    for x in pair.coef.iter_mut() {
+    for x in pair.b.iter_mut() {
         *x /= n as $float;
     }
-    for (i, val) in pair.coef.iter().enumerate() {
+    for (i, val) in pair.b.iter().enumerate() {
         let ans = (i + 1) as $float;
         if !val.approx_eq_ratio(&ans, $th) {
             panic!("Not equal: ans={}/val={}", ans, val);
@@ -58,8 +58,8 @@ fn hc2r2hc() {
 fn hc2r() {
     let n = 128;
     let mut pair = r2hc_1d(n).to_pair().unwrap();
-    pair.coef[0] = 2.0;
-    pair.coef[1] = 1.0;
+    pair.b[0] = 2.0;
+    pair.b[1] = 1.0;
     pair.backward();
     let ans: Vec<$float> = (0..n)
         .map(|i| {
@@ -67,7 +67,7 @@ fn hc2r() {
             2.0 + 2.0 * x.cos()
         })
         .collect();
-    for (v, a) in pair.field.iter().zip(ans.iter()) {
+    for (v, a) in pair.a.iter().zip(ans.iter()) {
         if (v - a).abs() > $th {
             panic!("Not equal: ans={}/val={}", a, v);
         }

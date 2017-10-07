@@ -33,16 +33,15 @@ where
 {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<R, C, Ix1>> {
-        let mut field = AlignedVec::<R>::new(self.n);
-        let mut coef = AlignedVec::<C>::new(self.n / 2 + 1);
-        let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
-        let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut coef, &mut field, self.flag) };
+        let mut a = AlignedVec::<R>::new(self.n);
+        let mut b = AlignedVec::<C>::new(self.n / 2 + 1);
+        let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut a, &mut b, self.flag) };
+        let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut b, &mut a, self.flag) };
         Pair {
-            field: field,
-            coef: coef,
-            logical_size: self.n,
-            forward: forward,
-            backward: backward,
+            a,
+            b,
+            forward,
+            backward,
             phantom: PhantomData,
         }.null_checked()
     }

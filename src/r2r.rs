@@ -78,24 +78,15 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
 impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
-        let mut field = AlignedVec::new(self.n);
-        let mut coef = AlignedVec::new(self.n);
-        let forward = unsafe { T::r2r_1d(self.n, &mut field, &mut coef, forward(self.kind), self.flag) };
-        let backward = unsafe {
-            T::r2r_1d(
-                self.n,
-                &mut coef,
-                &mut field,
-                backward(self.kind),
-                self.flag,
-            )
-        };
+        let mut a = AlignedVec::new(self.n);
+        let mut b = AlignedVec::new(self.n);
+        let forward = unsafe { T::r2r_1d(self.n, &mut a, &mut b, forward(self.kind), self.flag) };
+        let backward = unsafe { T::r2r_1d(self.n, &mut b, &mut a, backward(self.kind), self.flag) };
         Pair {
-            field: field,
-            coef: coef,
-            logical_size: logical_size(self.n, self.kind),
-            forward: forward,
-            backward: backward,
+            a,
+            b,
+            forward,
+            backward,
             phantom: PhantomData,
         }.null_checked()
     }

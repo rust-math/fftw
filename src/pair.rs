@@ -15,49 +15,43 @@ use std::marker::PhantomData;
 /// `Pair` interface composes the array and plan to manage
 /// mutability in the safe Rust way.
 pub struct Pair<A, B, D> {
-    pub field: AlignedVec<A>,
-    pub coef: AlignedVec<B>,
-    pub(crate) logical_size: usize,
+    pub a: AlignedVec<A>,
+    pub b: AlignedVec<B>,
     pub(crate) forward: RawPlan,
     pub(crate) backward: RawPlan,
     pub(crate) phantom: PhantomData<D>,
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D> {
-    pub fn logical_size(&self) -> usize {
-        self.logical_size
-    }
-
-    pub fn forward_transform(&mut self, input: &[A]) -> &[B]
+    /// Executes copy the input to `a`, forward transform,
+    /// and returns the result `b` as a reference
+    pub fn forward(&mut self, input: &[A]) -> &mut [B]
     where
         A: Copy,
     {
-        self.field.copy_from_slice(input);
-        self.forward();
-        &self.coef
+        self.a.copy_from_slice(input);
+        &mut self.b
     }
 
-    pub fn backward_transform(&mut self, input: &[B]) -> &[A]
+    /// Execute copy to pair, forward transform,
+    /// and returns a reference of the result.
+    pub fn backward(&mut self, input: &[B]) -> &mut [A]
     where
         B: Copy,
     {
-        self.coef.copy_from_slice(input);
-        self.backward();
-        &self.field
+        self.b.copy_from_slice(input);
+        self.exec_backward();
+        &mut self.a
     }
 
-    /// Execute forward transformation
-    pub fn forward(&mut self) {
-        unsafe {
-            self.forward.execute();
-        }
+    /// Execute a forward transform (`a` to `b`)
+    pub fn exec_forward(&mut self) {
+        unsafe { self.forward.execute() }
     }
 
-    /// Execute backward transformation
-    pub fn backward(&mut self) {
-        unsafe {
-            self.backward.execute();
-        }
+    /// Execute a backward transform (`b` to `a`)
+    pub fn exec_backward(&mut self) {
+        unsafe { self.backward.execute() }
     }
 
     pub(crate) fn null_checked(self) -> Result<Self> {
