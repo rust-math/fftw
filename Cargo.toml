@@ -18,6 +18,9 @@ intel-mkl = ["fftw-sys/intel-mkl"]
 num-traits = "0.1.37"
 num-complex = "0.1.37"
 lazy_static = "0.2.2"
+derive-new = "0.4"
+ndarray = "0.10"
+procedurals = "0.2"
 
 [dependencies.fftw-sys]
 path = "fftw-sys"

@@ -12,7 +12,7 @@ use fftw::*;
 #[test]
 fn r2c2r() {
     let n = 128;
-    let mut pair = Pair::r2c_1d(n, FLAG::FFTW_ESTIMATE);
+    let mut pair = r2c_1d(n).to_pair().unwrap();
     for (i, val) in pair.field.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
@@ -32,7 +32,7 @@ fn r2c2r() {
 #[test]
 fn c2r2c() {
     let n = 128;
-    let mut pair = Pair::r2c_1d(n, FLAG::FFTW_ESTIMATE);
+    let mut pair = r2c_1d(n).to_pair().unwrap();
     for (i, val) in pair.coef.iter_mut().enumerate() {
         *val = $complex::new((i + 1) as $float, (i + 2) as $float);
     }

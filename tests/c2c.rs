@@ -12,7 +12,7 @@ use fftw::*;
 #[test]
 fn c2c2c() {
     let n = 128;
-    let mut pair = Pair::c2c_1d(n, SIGN::FFTW_FORWARD, FLAG::FFTW_ESTIMATE);
+    let mut pair = c2c_1d(n).to_pair().unwrap();
     for (i, val) in pair.field.iter_mut().enumerate() {
         *val = $complex::new((i + 1) as $float, (i + 2) as $float);
     }

@@ -1,5 +1,4 @@
-use super::{c32, c64};
-use super::util::FFTW_MUTEX;
+use super::{FFTW_MUTEX, c32, c64};
 use ffi;
 
 use num_traits::Zero;
