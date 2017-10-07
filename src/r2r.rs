@@ -1,10 +1,11 @@
-use super::{FLAG, R2R_KIND};
+use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
 use super::plan::R2R;
 
 use ffi;
+pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
 use num_traits::Zero;

@@ -20,8 +20,6 @@ pub mod aligned_vec;
 pub mod plan;
 pub mod error;
 
-pub use ffi::SIGN;
-pub use ffi::fftw_r2r_kind as R2R_KIND;
 pub type FLAG = u32;
 
 pub use ffi::fftw_complex as c64;

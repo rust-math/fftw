@@ -1,10 +1,11 @@
-use super::{FLAG, SIGN};
+use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
 use super::plan::C2C;
 
 use ffi;
+pub use ffi::SIGN;
 
 use ndarray::*;
 use num_traits::Zero;
