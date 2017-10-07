@@ -2,6 +2,7 @@
 
 use super::aligned_vec::*;
 use super::enums::*;
+use super::error::*;
 use super::plan::*;
 use super::r2r::*;
 
@@ -43,13 +44,21 @@ impl<A, B, D: Dimension> Pair<A, B, D> {
             self.backward.execute();
         }
     }
+
+    fn null_checked(self) -> Result<Self> {
+        if self.forward.is_null() || self.backward.is_null() {
+            Err(InvalidPlanError {}.into())
+        } else {
+            Ok(self)
+        }
+    }
 }
 
 /// Create a `Pair` from a setting struct e.g. `R2C1D`.
 pub trait ToPair<A, B> {
     type Dim: Dimension;
     /// Generate `Pair` from a setting struct
-    fn to_pair(&self) -> Pair<A, B, Self::Dim>;
+    fn to_pair(&self) -> Result<Pair<A, B, Self::Dim>>;
 }
 
 #[derive(Debug, Clone, Copy, new)]
@@ -69,7 +78,7 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
 
 impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
     type Dim = Ix1;
-    fn to_pair(&self) -> Pair<T, T, Ix1> {
+    fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
         let mut field = AlignedVec::new(self.n);
         let mut coef = AlignedVec::new(self.n);
         let forward = unsafe { T::r2r_1d(self.n, &mut field, &mut coef, forward(self.kind), self.flag) };
@@ -89,7 +98,7 @@ impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
             forward: forward,
             backward: backward,
             phantom: PhantomData,
-        }
+        }.null_checked()
     }
 }
 
@@ -112,7 +121,7 @@ pub fn c2c_1d(n: usize) -> C2C1D {
 
 impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
     type Dim = Ix1;
-    fn to_pair(&self) -> Pair<T, T, Ix1> {
+    fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
         let mut field = AlignedVec::new(self.n);
         let mut coef = AlignedVec::new(self.n);
         let forward = unsafe { T::c2c_1d(self.n, &mut field, &mut coef, self.sign, self.flag) };
@@ -124,7 +133,7 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
             forward: forward,
             backward: backward,
             phantom: PhantomData,
-        }
+        }.null_checked()
     }
 }
 
@@ -150,7 +159,7 @@ where
     C: AlignedAllocable + Zero,
 {
     type Dim = Ix1;
-    fn to_pair(&self) -> Pair<R, C, Ix1> {
+    fn to_pair(&self) -> Result<Pair<R, C, Ix1>> {
         let mut field = AlignedVec::<R>::new(self.n);
         let mut coef = AlignedVec::<C>::new(self.n / 2 + 1);
         let forward = unsafe { <(C, R) as C2R>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
@@ -162,6 +171,6 @@ where
             forward: forward,
             backward: backward,
             phantom: PhantomData,
-        }
+        }.null_checked()
     }
 }

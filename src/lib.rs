@@ -1,18 +1,23 @@
 
-extern crate fftw_sys as ffi;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate derive_new;
+#[macro_use]
+extern crate procedurals;
+
 extern crate num_traits;
 extern crate num_complex;
 extern crate ndarray;
+
+extern crate fftw_sys as ffi;
 
 pub mod pair;
 pub mod r2r;
 pub mod aligned_vec;
 pub mod plan;
 pub mod enums;
+pub mod error;
 
 pub use enums::*;
 pub use ffi::fftw_complex as c64;
