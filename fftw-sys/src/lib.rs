@@ -15,6 +15,50 @@ use libc::FILE;
 pub use num_complex::Complex32 as fftwf_complex;
 pub use num_complex::Complex64 as fftw_complex;
 
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum SIGN {
+    FFTW_FORWARD = -1,
+    FFTW_BACKWARD = 1,
+}
+
+impl ::std::ops::Neg for SIGN {
+    type Output = SIGN;
+    fn neg(self) -> Self::Output {
+        match self {
+            SIGN::FFTW_FORWARD => SIGN::FFTW_BACKWARD,
+            SIGN::FFTW_BACKWARD => SIGN::FFTW_FORWARD,
+        }
+    }
+}
+
+// documented flags
+pub const FFTW_MEASURE: u32 = 0;
+pub const FFTW_DESTROY_INPUT: u32 = 1 << 0;
+pub const FFTW_UNALIGNED: u32 = 1 << 1;
+pub const FFTW_CONSERVE_MEMORY: u32 = 1 << 2;
+pub const FFTW_EXHAUSTIVE: u32 = 1 << 3; // NO_EXHAUSTIVE is default
+pub const FFTW_PRESERVE_INPUT: u32 = 1 << 4; // cancels FFTW_DESTROY_INPUT
+pub const FFTW_PATIENT: u32 = 1 << 5; // IMPATIENT is default
+pub const FFTW_ESTIMATE: u32 = 1 << 6;
+pub const FFTW_WISDOM_ONLY: u32 = 1 << 21;
+
+// undocumented beyond-guru flags
+pub const FFTW_ESTIMATE_PATIENT: u32 = 1 << 7;
+pub const FFTW_BELIEVE_PCOST: u32 = 1 << 8;
+pub const FFTW_NO_DFT_R2HC: u32 = 1 << 9;
+pub const FFTW_NO_NONTHREADED: u32 = 1 << 10;
+pub const FFTW_NO_BUFFERING: u32 = 1 << 11;
+pub const FFTW_NO_INDIRECT_OP: u32 = 1 << 12;
+pub const FFTW_ALLOW_LARGE_GENERIC: u32 = 1 << 13; // NO_LARGE_GENERIC is default
+pub const FFTW_NO_RANK_SPLITS: u32 = 1 << 14;
+pub const FFTW_NO_VRANK_SPLITS: u32 = 1 << 15;
+pub const FFTW_NO_VRECURSE: u32 = 1 << 16;
+pub const FFTW_NO_SIMD: u32 = 1 << 17;
+pub const FFTW_NO_SLOW: u32 = 1 << 18;
+pub const FFTW_NO_FIXED_RADIX_LARGE_N: u32 = 1 << 19;
+pub const FFTW_ALLOW_PRUNING: u32 = 1 << 20;
+
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum fftw_r2r_kind {
