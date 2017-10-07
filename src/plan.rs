@@ -90,7 +90,7 @@ pub trait C2C: Sized {
     ) -> RawPlan;
 }
 
-pub trait C2R {
+pub trait R2C {
     type Real: Sized;
     type Complex: Sized;
     unsafe fn r2c_1d(n: usize, in_: &mut AlignedVec<Self::Real>, out: &mut AlignedVec<Self::Complex>, FLAG) -> RawPlan;
@@ -163,7 +163,7 @@ impl C2C for $complex {
     }
 }
 
-impl C2R for ($complex, $float) {
+impl R2C for ($float, $complex) {
     type Real = $float;
     type Complex = $complex;
     unsafe fn r2c_1d(n: usize, i: &mut AlignedVec<Self::Real>, o: &mut AlignedVec<Self::Complex>, f: FLAG) -> RawPlan {
