@@ -19,6 +19,7 @@ pub mod c2c;
 pub mod aligned_vec;
 pub mod plan;
 pub mod error;
+pub mod traits;
 
 pub type FLAG = u32;
 
@@ -29,6 +30,7 @@ pub use c2c::*;
 pub use pair::*;
 pub use r2c::*;
 pub use r2r::*;
+pub use traits::*;
 
 use std::sync::Mutex;
 lazy_static! {
