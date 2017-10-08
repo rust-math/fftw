@@ -37,7 +37,7 @@ impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
         Pair {
             a,
             b,
-            size: self.n,
+            size: self.n.into_dimension(),
             forward,
             backward,
             factor_f: None,

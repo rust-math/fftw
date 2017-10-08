@@ -84,7 +84,7 @@ impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
         Pair {
             a,
             b,
-            size: self.n,
+            size: self.n.into_dimension(),
             forward,
             backward,
             factor_f: None,

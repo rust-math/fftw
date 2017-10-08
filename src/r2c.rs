@@ -39,7 +39,7 @@ where
         Pair {
             a,
             b,
-            size: self.n,
+            size: self.n.into_dimension(),
             forward,
             backward,
             factor_f: None,

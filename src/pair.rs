@@ -16,7 +16,7 @@ use ndarray::*;
 pub struct Pair<A, B, D: Dimension> {
     pub a: AlignedVec<A>,
     pub b: AlignedVec<B>,
-    pub size: D::Pattern,
+    pub(crate) size: D,
     pub(crate) forward: RawPlan,
     pub(crate) backward: RawPlan,
     // normaliztion factors
@@ -26,6 +26,10 @@ pub struct Pair<A, B, D: Dimension> {
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D> {
+    pub fn size(&self) -> D {
+        self.size.clone()
+    }
+
     /// Executes copy the input to `a`, forward transform,
     /// and returns the result `b` as a reference
     pub fn forward(&mut self, input: &[A]) -> &mut [B]
@@ -33,6 +37,7 @@ impl<A, B, D: Dimension> Pair<A, B, D> {
         A: Copy,
     {
         self.a.copy_from_slice(input);
+        self.exec_forward();
         &mut self.b
     }
 
