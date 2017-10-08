@@ -29,3 +29,4 @@ default-features = false
 
 [dev-dependencies]
 float-cmp = "0.2.3"
+ndarray-linalg = "0.7"

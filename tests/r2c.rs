@@ -1,59 +1,33 @@
 
 extern crate fftw;
-extern crate num_complex;
-
-macro_rules! impl_test{
-    ($modname:ident, $float:ident, $complex:ident, $th:expr) => {
-
-mod $modname {
+extern crate ndarray;
+extern crate ndarray_linalg;
 
 use fftw::*;
+use ndarray::*;
+use ndarray_linalg::*;
+
+fn test_r2c2r<R, C>(mut pair: Pair<R, C, Ix1>, rtol: R::Real)
+where
+    R: FFTWReal + Scalar,
+    C: FFTWComplex + Scalar,
+{
+    let a: Array1<R> = random(pair.size());
+    println!("a = {:?}", &a);
+    let b = {
+        let b = pair.forward(a.as_slice().unwrap());
+        Array::from_vec(b.to_vec())
+    };
+    println!("b = {:?}", &b);
+    let a2 = pair.backward(b.as_slice().unwrap());
+    let a2: Array1<R> = Array::from_vec(a2.to_vec());
+    println!("a2 = {:?}", &a2);
+    assert_close_l2!(&a2, &a, rtol);
+}
 
 #[test]
 fn r2c2r() {
-    let n = 128;
-    let mut pair = r2c_1d(n).to_pair().unwrap();
-    for (i, val) in pair.a.iter_mut().enumerate() {
-        *val = (i + 1) as $float;
-    }
-    pair.exec_forward();
-    pair.exec_backward();
-    for x in pair.a.iter_mut() {
-        *x /= n as $float;
-    }
-    for (i, val) in pair.a.iter().enumerate() {
-        let ans = (i + 1) as $float;
-        if (ans - *val).abs() / ans.abs() > $th {
-            panic!("Not equal: ans={:?}/val={:?}", ans, val);
-        }
-    }
+    let n = 32;
+    let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
+    test_r2c2r(pair, 1e-7);
 }
-
-#[test]
-fn c2r2c() {
-    let n = 128;
-    let mut pair = r2c_1d(n).to_pair().unwrap();
-    for (i, val) in pair.b.iter_mut().enumerate() {
-        *val = $complex::new((i + 1) as $float, (i + 2) as $float);
-    }
-    pair.exec_backward();
-    pair.exec_forward();
-    for x in pair.b.iter_mut() {
-        *x = *x / n as $float;
-    }
-    for (i, val) in pair.b.iter().enumerate() {
-        let mut ans = $complex::new((i + 1) as $float, (i + 2) as $float);
-        if i == 0 || i == n / 2 {
-            ans.im = 0.0;
-        }
-        if (ans - *val).norm() / ans.norm() > $th {
-            panic!("Not equal: i={}, ans={:?}/val={:?}", i, ans, val);
-        }
-    }
-}
-
-} // mod
-}} // impl_test
-
-impl_test!(_32, f32, c32, 1e-4);
-impl_test!(_64, f64, c64, 1e-7);
