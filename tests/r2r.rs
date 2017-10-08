@@ -19,8 +19,8 @@ fn r2hc2r() {
     for (i, val) in pair.a.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
-    pair.forward();
-    pair.backward();
+    pair.exec_forward();
+    pair.exec_backward();
     for x in pair.a.iter_mut() {
         *x /= n as $float;
     }
@@ -40,8 +40,8 @@ fn hc2r2hc() {
     for (i, val) in pair.b.iter_mut().enumerate() {
         *val = (i + 1) as $float;
     }
-    pair.backward();
-    pair.forward();
+    pair.exec_backward();
+    pair.exec_forward();
     for x in pair.b.iter_mut() {
         *x /= n as $float;
     }
@@ -60,7 +60,7 @@ fn hc2r() {
     let mut pair = r2hc_1d(n).to_pair().unwrap();
     pair.b[0] = 2.0;
     pair.b[1] = 1.0;
-    pair.backward();
+    pair.exec_backward();
     let ans: Vec<$float> = (0..n)
         .map(|i| {
             let x = 2.0 * PI * i as $float / n as $float;

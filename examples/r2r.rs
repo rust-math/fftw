@@ -11,7 +11,7 @@ fn main() {
     // Initialize to `cos(x)` in bficient space
     pair.b[1] = 1.0;
     // execute rDCT
-    pair.backward();
+    pair.exec_backward();
 
     for val in pair.a.iter() {
         println!("{}", val);

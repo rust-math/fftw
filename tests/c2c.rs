@@ -16,8 +16,8 @@ fn c2c2c() {
     for (i, val) in pair.a.iter_mut().enumerate() {
         *val = $complex::new((i + 1) as $float, (i + 2) as $float);
     }
-    pair.forward();
-    pair.backward();
+    pair.exec_forward();
+    pair.exec_backward();
     for x in pair.a.iter_mut() {
         *x = *x / n as $float;
     }
