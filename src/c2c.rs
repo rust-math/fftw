@@ -8,6 +8,7 @@ use ffi;
 pub use ffi::SIGN;
 
 use ndarray::*;
+use ndarray_linalg::Scalar;
 
 /// Setting for 1-dimensional C2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -39,7 +40,7 @@ impl<T: FFTWComplex> ToPair<T, T> for C2C1D {
             size: self.n.into_dimension(),
             forward,
             backward,
-            factor_f: None,
+            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
             factor_b: None,
         }.null_checked()
     }
