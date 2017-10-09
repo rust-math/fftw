@@ -2,13 +2,12 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::R2R;
+use super::traits::*;
 
 use ffi;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
-use num_traits::Zero;
 
 fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
@@ -74,7 +73,7 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
     }
 }
 
-impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
+impl<T: FFTWReal> ToPair<T, T> for R2R1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
         let mut a = AlignedVec::new(self.n);

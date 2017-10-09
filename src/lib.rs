@@ -9,6 +9,10 @@ extern crate procedurals;
 extern crate num_traits;
 extern crate num_complex;
 extern crate ndarray;
+// XXX For ndarray_linalg::Scalar
+// Will be removed if the following PR to num-complex is merged
+// https://github.com/rust-num/num/pull/338
+extern crate ndarray_linalg;
 
 extern crate fftw_sys as ffi;
 

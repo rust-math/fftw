@@ -2,13 +2,12 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::C2C;
+use super::traits::*;
 
 use ffi;
 pub use ffi::SIGN;
 
 use ndarray::*;
-use num_traits::Zero;
 
 /// Setting for 1-dimensional C2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -27,7 +26,7 @@ pub fn c2c_1d(n: usize) -> C2C1D {
     }
 }
 
-impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
+impl<T: FFTWComplex> ToPair<T, T> for C2C1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
         let mut a = AlignedVec::new(self.n);
