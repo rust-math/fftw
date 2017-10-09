@@ -10,7 +10,7 @@ use ndarray::*;
 use ndarray_linalg::*;
 
 /// Check successive forward and backward transformation conserves.
-fn test_r2c2r<R, C>(mut pair: Pair<R, C, Ix1>, rtol: R::Real)
+fn test_identity<R, C>(mut pair: Pair<R, C, Ix1>, rtol: R::Real)
 where
     R: FFTWReal,
     C: FFTWComplex<Real = R::Real>,
@@ -29,7 +29,7 @@ where
 }
 
 /// Check `cos(k_0 x)` is transformed `b[1] = 1.0 + 0.0i`
-fn test_r2c<R, C>(mut pair: Pair<R, C, Ix1>, rtol: C::Real)
+fn test_forward<R, C>(mut pair: Pair<R, C, Ix1>, rtol: C::Real)
 where
     R: FFTWReal,
     C: FFTWComplex<Real = R::Real>,
@@ -52,36 +52,36 @@ where
 
 mod _64 {
     use super::*;
+    const N: usize = 32;
+    const RTOL: f64 = 1e-4;
 
     #[test]
-    fn r2c2r() {
-        let n = 32;
-        let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
-        test_r2c2r(pair, 1e-7);
+    fn identity() {
+        let pair: Pair<f64, c64, Ix1> = r2c_1d(N).to_pair().unwrap();
+        test_identity(pair, RTOL);
     }
 
     #[test]
-    fn r2c() {
-        let n = 32;
-        let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
-        test_r2c(pair, 1e-7);
+    fn forward() {
+        let pair: Pair<f64, c64, Ix1> = r2c_1d(N).to_pair().unwrap();
+        test_forward(pair, RTOL);
     }
 }
 
 mod _32 {
     use super::*;
+    const N: usize = 32;
+    const RTOL: f32 = 1e-4;
 
     #[test]
-    fn r2c2r() {
-        let n = 32;
-        let pair: Pair<f32, c32, Ix1> = r2c_1d(n).to_pair().unwrap();
-        test_r2c2r(pair, 1e-4);
+    fn identity() {
+        let pair: Pair<f32, c32, Ix1> = r2c_1d(N).to_pair().unwrap();
+        test_identity(pair, RTOL);
     }
 
     #[test]
-    fn r2c() {
-        let n = 32;
-        let pair: Pair<f32, c32, Ix1> = r2c_1d(n).to_pair().unwrap();
-        test_r2c(pair, 1e-4);
+    fn forward() {
+        let pair: Pair<f32, c32, Ix1> = r2c_1d(N).to_pair().unwrap();
+        test_forward(pair, RTOL);
     }
 }
