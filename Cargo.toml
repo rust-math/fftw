@@ -20,6 +20,7 @@ num-complex = "0.1.37"
 lazy_static = "0.2.2"
 derive-new = "0.4"
 ndarray = "0.10"
+ndarray-linalg = "0.7"
 procedurals = "0.2"
 
 [dependencies.fftw-sys]

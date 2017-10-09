@@ -2,14 +2,13 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::R2R;
+use super::traits::*;
 
 use ffi;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
-use num_traits::Zero;
-use std::marker::PhantomData;
+use ndarray_linalg::Scalar;
 
 fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
@@ -75,28 +74,21 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
     }
 }
 
-impl<T: R2R + AlignedAllocable + Zero> ToPair<T, T> for R2R1D {
+impl<T: FFTWReal> ToPair<T, T> for R2R1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
-        let mut field = AlignedVec::new(self.n);
-        let mut coef = AlignedVec::new(self.n);
-        let forward = unsafe { T::r2r_1d(self.n, &mut field, &mut coef, forward(self.kind), self.flag) };
-        let backward = unsafe {
-            T::r2r_1d(
-                self.n,
-                &mut coef,
-                &mut field,
-                backward(self.kind),
-                self.flag,
-            )
-        };
+        let mut a = AlignedVec::new(self.n);
+        let mut b = AlignedVec::new(self.n);
+        let forward = unsafe { T::r2r_1d(self.n, &mut a, &mut b, forward(self.kind), self.flag) };
+        let backward = unsafe { T::r2r_1d(self.n, &mut b, &mut a, backward(self.kind), self.flag) };
         Pair {
-            field: field,
-            coef: coef,
-            logical_size: logical_size(self.n, self.kind),
-            forward: forward,
-            backward: backward,
-            phantom: PhantomData,
+            a,
+            b,
+            size: self.n.into_dimension(),
+            forward,
+            backward,
+            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
+            factor_b: None,
         }.null_checked()
     }
 }

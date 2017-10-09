@@ -2,14 +2,13 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::C2C;
+use super::traits::*;
 
 use ffi;
 pub use ffi::SIGN;
 
 use ndarray::*;
-use num_traits::Zero;
-use std::marker::PhantomData;
+use ndarray_linalg::Scalar;
 
 /// Setting for 1-dimensional C2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -28,20 +27,21 @@ pub fn c2c_1d(n: usize) -> C2C1D {
     }
 }
 
-impl<T: C2C + AlignedAllocable + Zero> ToPair<T, T> for C2C1D {
+impl<T: FFTWComplex> ToPair<T, T> for C2C1D {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<T, T, Ix1>> {
-        let mut field = AlignedVec::new(self.n);
-        let mut coef = AlignedVec::new(self.n);
-        let forward = unsafe { T::c2c_1d(self.n, &mut field, &mut coef, self.sign, self.flag) };
-        let backward = unsafe { T::c2c_1d(self.n, &mut coef, &mut field, -self.sign, self.flag) };
+        let mut a = AlignedVec::new(self.n);
+        let mut b = AlignedVec::new(self.n);
+        let forward = unsafe { T::c2c_1d(self.n, &mut a, &mut b, self.sign, self.flag) };
+        let backward = unsafe { T::c2c_1d(self.n, &mut b, &mut a, -self.sign, self.flag) };
         Pair {
-            field: field,
-            coef: coef,
-            logical_size: self.n,
-            forward: forward,
-            backward: backward,
-            phantom: PhantomData,
+            a,
+            b,
+            size: self.n.into_dimension(),
+            forward,
+            backward,
+            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
+            factor_b: None,
         }.null_checked()
     }
 }

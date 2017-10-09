@@ -3,12 +3,12 @@ use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
 use super::plan::R2C;
+use super::traits::*;
 
 use ffi;
 
 use ndarray::*;
-use num_traits::Zero;
-use std::marker::PhantomData;
+use ndarray_linalg::Scalar;
 
 /// Setting for 1-dimensional R2C transform
 #[derive(Debug, Clone, Copy, new)]
@@ -28,22 +28,23 @@ pub fn r2c_1d(n: usize) -> R2C1D {
 impl<R, C> ToPair<R, C> for R2C1D
 where
     (R, C): R2C<Real = R, Complex = C>,
-    R: AlignedAllocable + Zero,
-    C: AlignedAllocable + Zero,
+    R: FFTWReal,
+    C: FFTWComplex<Real = R::Real>,
 {
     type Dim = Ix1;
     fn to_pair(&self) -> Result<Pair<R, C, Ix1>> {
-        let mut field = AlignedVec::<R>::new(self.n);
-        let mut coef = AlignedVec::<C>::new(self.n / 2 + 1);
-        let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut field, &mut coef, self.flag) };
-        let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut coef, &mut field, self.flag) };
+        let mut a = AlignedVec::<R>::new(self.n);
+        let mut b = AlignedVec::<C>::new(self.n / 2 + 1);
+        let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut a, &mut b, self.flag) };
+        let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut b, &mut a, self.flag) };
         Pair {
-            field: field,
-            coef: coef,
-            logical_size: self.n,
-            forward: forward,
-            backward: backward,
-            phantom: PhantomData,
+            a,
+            b,
+            size: self.n.into_dimension(),
+            forward,
+            backward,
+            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
+            factor_b: None,
         }.null_checked()
     }
 }
