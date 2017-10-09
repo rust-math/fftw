@@ -17,13 +17,9 @@ where
 {
     let a: Array1<R> = random(pair.size());
     println!("a = {:?}", &a);
-    let b = {
-        let b = pair.forward(a.as_slice().unwrap());
-        Array::from_vec(b.to_vec())
-    };
+    let b = pair.forward_array(a.view()).to_owned();
     println!("b = {:?}", &b);
-    let a2 = pair.backward(b.as_slice().unwrap());
-    let a2: Array1<R> = Array::from_vec(a2.to_vec());
+    let a2 = pair.backward_array(b.view());
     println!("a2 = {:?}", &a2);
     assert_close_l2!(&a2, &a, rtol);
 }
@@ -40,10 +36,7 @@ where
         Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())
     }));
     println!("a = {:?}", &a);
-    let b = {
-        let b = pair.forward(a.as_slice().unwrap());
-        Array::from_vec(b.to_vec())
-    };
+    let b = pair.forward_array(a.view()).to_owned();
     println!("b = {:?}", &b);
     let mut ans: Array1<C> = Array::zeros(b.len());
     ans[1] = Scalar::from_f64(0.5); // cos(x) = 0.5*exp(ix) + c.c.
