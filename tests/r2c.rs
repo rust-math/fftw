@@ -1,16 +1,19 @@
 
+extern crate num_traits;
 extern crate fftw;
 extern crate ndarray;
+#[macro_use]
 extern crate ndarray_linalg;
 
 use fftw::*;
 use ndarray::*;
 use ndarray_linalg::*;
 
+/// Check successive forward and backward transformation conserves.
 fn test_r2c2r<R, C>(mut pair: Pair<R, C, Ix1>, rtol: R::Real)
 where
-    R: FFTWReal + Scalar,
-    C: FFTWComplex + Scalar,
+    R: FFTWReal,
+    C: FFTWComplex<Real = R::Real>,
 {
     let a: Array1<R> = random(pair.size());
     println!("a = {:?}", &a);
@@ -25,9 +28,43 @@ where
     assert_close_l2!(&a2, &a, rtol);
 }
 
-#[test]
-fn r2c2r() {
-    let n = 32;
-    let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
-    test_r2c2r(pair, 1e-7);
+/// Check `cos(k_0 x)` is transformed `b[1] = 1.0 + 0.0i`
+fn test_r2c<R, C>(mut pair: Pair<R, C, Ix1>, rtol: C::Real)
+where
+    R: FFTWReal,
+    C: FFTWComplex<Real = R::Real>,
+{
+    let n = pair.size().size();
+    let pi = ::std::f64::consts::PI;
+    let a: Array1<R> = Array::from_iter((0..n).map(|i| {
+        Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())
+    }));
+    println!("a = {:?}", &a);
+    let b = {
+        let b = pair.forward(a.as_slice().unwrap());
+        Array::from_vec(b.to_vec())
+    };
+    println!("b = {:?}", &b);
+    let mut ans: Array1<C> = Array::zeros(b.len());
+    ans[1] = Scalar::from_f64(0.5); // cos(x) = 0.5*exp(ix) + c.c.
+    assert_close_l2!(&b, &ans, rtol);
+}
+
+mod _64 {
+    use super::*;
+
+    #[test]
+    fn r2c2r() {
+        let n = 32;
+        let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
+        test_r2c2r(pair, 1e-7);
+    }
+
+    #[test]
+    fn r2c() {
+        let n = 32;
+        let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
+        test_r2c(pair, 1e-7);
+    }
+
 }
