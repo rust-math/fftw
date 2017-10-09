@@ -30,6 +30,24 @@ where
     pub(crate) factor_b: Option<B::Real>,
 }
 
+impl<A, B> Pair<A, B, Ix1>
+where
+    A: Scalar,
+    B: Scalar<Real = A::Real>,
+{
+    /// Execute `Pair::forward` with `ndarray::ArrayView`
+    pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView1<'b, A>) -> ArrayViewMut1<'a, B> {
+        let sl = self.forward(input.as_slice().unwrap());
+        ArrayViewMut::from(sl)
+    }
+
+    /// Execute `Pair::backward` with `ndarray::ArrayView`
+    pub fn backward_array<'a, 'b>(&'a mut self, input: ArrayView1<'b, B>) -> ArrayViewMut1<'a, A> {
+        let sl = self.backward(input.as_slice().unwrap());
+        ArrayViewMut::from(sl)
+    }
+}
+
 impl<A, B, D: Dimension> Pair<A, B, D>
 where
     A: Scalar,
