@@ -66,5 +66,22 @@ mod _64 {
         let pair: Pair<f64, c64, Ix1> = r2c_1d(n).to_pair().unwrap();
         test_r2c(pair, 1e-7);
     }
+}
 
+mod _32 {
+    use super::*;
+
+    #[test]
+    fn r2c2r() {
+        let n = 32;
+        let pair: Pair<f32, c32, Ix1> = r2c_1d(n).to_pair().unwrap();
+        test_r2c2r(pair, 1e-4);
+    }
+
+    #[test]
+    fn r2c() {
+        let n = 32;
+        let pair: Pair<f32, c32, Ix1> = r2c_1d(n).to_pair().unwrap();
+        test_r2c(pair, 1e-4);
+    }
 }
