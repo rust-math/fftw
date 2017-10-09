@@ -1,81 +1,85 @@
 
+extern crate num_traits;
 extern crate fftw;
-extern crate float_cmp;
-
-macro_rules! impl_test{
-    ($modname:ident, $float:ident, $th:expr) => {
-
-mod $modname {
+extern crate ndarray;
+#[macro_use]
+extern crate ndarray_linalg;
 
 use fftw::*;
-use float_cmp::ApproxEqRatio;
-use std::$float::consts::PI;
+use ndarray::*;
+use ndarray_linalg::*;
 
-#[cfg_attr(feature = "intel-mkl", should_panic)]
-#[test]
-fn r2hc2r() {
-    let n = 128;
-    let mut pair = r2hc_1d(n).to_pair().unwrap();
-    for (i, val) in pair.a.iter_mut().enumerate() {
-        *val = (i + 1) as $float;
+/// Check successive forward and backward transformation conserves.
+fn test_identity<R>(mut pair: Pair<R, R, Ix1>, rtol: R::Real)
+where
+    R: FFTWReal,
+{
+    let a: Array1<R> = random(pair.size());
+    println!("a = {:?}", &a);
+    let b = {
+        let b = pair.forward(a.as_slice().unwrap());
+        Array::from_vec(b.to_vec())
+    };
+    println!("b = {:?}", &b);
+    let a2 = pair.backward(b.as_slice().unwrap());
+    let a2: Array1<R> = Array::from_vec(a2.to_vec());
+    println!("a2 = {:?}", &a2);
+    assert_close_l2!(&a2, &a, rtol);
+}
+
+/// Check `cos(k_0 x)` is transformed `b[1] = 1.0 + 0.0i`
+fn test_forward<R>(mut pair: Pair<R, R, Ix1>, rtol: R::Real)
+where
+    R: FFTWReal,
+{
+    let n = pair.size().size();
+    let pi = ::std::f64::consts::PI;
+    let a: Array1<R> = Array::from_iter((0..n).map(|i| {
+        Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())
+    }));
+    println!("a = {:?}", &a);
+    let b = {
+        let b = pair.forward(a.as_slice().unwrap());
+        Array::from_vec(b.to_vec())
+    };
+    println!("b = {:?}", &b);
+    let mut ans: Array1<R> = Array::zeros(b.len());
+    ans[1] = Scalar::from_f64(0.5); // cos(x) = 0.5*exp(ix) + c.c.
+    assert_close_l2!(&b, &ans, rtol);
+}
+
+mod _64 {
+    use super::*;
+    const N: usize = 32;
+    const RTOL: f64 = 1e-7;
+
+    #[test]
+    fn r2hc_identity() {
+        let pair: Pair<f64, f64, Ix1> = r2hc_1d(N).to_pair().unwrap();
+        test_identity(pair, RTOL);
     }
-    pair.exec_forward();
-    pair.exec_backward();
-    for x in pair.a.iter_mut() {
-        *x /= n as $float;
-    }
-    for (i, val) in pair.a.iter().enumerate() {
-        let ans = (i + 1) as $float;
-        if !val.approx_eq_ratio(&ans, $th) {
-            panic!("Not equal: ans={}/val={}", ans, val);
-        }
+
+    #[test]
+    fn r2hc_forward() {
+        let pair: Pair<f64, f64, Ix1> = r2hc_1d(N).to_pair().unwrap();
+        test_forward(pair, RTOL);
     }
 }
 
-#[cfg_attr(feature = "intel-mkl", should_panic)]
-#[test]
-fn hc2r2hc() {
-    let n = 128;
-    let mut pair = r2hc_1d(n).to_pair().unwrap();
-    for (i, val) in pair.b.iter_mut().enumerate() {
-        *val = (i + 1) as $float;
+mod _32 {
+    use super::*;
+    const N: usize = 32;
+    const RTOL: f32 = 1e-4;
+
+    #[test]
+    fn r2hc_identity() {
+        let pair: Pair<f32, f32, Ix1> = r2hc_1d(N).to_pair().unwrap();
+        test_identity(pair, RTOL);
     }
-    pair.exec_backward();
-    pair.exec_forward();
-    for x in pair.b.iter_mut() {
-        *x /= n as $float;
-    }
-    for (i, val) in pair.b.iter().enumerate() {
-        let ans = (i + 1) as $float;
-        if !val.approx_eq_ratio(&ans, $th) {
-            panic!("Not equal: ans={}/val={}", ans, val);
-        }
+
+    #[test]
+    fn r2hc_forward() {
+        let pair: Pair<f32, f32, Ix1> = r2hc_1d(N).to_pair().unwrap();
+        test_forward(pair, RTOL);
     }
 }
-
-#[cfg_attr(feature = "intel-mkl", should_panic)]
-#[test]
-fn hc2r() {
-    let n = 128;
-    let mut pair = r2hc_1d(n).to_pair().unwrap();
-    pair.b[0] = 2.0;
-    pair.b[1] = 1.0;
-    pair.exec_backward();
-    let ans: Vec<$float> = (0..n)
-        .map(|i| {
-            let x = 2.0 * PI * i as $float / n as $float;
-            2.0 + 2.0 * x.cos()
-        })
-        .collect();
-    for (v, a) in pair.a.iter().zip(ans.iter()) {
-        if (v - a).abs() > $th {
-            panic!("Not equal: ans={}/val={}", a, v);
-        }
-    }
-}
-
-} // mod
-}} // impl_test
-
-impl_test!(_32, f32, 1e-4);
-impl_test!(_64, f64, 1e-7);

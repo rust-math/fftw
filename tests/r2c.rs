@@ -53,7 +53,7 @@ where
 mod _64 {
     use super::*;
     const N: usize = 32;
-    const RTOL: f64 = 1e-4;
+    const RTOL: f64 = 1e-7;
 
     #[test]
     fn identity() {

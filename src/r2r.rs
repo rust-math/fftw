@@ -8,6 +8,7 @@ use ffi;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
+use ndarray_linalg::Scalar;
 
 fn forward(kind: R2R_KIND) -> R2R_KIND {
     match kind {
@@ -86,7 +87,7 @@ impl<T: FFTWReal> ToPair<T, T> for R2R1D {
             size: self.n.into_dimension(),
             forward,
             backward,
-            factor_f: None,
+            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
             factor_b: None,
         }.null_checked()
     }
