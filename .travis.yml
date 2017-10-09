@@ -8,6 +8,12 @@ script:
   - cargo update
   - cargo test -vv --no-default-features --features=$FEATURE
 
+addons:
+  apt:
+    packages:
+      - cmake
+      - gfortran
+
 jobs:
   include:
     - env: RUST_BACKTRACE=1 FEATURE=source
