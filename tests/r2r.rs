@@ -53,12 +53,14 @@ mod _64 {
     const N: usize = 32;
     const RTOL: f64 = 1e-7;
 
+    #[cfg_attr(feature = "intel-mkl", should_panic)]
     #[test]
     fn r2hc_identity() {
         let pair: Pair<f64, f64, Ix1> = r2hc_1d(N).to_pair().unwrap();
         test_identity(pair, RTOL);
     }
 
+    #[cfg_attr(feature = "intel-mkl", should_panic)]
     #[test]
     fn r2hc_forward() {
         let pair: Pair<f64, f64, Ix1> = r2hc_1d(N).to_pair().unwrap();
@@ -71,12 +73,14 @@ mod _32 {
     const N: usize = 32;
     const RTOL: f32 = 1e-4;
 
+    #[cfg_attr(feature = "intel-mkl", should_panic)]
     #[test]
     fn r2hc_identity() {
         let pair: Pair<f32, f32, Ix1> = r2hc_1d(N).to_pair().unwrap();
         test_identity(pair, RTOL);
     }
 
+    #[cfg_attr(feature = "intel-mkl", should_panic)]
     #[test]
     fn r2hc_forward() {
         let pair: Pair<f32, f32, Ix1> = r2hc_1d(N).to_pair().unwrap();
