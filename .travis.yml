@@ -8,22 +8,25 @@ script:
   - cargo update
   - cargo test -vv --no-default-features --features=$FEATURE
 
-addons:
-  apt:
-    packages:
-      - cmake
-      - gfortran
-
 jobs:
   include:
     - env: RUST_BACKTRACE=1 FEATURE=source
       addons:
         apt:
           packages:
+            - cmake
+            - gfortran
             - make
     - env: RUST_BACKTRACE=1 FEATURE=system
       addons:
         apt:
           packages:
+            - cmake
+            - gfortran
             - libfftw3-dev
     - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
+      addons:
+        apt:
+          packages:
+            - cmake
+            - gfortran
