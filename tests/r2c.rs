@@ -15,7 +15,7 @@ where
     R: FFTWReal,
     C: FFTWComplex<Real = R::Real>,
 {
-    let a: Array1<R> = random(pair.size());
+    let a: Array1<R> = random(pair.a_size());
     println!("a = {:?}", &a);
     let b = pair.forward_array(a.view()).to_owned();
     println!("b = {:?}", &b);
@@ -30,7 +30,7 @@ where
     R: FFTWReal,
     C: FFTWComplex<Real = R::Real>,
 {
-    let n = pair.size().size();
+    let n = pair.a_size();
     let pi = ::std::f64::consts::PI;
     let a: Array1<R> = Array::from_iter((0..n).map(|i| {
         Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())
@@ -43,7 +43,7 @@ where
     assert_close_l2!(&b, &ans, rtol);
 }
 
-mod _64 {
+mod r2c_64 {
     use super::*;
     const N: usize = 32;
     const RTOL: f64 = 1e-7;
@@ -61,7 +61,7 @@ mod _64 {
     }
 }
 
-mod _32 {
+mod r2c_32 {
     use super::*;
     const N: usize = 32;
     const RTOL: f32 = 1e-4;
