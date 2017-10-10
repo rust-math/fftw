@@ -35,10 +35,8 @@ impl<T: FFTWComplex> ToPair<T, T> for C2C1D {
         let forward = unsafe { T::c2c_1d(self.n, &mut a, &mut b, self.sign, self.flag) };
         let backward = unsafe { T::c2c_1d(self.n, &mut b, &mut a, -self.sign, self.flag) };
         Pair {
-            a,
-            b,
-            a_dim: self.n.into_dimension(),
-            b_dim: self.n.into_dimension(),
+            a: (a, self.n.into_shape()),
+            b: (b, self.n.into_shape()),
             forward,
             backward,
             factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),

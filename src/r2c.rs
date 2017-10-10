@@ -38,10 +38,8 @@ where
         let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut a, &mut b, self.flag) };
         let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut b, &mut a, self.flag) };
         Pair {
-            a,
-            b,
-            a_dim: self.n.into_dimension(),
-            b_dim: (self.n / 2 + 1).into_dimension(),
+            a: (a, self.n.into_shape()),
+            b: (b, (self.n / 2 + 1).into_shape()),
             forward,
             backward,
             factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),

@@ -65,10 +65,8 @@ impl<T: FFTWReal> ToPair<T, T> for R2R1D {
         let forward = unsafe { T::r2r_1d(self.n, &mut a, &mut b, forward(self.kind), self.flag) };
         let backward = unsafe { T::r2r_1d(self.n, &mut b, &mut a, backward(self.kind), self.flag) };
         Pair {
-            a,
-            b,
-            a_dim: self.n.into_dimension(),
-            b_dim: self.n.into_dimension(),
+            a: (a, self.n.into_shape()),
+            b: (b, self.n.into_shape()),
             forward,
             backward,
             factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
