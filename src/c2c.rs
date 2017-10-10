@@ -37,7 +37,8 @@ impl<T: FFTWComplex> ToPair<T, T> for C2C1D {
         Pair {
             a,
             b,
-            dim: self.n.into_dimension(),
+            a_dim: self.n.into_dimension(),
+            b_dim: self.n.into_dimension(),
             forward,
             backward,
             factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),

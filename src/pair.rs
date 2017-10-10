@@ -21,7 +21,8 @@ where
 {
     pub a: AlignedVec<A>,
     pub b: AlignedVec<B>,
-    pub(crate) dim: D,
+    pub(crate) a_dim: D,
+    pub(crate) b_dim: D,
     pub(crate) forward: RawPlan,
     pub(crate) backward: RawPlan,
     // normaliztion factors
@@ -35,24 +36,32 @@ where
     A: Scalar,
     B: Scalar<Real = A::Real>,
 {
-    pub fn dim(&self) -> D {
-        self.dim.clone()
+    pub fn a_dim(&self) -> D {
+        self.a_dim.clone()
     }
 
-    pub fn size(&self) -> usize {
-        self.dim.size()
+    pub fn b_dim(&self) -> D {
+        self.b_dim.clone()
+    }
+
+    pub fn a_size(&self) -> usize {
+        self.a_dim.size()
+    }
+
+    pub fn b_size(&self) -> usize {
+        self.b_dim.size()
     }
 
     /// Execute `Pair::forward` with `ndarray::ArrayView`
     pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
-        let dim = self.dim();
+        let dim = self.b_dim();
         let sl = self.forward(input.as_slice().unwrap());
         ArrayViewMut::from(sl).into_shape(dim).unwrap()
     }
 
     /// Execute `Pair::backward` with `ndarray::ArrayView`
     pub fn backward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, B, D>) -> ArrayViewMut<'a, A, D> {
-        let dim = self.dim();
+        let dim = self.a_dim();
         let sl = self.backward(input.as_slice().unwrap());
         ArrayViewMut::from(sl).into_shape(dim).unwrap()
     }

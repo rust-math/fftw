@@ -40,7 +40,8 @@ where
         Pair {
             a,
             b,
-            dim: self.n.into_dimension(),
+            a_dim: self.n.into_dimension(),
+            b_dim: (self.n / 2 + 1).into_dimension(),
             forward,
             backward,
             factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
