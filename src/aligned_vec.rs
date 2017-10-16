@@ -1,6 +1,8 @@
 use super::{FFTW_MUTEX, c32, c64};
+use error::*;
 use ffi;
 
+use ndarray::*;
 use num_traits::Zero;
 use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
@@ -51,6 +53,22 @@ impl<T> AlignedVec<T> {
     /// Recast to Rust's mutable slice
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
+    }
+
+    pub fn as_view<'a, Sh, D>(&'a self, shape: Sh) -> Result<ArrayView<'a, T, D>>
+    where
+        D: Dimension,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Ok(ArrayView::from_shape(shape, self)?)
+    }
+
+    pub fn as_view_mut<'a, Sh, D>(&'a mut self, shape: Sh) -> Result<ArrayViewMut<'a, T, D>>
+    where
+        D: Dimension,
+        Sh: ShapeBuilder<Dim = D>,
+    {
+        Ok(ArrayViewMut::from_shape(shape, self)?)
     }
 }
 
