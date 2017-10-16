@@ -11,6 +11,9 @@ pub enum RawPlan {
 }
 
 impl RawPlan {
+    /// Execute FFT saved in the plan
+    ///
+    /// This is unsafe because rewrite the array saved in the plan.
     pub unsafe fn execute(&self) {
         if self.is_null() {
             panic!("Plan is NULL");
@@ -21,6 +24,7 @@ impl RawPlan {
         }
     }
 
+    /// Check if the plan is NULL
     pub fn is_null(&self) -> bool {
         let p = match *self {
             RawPlan::_64(p) => p as *const c_void,
