@@ -2,7 +2,7 @@ use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::R2C;
+use super::plan::*;
 use super::traits::*;
 
 use ffi;
@@ -40,10 +40,8 @@ where
         Pair {
             a: (a, self.n.into_shape()),
             b: (b, (self.n / 2 + 1).into_shape()),
-            forward,
-            backward,
-            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
-            factor_b: None,
+            forward: Plan::with_factor(forward, Scalar::from_f64(1.0 / self.n as f64)),
+            backward: Plan::new(backward),
         }.null_checked()
     }
 }

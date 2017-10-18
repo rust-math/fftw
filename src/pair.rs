@@ -21,12 +21,8 @@ where
 {
     pub(crate) a: (AlignedVec<A>, Shape<D>),
     pub(crate) b: (AlignedVec<B>, Shape<D>),
-    pub(crate) forward: RawPlan,
-    pub(crate) backward: RawPlan,
-    // normaliztion factors
-    // `None` means no normaliztion
-    pub(crate) factor_f: Option<A::Real>,
-    pub(crate) factor_b: Option<B::Real>,
+    pub(crate) forward: Plan<B>,
+    pub(crate) backward: Plan<A>,
 }
 
 impl<A, B, D: Dimension> Pair<A, B, D>
@@ -76,11 +72,6 @@ where
     pub fn forward(&mut self, input: &[A]) -> &mut [B] {
         self.a.0.copy_from_slice(input);
         self.exec_forward();
-        if let Some(n) = self.factor_f.as_ref() {
-            for val in self.b.0.iter_mut() {
-                *val = val.mul_real(*n);
-            }
-        }
         &mut self.b.0
     }
 
@@ -93,30 +84,25 @@ where
     {
         self.b.0.copy_from_slice(input);
         self.exec_backward();
-        if let Some(n) = self.factor_b.as_ref() {
-            for val in self.a.0.iter_mut() {
-                *val = val.mul_real(*n);
-            }
-        }
         &mut self.a.0
     }
 
     /// Execute a forward transform (`a` to `b`)
     pub fn exec_forward(&mut self) {
         unsafe { self.forward.execute() }
+        self.forward.normalize(&mut self.b.0);
     }
 
     /// Execute a backward transform (`b` to `a`)
     pub fn exec_backward(&mut self) {
         unsafe { self.backward.execute() }
+        self.backward.normalize(&mut self.a.0);
     }
 
     pub(crate) fn null_checked(self) -> Result<Self> {
-        if self.forward.is_null() || self.backward.is_null() {
-            Err(InvalidPlanError {}.into())
-        } else {
-            Ok(self)
-        }
+        self.forward.check_null()?;
+        self.backward.check_null()?;
+        Ok(self)
     }
 }
 

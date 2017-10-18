@@ -1,7 +1,8 @@
 use super::FLAG;
 use super::aligned_vec::*;
 use super::error::*;
-use super::pair::{Pair, ToPair};
+use super::pair::*;
+use super::plan::*;
 use super::traits::*;
 
 use ffi;
@@ -67,10 +68,8 @@ impl<T: FFTWReal> ToPair<T, T> for R2R1D {
         Pair {
             a: (a, self.n.into_shape()),
             b: (b, self.n.into_shape()),
-            forward,
-            backward,
-            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
-            factor_b: None,
+            forward: Plan::with_factor(forward, Scalar::from_f64(1.0 / self.n as f64)),
+            backward: Plan::new(backward),
         }.null_checked()
     }
 }

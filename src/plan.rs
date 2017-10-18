@@ -1,9 +1,50 @@
 use super::{FFTW_MUTEX, FLAG, R2R_KIND, SIGN, c32, c64};
 use super::aligned_vec::AlignedVec;
+use super::error::*;
 use ffi;
 
+use ndarray_linalg::Scalar;
 use std::os::raw::c_void;
 use std::ptr::null;
+
+pub struct Plan<T: Scalar> {
+    p: RawPlan,
+    factor: Option<T::Real>,
+}
+
+impl<T: Scalar> Plan<T> {
+    pub fn new(p: RawPlan) -> Self {
+        Self { p, factor: None }
+    }
+
+    pub fn with_factor(p: RawPlan, f: T::Real) -> Self {
+        Self { p, factor: Some(f) }
+    }
+
+    pub unsafe fn execute(&self) {
+        self.p.execute()
+    }
+
+    fn get_factor(&self) -> Option<&T::Real> {
+        self.factor.as_ref()
+    }
+
+    pub fn check_null(&self) -> Result<()> {
+        if self.p.is_null() {
+            Err(InvalidPlanError::new().into())
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn normalize(&self, array: &mut [T]) {
+        if let Some(n) = self.get_factor() {
+            for val in array.iter_mut() {
+                *val = val.mul_real(*n);
+            }
+        }
+    }
+}
 
 pub enum RawPlan {
     _64(ffi::fftw_plan),

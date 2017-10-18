@@ -11,5 +11,5 @@ pub enum Error {
     MemoryContError(MemoryContError),
 }
 
-#[derive(Debug)]
+#[derive(Debug, new)]
 pub struct InvalidPlanError {}
