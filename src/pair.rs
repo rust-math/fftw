@@ -19,8 +19,8 @@ where
     A: Scalar,
     B: Scalar<Real = A::Real>,
 {
-    pub(crate) a: (AlignedVec<A>, Shape<D>),
-    pub(crate) b: (AlignedVec<B>, Shape<D>),
+    pub a: AlignedArray<A, D>,
+    pub b: AlignedArray<B, D>,
     pub(crate) forward: Plan<B>,
     pub(crate) backward: Plan<A>,
 }
@@ -30,30 +30,6 @@ where
     A: Scalar,
     B: Scalar<Real = A::Real>,
 {
-    pub fn a_shape(&self) -> Shape<D> {
-        self.a.1.clone()
-    }
-
-    pub fn b_shape(&self) -> Shape<D> {
-        self.b.1.clone()
-    }
-
-    pub fn get_a<'a>(&'a self) -> Result<ArrayView<'a, A, D>> {
-        Ok(ArrayView::from_shape(self.a_shape(), &self.a.0)?)
-    }
-
-    pub fn get_b<'a>(&'a self) -> Result<ArrayView<'a, B, D>> {
-        Ok(ArrayView::from_shape(self.b_shape(), &self.b.0)?)
-    }
-
-    pub fn get_a_mut<'a>(&'a mut self) -> Result<ArrayViewMut<'a, A, D>> {
-        Ok(ArrayViewMut::from_shape(self.a_shape(), &mut self.a.0)?)
-    }
-
-    pub fn get_b_mut<'a>(&'a mut self) -> Result<ArrayViewMut<'a, B, D>> {
-        Ok(ArrayViewMut::from_shape(self.b_shape(), &mut self.b.0)?)
-    }
-
     // /// Execute `Pair::forward` with `ndarray::ArrayView`
     // pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
     //     let sl = self.forward(input.as_slice().unwrap());
@@ -70,9 +46,9 @@ where
     /// Executes copy the input to `a`, forward transform,
     /// and returns the result `b` as a reference
     pub fn forward(&mut self, input: &[A]) -> &mut [B] {
-        self.a.0.copy_from_slice(input);
+        self.a.copy_from_slice(input);
         self.exec_forward();
-        &mut self.b.0
+        self.b.as_slice_mut()
     }
 
     /// Execute copy to pair, forward transform,
@@ -82,21 +58,21 @@ where
         A: Scalar,
         B: Scalar,
     {
-        self.b.0.copy_from_slice(input);
+        self.b.copy_from_slice(input);
         self.exec_backward();
-        &mut self.a.0
+        self.a.as_slice_mut()
     }
 
     /// Execute a forward transform (`a` to `b`)
     pub fn exec_forward(&mut self) {
         unsafe { self.forward.execute() }
-        self.forward.normalize(&mut self.b.0);
+        self.forward.normalize(self.b.as_slice_mut());
     }
 
     /// Execute a backward transform (`b` to `a`)
     pub fn exec_backward(&mut self) {
         unsafe { self.backward.execute() }
-        self.backward.normalize(&mut self.a.0);
+        self.backward.normalize(self.a.as_slice_mut());
     }
 
     pub(crate) fn null_checked(self) -> Result<Self> {

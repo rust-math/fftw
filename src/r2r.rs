@@ -66,8 +66,8 @@ impl<T: FFTWReal> ToPair<T, T> for R2R1D {
         let forward = unsafe { T::r2r_1d(self.n, &mut a, &mut b, forward(self.kind), self.flag) };
         let backward = unsafe { T::r2r_1d(self.n, &mut b, &mut a, backward(self.kind), self.flag) };
         Pair {
-            a: (a, self.n.into_shape()),
-            b: (b, self.n.into_shape()),
+            a: AlignedArray::from_vec(a),
+            b: AlignedArray::from_vec(b),
             forward: Plan::with_factor(forward, Scalar::from_f64(1.0 / self.n as f64)),
             backward: Plan::new(backward),
         }.null_checked()

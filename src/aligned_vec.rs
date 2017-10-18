@@ -8,6 +8,52 @@ use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
+pub struct AlignedArray<A, D: Dimension> {
+    data: AlignedVec<A>,
+    shape: Shape<D>,
+}
+
+impl<A> AlignedArray<A, Ix1> {
+    pub fn from_vec(data: AlignedVec<A>) -> Self {
+        let shape = data.len().into_shape();
+        Self { data, shape }
+    }
+}
+
+impl<A, D: Dimension> AlignedArray<A, D> {
+    pub fn new<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self
+    where
+        A: Zero + AlignedAllocable,
+    {
+        let shape = shape.into_shape();
+        let data = AlignedVec::new(shape.size());
+        Self { data, shape }
+    }
+
+    pub fn copy_from_slice(&mut self, input: &[A])
+    where
+        A: Copy,
+    {
+        self.data.copy_from_slice(input)
+    }
+
+    pub fn as_slice(&self) -> &[A] {
+        self.data.as_slice()
+    }
+
+    pub fn as_slice_mut(&mut self) -> &mut [A] {
+        self.data.as_slice_mut()
+    }
+
+    pub fn as_view<'a>(&'a self) -> ArrayView<'a, A, D> {
+        self.data.as_view(self.shape.clone()).unwrap()
+    }
+
+    pub fn as_view_mut<'a>(&'a mut self) -> ArrayViewMut<'a, A, D> {
+        self.data.as_view_mut(self.shape.clone()).unwrap()
+    }
+}
+
 /// Array with SIMD alignment
 ///
 /// This wraps `fftw_alloc` and `fftw_free`for SIMD feature
@@ -51,7 +97,7 @@ impl<T> AlignedVec<T> {
         unsafe { from_raw_parts(self.data, self.n) }
     }
     /// Recast to Rust's mutable slice
-    pub fn as_mut_slice(&mut self) -> &mut [T] {
+    pub fn as_slice_mut(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
     }
 
@@ -81,7 +127,7 @@ impl<T> Deref for AlignedVec<T> {
 
 impl<T> DerefMut for AlignedVec<T> {
     fn deref_mut(&mut self) -> &mut [T] {
-        self.as_mut_slice()
+        self.as_slice_mut()
     }
 }
 
