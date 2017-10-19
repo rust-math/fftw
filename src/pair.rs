@@ -30,18 +30,19 @@ where
     A: Scalar,
     B: Scalar<Real = A::Real>,
 {
-    // /// Execute `Pair::forward` with `ndarray::ArrayView`
-    // pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
-    //     let sl = self.forward(input.as_slice().unwrap());
-    //     ArrayViewMut::from(sl).into_shape(dim).unwrap()
-    // }
-    //
-    // /// Execute `Pair::backward` with `ndarray::ArrayView`
-    // pub fn backward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, B, D>) -> ArrayViewMut<'a, A, D> {
-    //     let dim = self.a_dim();
-    //     let sl = self.backward(input.as_slice().unwrap());
-    //     ArrayViewMut::from(sl).into_shape(dim).unwrap()
-    // }
+    /// Execute `Pair::forward` with `ndarray::ArrayView`
+    pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
+        self.a.as_view_mut().assign(&input);
+        self.exec_forward();
+        self.b.as_view_mut()
+    }
+
+    /// Execute `Pair::backward` with `ndarray::ArrayView`
+    pub fn backward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, B, D>) -> ArrayViewMut<'a, A, D> {
+        self.b.as_view_mut().assign(&input);
+        self.exec_backward();
+        self.a.as_view_mut()
+    }
 
     /// Executes copy the input to `a`, forward transform,
     /// and returns the result `b` as a reference
@@ -53,11 +54,7 @@ where
 
     /// Execute copy to pair, forward transform,
     /// and returns a reference of the result.
-    pub fn backward(&mut self, input: &[B]) -> &mut [A]
-    where
-        A: Scalar,
-        B: Scalar,
-    {
+    pub fn backward(&mut self, input: &[B]) -> &mut [A] {
         self.b.copy_from_slice(input);
         self.exec_backward();
         self.a.as_slice_mut()
