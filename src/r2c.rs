@@ -1,8 +1,8 @@
 use super::FLAG;
-use super::aligned_vec::*;
+use super::array::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
-use super::plan::R2C;
+use super::plan::*;
 use super::traits::*;
 
 use ffi;
@@ -38,13 +38,10 @@ where
         let forward = unsafe { <(R, C) as R2C>::r2c_1d(self.n, &mut a, &mut b, self.flag) };
         let backward = unsafe { <(R, C) as R2C>::c2r_1d(self.n, &mut b, &mut a, self.flag) };
         Pair {
-            a,
-            b,
-            size: self.n.into_dimension(),
-            forward,
-            backward,
-            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
-            factor_b: None,
+            a: AlignedArray::from_vec(a),
+            b: AlignedArray::from_vec(b),
+            forward: Plan::with_factor(forward, Scalar::from_f64(1.0 / self.n as f64)),
+            backward: Plan::new(backward),
         }.null_checked()
     }
 }

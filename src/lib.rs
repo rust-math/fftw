@@ -20,7 +20,7 @@ pub mod pair;
 pub mod r2r;
 pub mod r2c;
 pub mod c2c;
-pub mod aligned_vec;
+pub mod array;
 pub mod plan;
 pub mod error;
 pub mod traits;

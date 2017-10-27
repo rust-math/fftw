@@ -1,5 +1,5 @@
 use super::*;
-use aligned_vec::AlignedAllocable;
+use array::AlignedAllocable;
 use plan::*;
 
 use ndarray_linalg::Scalar;
