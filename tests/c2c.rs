@@ -11,7 +11,7 @@ use ndarray_linalg::*;
 
 /// Check successive forward and backward transform equals to the identity
 fn test_identity<C: FFTWComplex>(mut pair: Pair<C, C, Ix1>, rtol: C::Real) {
-    let a: Array1<C> = random(pair.a_size());
+    let a: Array1<C> = random(pair.a.dim());
     println!("a = {:?}", &a);
     let b = pair.forward_array(a.view()).to_owned();
     println!("b = {:?}", &b);
@@ -22,7 +22,7 @@ fn test_identity<C: FFTWComplex>(mut pair: Pair<C, C, Ix1>, rtol: C::Real) {
 
 /// Check successive forward and backward transform equals to the identity
 fn test_forward<C: FFTWComplex>(mut pair: Pair<C, C, Ix1>, rtol: C::Real) {
-    let n = pair.a_size();
+    let n = pair.a.dim();
     let pi = ::std::f64::consts::PI;
     let a: Array1<C> = Array::from_iter((0..n).map(|i| {
         Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())

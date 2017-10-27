@@ -14,7 +14,7 @@ fn test_identity<R>(mut pair: Pair<R, R, Ix1>, rtol: R::Real)
 where
     R: FFTWReal,
 {
-    let a: Array1<R> = random(pair.a_size());
+    let a: Array1<R> = random(pair.a.dim());
     println!("a = {:?}", &a);
     let b = pair.forward_array(a.view()).to_owned();
     println!("b = {:?}", &b);
@@ -28,7 +28,7 @@ fn test_forward<R>(mut pair: Pair<R, R, Ix1>, rtol: R::Real)
 where
     R: FFTWReal,
 {
-    let n = pair.a_size();
+    let n = pair.a.dim();
     let pi = ::std::f64::consts::PI;
     let a: Array1<R> = Array::from_iter((0..n).map(|i| {
         Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())

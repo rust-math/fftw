@@ -30,6 +30,14 @@ impl<A, D: Dimension> AlignedArray<A, D> {
         Self { data, shape }
     }
 
+    pub fn dim(&self) -> D::Pattern {
+        self.as_view().dim()
+    }
+
+    pub fn shape(&self) -> &Shape<D> {
+        &self.shape
+    }
+
     pub fn copy_from_slice(&mut self, input: &[A])
     where
         A: Copy,
