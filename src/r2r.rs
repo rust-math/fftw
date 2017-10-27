@@ -1,5 +1,5 @@
 use super::FLAG;
-use super::aligned_vec::*;
+use super::array::*;
 use super::error::*;
 use super::pair::*;
 use super::plan::*;

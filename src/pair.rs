@@ -1,6 +1,6 @@
 //! Safe-interface corresponding to out-place transform
 
-use super::aligned_vec::*;
+use super::array::*;
 use super::error::*;
 use super::plan::*;
 

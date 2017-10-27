@@ -1,5 +1,5 @@
 use super::{FFTW_MUTEX, FLAG, R2R_KIND, SIGN, c32, c64};
-use super::aligned_vec::AlignedVec;
+use super::array::AlignedVec;
 use super::error::*;
 use ffi;
 
