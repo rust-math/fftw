@@ -1,7 +1,8 @@
 use super::FLAG;
-use super::aligned_vec::*;
+use super::array::*;
 use super::error::*;
-use super::pair::{Pair, ToPair};
+use super::pair::*;
+use super::plan::*;
 use super::traits::*;
 
 use ffi;
@@ -65,13 +66,10 @@ impl<T: FFTWReal> ToPair<T, T> for R2R1D {
         let forward = unsafe { T::r2r_1d(self.n, &mut a, &mut b, forward(self.kind), self.flag) };
         let backward = unsafe { T::r2r_1d(self.n, &mut b, &mut a, backward(self.kind), self.flag) };
         Pair {
-            a,
-            b,
-            size: self.n.into_dimension(),
-            forward,
-            backward,
-            factor_f: Some(Scalar::from_f64(1.0 / self.n as f64)),
-            factor_b: None,
+            a: AlignedArray::from_vec(a),
+            b: AlignedArray::from_vec(b),
+            forward: Plan::with_factor(forward, Scalar::from_f64(1.0 / self.n as f64)),
+            backward: Plan::new(backward),
         }.null_checked()
     }
 }
