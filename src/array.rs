@@ -8,19 +8,24 @@ use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
-pub struct AlignedArray<A, D: Dimension> {
+#[derive(Debug, Clone)]
+pub struct AlignedArray<A, D>
+where
+    A: AlignedAllocable,
+    D: Dimension,
+{
     data: AlignedVec<A>,
     shape: Shape<D>,
 }
 
-impl<A> AlignedArray<A, Ix1> {
+impl<A: AlignedAllocable> AlignedArray<A, Ix1> {
     pub fn from_vec(data: AlignedVec<A>) -> Self {
         let shape = data.len().into_shape();
         Self { data, shape }
     }
 }
 
-impl<A, D: Dimension> AlignedArray<A, D> {
+impl<A: AlignedAllocable, D: Dimension> AlignedArray<A, D> {
     pub fn new<Sh: ShapeBuilder<Dim = D>>(shape: Sh) -> Self
     where
         A: Zero + AlignedAllocable,
@@ -66,12 +71,13 @@ impl<A, D: Dimension> AlignedArray<A, D> {
 ///
 /// This wraps `fftw_alloc` and `fftw_free`for SIMD feature
 /// http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html
+#[derive(Debug)]
 pub struct AlignedVec<T> {
     n: usize,
     data: *mut T,
 }
 
-pub trait AlignedAllocable {
+pub trait AlignedAllocable: Zero {
     unsafe fn alloc(n: usize) -> *mut Self;
 }
 
@@ -149,7 +155,7 @@ impl<T> Drop for AlignedVec<T> {
 
 impl<T> AlignedVec<T>
 where
-    T: Zero + AlignedAllocable,
+    T: AlignedAllocable,
 {
     /// Create array with `fftw_malloc` (`fftw_free` is automatically called when the arrya is `Drop`-ed)
     pub fn new(n: usize) -> Self {
@@ -161,6 +167,15 @@ where
             *v = T::zero();
         }
         vec
+    }
+}
+
+impl<T> Clone for AlignedVec<T>
+where
+    T: AlignedAllocable,
+{
+    fn clone(&self) -> Self {
+        Self::new(self.n)
     }
 }
 
