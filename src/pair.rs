@@ -14,10 +14,11 @@ use ndarray_linalg::Scalar;
 /// It is not compatible to the programing model of safe Rust.
 /// `Pair` interface composes the array and plan to manage
 /// mutability in the safe Rust way.
+#[derive(Debug)]
 pub struct Pair<A, B, D: Dimension>
 where
-    A: Scalar,
-    B: Scalar<Real = A::Real>,
+    A: Scalar + AlignedAllocable,
+    B: Scalar<Real = A::Real> + AlignedAllocable,
 {
     pub a: AlignedArray<A, D>,
     pub b: AlignedArray<B, D>,
@@ -27,8 +28,8 @@ where
 
 impl<A, B, D: Dimension> Pair<A, B, D>
 where
-    A: Scalar,
-    B: Scalar<Real = A::Real>,
+    A: Scalar + AlignedAllocable,
+    B: Scalar<Real = A::Real> + AlignedAllocable,
 {
     /// Execute `Pair::forward` with `ndarray::ArrayView`
     pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
@@ -82,8 +83,8 @@ where
 /// Create a `Pair` from a setting struct e.g. `R2C1D`.
 pub trait ToPair<A, B>
 where
-    A: Scalar,
-    B: Scalar<Real = A::Real>,
+    A: Scalar + AlignedAllocable,
+    B: Scalar<Real = A::Real> + AlignedAllocable,
 {
     type Dim: Dimension;
     /// Generate `Pair` from a setting struct
