@@ -7,6 +7,7 @@ use ndarray_linalg::Scalar;
 use std::os::raw::c_void;
 use std::ptr::null;
 
+#[derive(Debug)]
 pub struct Plan<T: Scalar> {
     p: RawPlan,
     factor: Option<T::Real>,
@@ -46,6 +47,7 @@ impl<T: Scalar> Plan<T> {
     }
 }
 
+#[derive(Debug)]
 pub enum RawPlan {
     _64(ffi::fftw_plan),
     _32(ffi::fftwf_plan),
