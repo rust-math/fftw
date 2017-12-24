@@ -23,6 +23,7 @@ pub mod c2c;
 pub mod array;
 pub mod plan;
 pub mod error;
+pub mod nae;
 pub mod traits;
 
 pub type FLAG = u32;
