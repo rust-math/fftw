@@ -17,17 +17,17 @@ pub use num_complex::Complex64 as fftw_complex;
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-pub enum SIGN {
+pub enum Sign {
     FFTW_FORWARD = -1,
     FFTW_BACKWARD = 1,
 }
 
-impl ::std::ops::Neg for SIGN {
-    type Output = SIGN;
+impl ::std::ops::Neg for Sign {
+    type Output = Sign;
     fn neg(self) -> Self::Output {
         match self {
-            SIGN::FFTW_FORWARD => SIGN::FFTW_BACKWARD,
-            SIGN::FFTW_BACKWARD => SIGN::FFTW_FORWARD,
+            Sign::FFTW_FORWARD => Sign::FFTW_BACKWARD,
+            Sign::FFTW_BACKWARD => Sign::FFTW_FORWARD,
         }
     }
 }
@@ -112,14 +112,14 @@ extern "C" {
         n: *const ::std::os::raw::c_int,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_dft_1d(
         n: ::std::os::raw::c_int,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_dft_2d(
@@ -127,7 +127,7 @@ extern "C" {
         n1: ::std::os::raw::c_int,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_dft_3d(
@@ -136,7 +136,7 @@ extern "C" {
         n2: ::std::os::raw::c_int,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_many_dft(
@@ -151,7 +151,7 @@ extern "C" {
         onembed: *const ::std::os::raw::c_int,
         ostride: ::std::os::raw::c_int,
         odist: ::std::os::raw::c_int,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_guru_dft(
@@ -161,7 +161,7 @@ extern "C" {
         howmany_dims: *const fftw_iodim,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_guru_split_dft(
@@ -182,7 +182,7 @@ extern "C" {
         howmany_dims: *const fftw_iodim64,
         in_: *mut fftw_complex,
         out: *mut fftw_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_plan_guru64_split_dft(
@@ -484,14 +484,14 @@ extern "C" {
         n: *const ::std::os::raw::c_int,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_dft_1d(
         n: ::std::os::raw::c_int,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_dft_2d(
@@ -499,7 +499,7 @@ extern "C" {
         n1: ::std::os::raw::c_int,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_dft_3d(
@@ -508,7 +508,7 @@ extern "C" {
         n2: ::std::os::raw::c_int,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_many_dft(
@@ -523,7 +523,7 @@ extern "C" {
         onembed: *const ::std::os::raw::c_int,
         ostride: ::std::os::raw::c_int,
         odist: ::std::os::raw::c_int,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_guru_dft(
@@ -533,7 +533,7 @@ extern "C" {
         howmany_dims: *const fftwf_iodim,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_guru_split_dft(
@@ -554,7 +554,7 @@ extern "C" {
         howmany_dims: *const fftwf_iodim64,
         in_: *mut fftwf_complex,
         out: *mut fftwf_complex,
-        sign: ::std::os::raw::c_int,
+        sign: Sign,
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_plan_guru64_split_dft(
