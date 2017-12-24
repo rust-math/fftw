@@ -6,7 +6,7 @@ use super::plan::*;
 use super::traits::*;
 
 use ffi;
-pub use ffi::SIGN;
+pub use ffi::Sign;
 
 use ndarray::*;
 use ndarray_linalg::Scalar;
@@ -15,7 +15,7 @@ use ndarray_linalg::Scalar;
 #[derive(Debug, Clone, Copy, new)]
 pub struct C2C1D {
     n: usize,
-    sign: SIGN,
+    sign: Sign,
     flag: FLAG,
 }
 
@@ -23,7 +23,7 @@ pub struct C2C1D {
 pub fn c2c_1d(n: usize) -> C2C1D {
     C2C1D {
         n,
-        sign: SIGN::FFTW_FORWARD,
+        sign: Sign::FFTW_FORWARD,
         flag: ffi::FFTW_MEASURE,
     }
 }
