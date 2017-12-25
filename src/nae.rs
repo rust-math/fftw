@@ -134,6 +134,38 @@ where
     }
 }
 
+pub type R2RKind = ffi::fftw_r2r_kind;
+
+#[derive(Debug)]
+pub struct R2RPlan<R>
+where
+    R: FFTW<Real = R>,
+{
+    plan: R::Plan,
+    shape: Shape,
+    kind: Vec<R2RKind>,
+    flag: FLAG,
+    alignment: Alignment,
+}
+
+impl<R: FFTW<Real = R>> R2RPlan<R> {
+    pub fn new(shape: &[i32], in_: &[R], out: &[R], kinds: &[R2RKind], flag: FLAG) -> Result<Self> {
+        Ok(Self {
+            plan: R::plan_r2r(&shape, in_, out, kinds, flag)?,
+            shape: Shape::new(shape),
+            kind: kinds.to_vec(),
+            flag,
+            alignment: Alignment::new(in_, out),
+        })
+    }
+    pub fn r2c(&mut self, in_: &[R], out: &mut [R]) -> Result<()> {
+        self.alignment.check(in_, out)?;
+        self.shape.check(in_, out)?;
+        R::exec_r2r(self.plan, in_, out);
+        Ok(())
+    }
+}
+
 pub trait Plan: Sized {
     fn check_null(self) -> Result<Self>;
 }
@@ -174,9 +206,11 @@ pub trait FFTW {
     ) -> Result<Self::Plan>;
     fn plan_c2r(shape: &[i32], in_: &[Self::Complex], out: &[Self::Real], flags: FLAG) -> Result<Self::Plan>;
     fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], flags: FLAG) -> Result<Self::Plan>;
+    fn plan_r2r(shape: &[i32], in_: &[Self::Real], out: &[Self::Real], &[R2RKind], flags: FLAG) -> Result<Self::Plan>;
     fn exec_c2c(p: Self::Plan, in_: &[Self::Complex], &mut [Self::Complex]);
     fn exec_c2r(p: Self::Plan, in_: &[Self::Complex], &mut [Self::Real]);
     fn exec_r2c(p: Self::Plan, in_: &[Self::Real], &mut [Self::Complex]);
+    fn exec_r2r(p: Self::Plan, in_: &[Self::Real], &mut [Self::Real]);
     fn alignment_of<T>(&[T]) -> i32;
 }
 
@@ -212,6 +246,15 @@ impl FFTW for c64 {
     fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], flag: FLAG) -> Result<Self::Plan> {
         excall!{ fftw_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, flag).check_null() }
     }
+    fn plan_r2r(
+        shape: &[i32],
+        in_: &[Self::Real],
+        out: &[Self::Real],
+        kinds: &[R2RKind],
+        flag: FLAG,
+    ) -> Result<Self::Plan> {
+        excall!{ fftw_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, kinds.as_ptr() as *mut _, flag).check_null() }
+    }
     fn exec_c2c(p: Self::Plan, in_: &[Self::Complex], out: &mut [Self::Complex]) {
         unsafe { fftw_execute_dft(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
     }
@@ -220,6 +263,9 @@ impl FFTW for c64 {
     }
     fn exec_r2c(p: Self::Plan, in_: &[Self::Real], out: &mut [Self::Complex]) {
         unsafe { fftw_execute_dft_r2c(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
+    }
+    fn exec_r2r(p: Self::Plan, in_: &[Self::Real], out: &mut [Self::Real]) {
+        unsafe { fftw_execute_r2r(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
     }
     fn alignment_of<T>(s: &[T]) -> i32 {
         unsafe { fftw_alignment_of(s.as_ptr() as *mut _) }
