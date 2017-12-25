@@ -9,7 +9,15 @@ pub enum Error {
     ShapeError(ShapeError),
     StrideError(StrideError),
     MemoryContError(MemoryContError),
+    AlignmentMismatchError(AlignmentMismatchError),
+    SizeMismatchError(SizeMismatchError),
 }
 
 #[derive(Debug, new)]
 pub struct InvalidPlanError {}
+
+#[derive(Debug, new)]
+pub struct AlignmentMismatchError {}
+
+#[derive(Debug, new)]
+pub struct SizeMismatchError {}
