@@ -244,23 +244,18 @@ macro_rules! excall {
     }
 }
 
-impl FFTW for c64 {
-    type Plan = fftw_plan;
+macro_rules! impl_fftw { ($scalar:ty) => {
+impl FFTW for $scalar {
     type Real = f64;
     type Complex = c64;
+    type Plan = fftw_plan;
     fn destroy_plan(p: Self::Plan) {
         excall!{ fftw_destroy_plan(p) };
     }
     fn print_plan(p: Self::Plan) {
         excall!{ fftw_print_plan(p) };
     }
-    fn plan_c2c(
-        shape: &[i32],
-        in_: &[Self::Complex],
-        out: &[Self::Complex],
-        sign: Sign,
-        flag: FLAG,
-    ) -> Result<Self::Plan> {
+    fn plan_c2c(shape: &[i32], in_: &[Self::Complex], out: &[Self::Complex], sign: Sign, flag: FLAG) -> Result<Self::Plan> {
         excall!{ fftw_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, sign, flag).check_null() }
     }
     fn plan_c2r(shape: &[i32], in_: &[Self::Complex], out: &[Self::Real], flag: FLAG) -> Result<Self::Plan> {
@@ -269,13 +264,7 @@ impl FFTW for c64 {
     fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], flag: FLAG) -> Result<Self::Plan> {
         excall!{ fftw_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, flag).check_null() }
     }
-    fn plan_r2r(
-        shape: &[i32],
-        in_: &[Self::Real],
-        out: &[Self::Real],
-        kinds: &[R2RKind],
-        flag: FLAG,
-    ) -> Result<Self::Plan> {
+    fn plan_r2r(shape: &[i32], in_: &[Self::Real], out: &[Self::Real], kinds: &[R2RKind], flag: FLAG) -> Result<Self::Plan> {
         excall!{ fftw_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, kinds.as_ptr() as *mut _, flag).check_null() }
     }
     fn exec_c2c(p: Self::Plan, in_: &[Self::Complex], out: &mut [Self::Complex]) {
@@ -294,3 +283,51 @@ impl FFTW for c64 {
         unsafe { fftw_alignment_of(s.as_ptr() as *mut _) }
     }
 }
+}} // impl_fftw
+
+impl_fftw!(f64);
+impl_fftw!(c64);
+
+macro_rules! impl_fftwf { ($scalar:ty) => {
+impl FFTW for $scalar {
+    type Real = f32;
+    type Complex = c32;
+    type Plan = fftwf_plan;
+    fn destroy_plan(p: Self::Plan) {
+        excall!{ fftwf_destroy_plan(p) };
+    }
+    fn print_plan(p: Self::Plan) {
+        excall!{ fftwf_print_plan(p) };
+    }
+    fn plan_c2c(shape: &[i32], in_: &[Self::Complex], out: &[Self::Complex], sign: Sign, flag: FLAG) -> Result<Self::Plan> {
+        excall!{ fftwf_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, sign, flag).check_null() }
+    }
+    fn plan_c2r(shape: &[i32], in_: &[Self::Complex], out: &[Self::Real], flag: FLAG) -> Result<Self::Plan> {
+        excall!{ fftwf_plan_dft_c2r(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, flag).check_null() }
+    }
+    fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], flag: FLAG) -> Result<Self::Plan> {
+        excall!{ fftwf_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, flag).check_null() }
+    }
+    fn plan_r2r(shape: &[i32], in_: &[Self::Real], out: &[Self::Real], kinds: &[R2RKind], flag: FLAG) -> Result<Self::Plan> {
+        excall!{ fftwf_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_ptr() as *mut _, out.as_ptr() as *mut _, kinds.as_ptr() as *mut _, flag).check_null() }
+    }
+    fn exec_c2c(p: Self::Plan, in_: &[Self::Complex], out: &mut [Self::Complex]) {
+        unsafe { fftwf_execute_dft(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
+    }
+    fn exec_c2r(p: Self::Plan, in_: &[Self::Complex], out: &mut [Self::Real]) {
+        unsafe { fftwf_execute_dft_c2r(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
+    }
+    fn exec_r2c(p: Self::Plan, in_: &[Self::Real], out: &mut [Self::Complex]) {
+        unsafe { fftwf_execute_dft_r2c(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
+    }
+    fn exec_r2r(p: Self::Plan, in_: &[Self::Real], out: &mut [Self::Real]) {
+        unsafe { fftwf_execute_r2r(p, in_.as_ptr() as *mut _, out.as_mut_ptr()) };
+    }
+    fn alignment_of<T>(s: &[T]) -> i32 {
+        unsafe { fftwf_alignment_of(s.as_ptr() as *mut _) }
+    }
+}
+}} // impl_fftwf
+
+impl_fftwf!(f32);
+impl_fftwf!(c32);
