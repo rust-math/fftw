@@ -1,4 +1,5 @@
 use super::*;
+use error::*;
 use ffi::*;
 
 #[derive(Debug, Clone)]
@@ -14,9 +15,11 @@ impl Alignment {
             out: B::alignment_of(out),
         }
     }
-    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) {
+    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) -> Result<()> {
         if self.in_ != A::alignment_of(in_) || self.out != B::alignment_of(out) {
-            panic!("Alignment is mismatch");
+            Err(AlignmentMismatchError::new().into())
+        } else {
+            Ok(())
         }
     }
 }
@@ -28,10 +31,12 @@ impl Shape {
     fn new(s: &[i32]) -> Self {
         Shape(s.to_vec())
     }
-    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) {
+    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) -> Result<()>{
         let n = self.0.len();
         if in_.len() != n || out.len() != n {
-            panic!("Array size mismatch");
+            Err(SizeMismatchError::new().into())
+        } else {
+            Ok(())
         }
     }
 }
@@ -55,10 +60,11 @@ impl<C: FFTW<Complex = C>> C2CPlan<C> {
             alignment: Alignment::new(in_, out),
         }
     }
-    pub fn c2c(&mut self, in_: &[C], out: &mut [C]) {
-        self.alignment.check(in_, out);
-        self.shape.check(in_, out);
+    pub fn c2c(&mut self, in_: &[C], out: &mut [C]) -> Result<()> {
+        self.alignment.check(in_, out)?;
+        self.shape.check(in_, out)?;
         C::exec_c2c(self.plan, in_, out);
+        Ok(())
     }
 }
 
@@ -81,16 +87,17 @@ where
 {
     pub fn new(shape: &[i32], in_: &[C], out: &[R], flag: FLAG) -> Self {
         Self {
-            plan:  C::plan_c2r(&shape, in_, out, flag),
+            plan: C::plan_c2r(&shape, in_, out, flag),
             shape: Shape::new(shape),
             flag,
             alignment: Alignment::new(in_, out),
         }
     }
-    pub fn c2r(&mut self, in_: &[C], out: &mut [R]) {
-        self.alignment.check(in_, out);
-        self.shape.check(in_, out);
+    pub fn c2r(&mut self, in_: &[C], out: &mut [R]) -> Result<()> {
+        self.alignment.check(in_, out)?;
+        self.shape.check(in_, out)?;
         C::exec_c2r(self.plan, in_, out);
+        Ok(())
     }
 }
 
@@ -113,16 +120,17 @@ where
 {
     pub fn new(shape: &[i32], in_: &[R], out: &[C], flag: FLAG) -> Self {
         Self {
-            plan:  C::plan_r2c(&shape, in_, out, flag),
+            plan: C::plan_r2c(&shape, in_, out, flag),
             shape: Shape::new(shape),
             flag,
             alignment: Alignment::new(in_, out),
         }
     }
-    pub fn r2c(&mut self, in_: &[R], out: &mut [C]) {
-        self.alignment.check(in_, out);
-        self.shape.check(in_, out);
+    pub fn r2c(&mut self, in_: &[R], out: &mut [C]) -> Result<()> {
+        self.alignment.check(in_, out)?;
+        self.shape.check(in_, out)?;
         C::exec_r2c(self.plan, in_, out);
+        Ok(())
     }
 }
 
