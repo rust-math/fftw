@@ -50,6 +50,12 @@ pub struct C2CPlan<C: FFTW> {
     alignment: Alignment,
 }
 
+impl<C: FFTW> Drop for C2CPlan<C> {
+    fn drop(&mut self) {
+        C::destroy_plan(self.plan);
+    }
+}
+
 impl<C: FFTW<Complex = C>> C2CPlan<C> {
     pub fn new(shape: &[i32], in_: &[C], out: &[C], sign: Sign, flag: FLAG) -> Result<Self> {
         Ok(Self {
@@ -78,6 +84,16 @@ where
     shape: Shape,
     flag: FLAG,
     alignment: Alignment,
+}
+
+impl<C, R> Drop for C2RPlan<C, R>
+where
+    C: FFTW<Real = R, Complex = C>,
+    R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
+{
+    fn drop(&mut self) {
+        R::destroy_plan(self.plan);
+    }
 }
 
 impl<C, R> C2RPlan<C, R>
@@ -113,6 +129,16 @@ where
     alignment: Alignment,
 }
 
+impl<R, C> Drop for R2CPlan<R, C>
+where
+    C: FFTW<Real = R, Complex = C>,
+    R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
+{
+    fn drop(&mut self) {
+        R::destroy_plan(self.plan);
+    }
+}
+
 impl<R, C> R2CPlan<R, C>
 where
     C: FFTW<Real = R, Complex = C>,
@@ -137,15 +163,18 @@ where
 pub type R2RKind = ffi::fftw_r2r_kind;
 
 #[derive(Debug)]
-pub struct R2RPlan<R>
-where
-    R: FFTW<Real = R>,
-{
+pub struct R2RPlan<R: FFTW> {
     plan: R::Plan,
     shape: Shape,
     kind: Vec<R2RKind>,
     flag: FLAG,
     alignment: Alignment,
+}
+
+impl<R: FFTW> Drop for R2RPlan<R> {
+    fn drop(&mut self) {
+        R::destroy_plan(self.plan);
+    }
 }
 
 impl<R: FFTW<Real = R>> R2RPlan<R> {
@@ -197,16 +226,10 @@ pub trait FFTW {
     type Complex;
     fn destroy_plan(Self::Plan);
     fn print_plan(Self::Plan);
-    fn plan_c2c(
-        shape: &[i32],
-        in_: &[Self::Complex],
-        out: &[Self::Complex],
-        sign: Sign,
-        flags: FLAG,
-    ) -> Result<Self::Plan>;
-    fn plan_c2r(shape: &[i32], in_: &[Self::Complex], out: &[Self::Real], flags: FLAG) -> Result<Self::Plan>;
-    fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], flags: FLAG) -> Result<Self::Plan>;
-    fn plan_r2r(shape: &[i32], in_: &[Self::Real], out: &[Self::Real], &[R2RKind], flags: FLAG) -> Result<Self::Plan>;
+    fn plan_c2c(shape: &[i32], in_: &[Self::Complex], out: &[Self::Complex], Sign, FLAG) -> Result<Self::Plan>;
+    fn plan_c2r(shape: &[i32], in_: &[Self::Complex], out: &[Self::Real], FLAG) -> Result<Self::Plan>;
+    fn plan_r2c(shape: &[i32], in_: &[Self::Real], out: &[Self::Complex], FLAG) -> Result<Self::Plan>;
+    fn plan_r2r(shape: &[i32], in_: &[Self::Real], out: &[Self::Real], &[R2RKind], FLAG) -> Result<Self::Plan>;
     fn exec_c2c(p: Self::Plan, in_: &[Self::Complex], &mut [Self::Complex]);
     fn exec_c2r(p: Self::Plan, in_: &[Self::Complex], &mut [Self::Real]);
     fn exec_r2c(p: Self::Plan, in_: &[Self::Real], &mut [Self::Complex]);
