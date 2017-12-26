@@ -20,4 +20,8 @@ pub struct InvalidPlanError {}
 pub struct AlignmentMismatchError {}
 
 #[derive(Debug, new)]
-pub struct SizeMismatchError {}
+pub struct SizeMismatchError {
+    n: usize,
+    n_in: usize,
+    n_out: usize,
+}
