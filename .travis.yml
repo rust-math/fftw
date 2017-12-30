@@ -60,6 +60,6 @@ before_script:
   - make install DESTDIR=${TRAVIS_BUILD_DIR}/kcov-build
 
 after_success: |
-  for file in target/debug/*-*[^\.d]; do mkdir -p "target/cov/$(basename $file)"; ${TRAVIS_BUILD_DIR}/kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
+  for file in "target/debug/*-*[^\.d]"; do mkdir -p "target/cov/$(basename $file)"; ${TRAVIS_BUILD_DIR}/kcov-build/usr/local/bin/kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
   bash <(curl -s https://codecov.io/bash) &&
   echo "Uploaded code coverage"
