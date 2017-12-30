@@ -70,16 +70,16 @@ fn main() {
     }
     expand(&archive_path, &out_dir);
 
-    build_fftw(&["--enable-shared", "--enable-single"], &src_dir, &out_dir);
-    build_fftw(&["--enable-shared"], &src_dir, &out_dir);
+    build_fftw(&["--enable-static", "--enable-single"], &src_dir, &out_dir);
+    build_fftw(&["--enable-static"], &src_dir, &out_dir);
 
     println!(
         "cargo:rustc-link-search={}",
         out_dir.join("usr/local/lib").display()
     );
 
-    println!("cargo:rustc-link-lib=fftw3");
-    println!("cargo:rustc-link-lib=fftw3f");
+    println!("cargo:rustc-link-lib=static=fftw3");
+    println!("cargo:rustc-link-lib=static=fftw3f");
 }
 
 fn run(command: &mut Command) {
