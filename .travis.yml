@@ -6,8 +6,6 @@ script:
   - cargo update
   - cargo test --no-default-features --features=$FEATURE
 
-cache: cargo
-
 addons:
   apt:
     packages:
@@ -42,9 +40,10 @@ jobs:
             - libelf-dev
             - libdw-dev
             - libiberty-dev
-    - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
+    - env: FEATURE=intel-mkl
 
 cache:
+  cargo: []
   directory:
     - kcov-master
     - kcov-build
