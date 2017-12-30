@@ -6,7 +6,7 @@ cache: cargo
 
 script:
   - cargo update
-  - cargo test -vv --no-default-features --features=$FEATURE
+  - cargo test --no-default-features --features=$FEATURE
 
 
 addons:
@@ -22,10 +22,14 @@ addons:
       - libdw-dev
       - libiberty-dev
 
+env:
+  global:
+    - RUST_BACKTRACE=1
+
 jobs:
   include:
-    - env: RUST_BACKTRACE=1 FEATURE=source
-    - env: RUST_BACKTRACE=1 FEATURE=system
+    - env: FEATURE=source
+    - env: FEATURE=system
       addons:
         apt:
           packages:
@@ -33,6 +37,7 @@ jobs:
             - cmake
             - gcc
             - gfortran
+            - libfftw3-dev
             - binutils-dev # for kcov (following packages)
             - libcurl4-openssl-dev
             - libelf-dev
