@@ -4,6 +4,7 @@ sudo: false
 
 script:
   - cargo update
+  - cargo build --no-default-features --features=$FEATURE
   - cargo test --no-default-features --features=$FEATURE
 
 addons:
