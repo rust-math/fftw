@@ -12,14 +12,14 @@ script:
 addons:
   apt:
     packages:
-      - cmake
-      - gfortran
       - make
+      - cmake
+      - gcc
+      - gfortran
+      - binutils-dev # for kcov (following packages)
       - libcurl4-openssl-dev
       - libelf-dev
       - libdw-dev
-      - gcc
-      - binutils-dev
       - libiberty-dev
 
 jobs:
@@ -29,9 +29,15 @@ jobs:
       addons:
         apt:
           packages:
+            - make
             - cmake
+            - gcc
             - gfortran
-            - libfftw3-dev
+            - binutils-dev # for kcov (following packages)
+            - libcurl4-openssl-dev
+            - libelf-dev
+            - libdw-dev
+            - libiberty-dev
     - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
 
 after_success: |
