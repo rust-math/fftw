@@ -8,15 +8,23 @@ script:
   - cargo update
   - cargo test -vv --no-default-features --features=$FEATURE
 
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - gfortran
+      - make
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - gcc
+      - binutils-dev
+      - libiberty-dev
+
 jobs:
   include:
     - env: RUST_BACKTRACE=1 FEATURE=source
-      addons:
-        apt:
-          packages:
-            - cmake
-            - gfortran
-            - make
     - env: RUST_BACKTRACE=1 FEATURE=system
       addons:
         apt:
@@ -25,11 +33,6 @@ jobs:
             - gfortran
             - libfftw3-dev
     - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
-      addons:
-        apt:
-          packages:
-            - cmake
-            - gfortran
 
 after_success: |
   wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
