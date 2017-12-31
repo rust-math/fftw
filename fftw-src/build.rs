@@ -70,8 +70,8 @@ fn main() {
     }
     expand(&archive_path, &out_dir);
 
-    build_fftw(&["--enable-static", "--enable-single"], &src_dir, &out_dir);
-    build_fftw(&["--enable-static"], &src_dir, &out_dir);
+    build_fftw(&["--enable-static", "--with-pic", "--enable-single"], &src_dir, &out_dir);
+    build_fftw(&["--enable-static", "--with-pic"], &src_dir, &out_dir);
 
     println!(
         "cargo:rustc-link-search={}",
