@@ -2,14 +2,14 @@
 
 command -v kcov > /dev/null 2>&1
 if [[ -n "$?" ]]; then
-  echo >&2 "Use system kcov"
+  echo >&2 "system kcov found"
   kcov="kcov"
 fi
 
 if [[ -n "${TRAVIS_BUILD_DIR}" ]]; then
   kcov_ci=${TRAVIS_BUILD_DIR}/kcov-build/usr/local/bin/kcov
   if [[ -e ${kcov_ci} ]]; then
-    echo >&2 "Use CI kcov"
+    echo >&2 "CI kcov found"
     kcov=$kcov_ci
   fi
 fi
@@ -19,10 +19,12 @@ if [[ -z "$kcov" ]]; then
   exit 1
 fi
 
-for file in tests/*.rs; do
+root=${TRAVIS_BUILD_DIR:-.}
+
+for file in $root/tests/*.rs; do
   testname="$(basename $file)"
   testname=${testname%.*}
-  outdir="target/cov/$testname"
+  outdir="$root/target/cov/$testname"
   testpath=$(ls -1 target/debug/$testname-* | head -1)
   echo -e >&2 "\e[31m[coverage.sh]\e[m Test = ${testname}, Path = ${testpath}, cov = ${outdir}"
   mkdir -p $outdir
