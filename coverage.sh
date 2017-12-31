@@ -25,7 +25,7 @@ for file in $root/tests/*.rs; do
   testname="$(basename $file)"
   testname=${testname%.*}
   outdir="$root/target/cov/$testname"
-  testpath=$(ls -1 target/debug/$testname-* | head -1)
+  testpath=$(ls -1 $root/target/debug/$testname-* | head -1)
   echo -e >&2 "\e[31m[coverage.sh]\e[m Test = ${testname}, Path = ${testpath}, cov = ${outdir}"
   mkdir -p $outdir
   $kcov --exclude-pattern=/.cargo,/usr/lib --verify $outdir $testpath
