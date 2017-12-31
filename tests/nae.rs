@@ -39,10 +39,42 @@ fn nae_c2c_cos() {
     }
     plan.c2c(&mut a, &mut b).unwrap();
     for (i, v) in b.iter().enumerate() {
-        let ans = if i == 1 || i == n - 1 { 0.5 * n as f64 } else { 0.0 };
+        let ans = if i == 1 || i == n - 1 {
+            0.5 * n as f64
+        } else {
+            0.0
+        };
         let dif = (v - ans).norm();
         if dif > 1e-7 {
-            panic!("Large difference: v={}, ans={}, dif={}, i={}", v,ans, dif, i);
+            panic!(
+                "Large difference: v={}, ans={}, dif={}, i={}",
+                v,
+                ans,
+                dif,
+                i
+            );
+        }
+    }
+}
+
+/// Check successive forward and backward transform equals to the identity
+#[test]
+fn nae_c2r2c_identity() {
+    let n = 32;
+    let mut a = vec![c64::zero(); n / 2 + 1];
+    let mut b = vec![0.0; n];
+    let mut c2r = nae::C2RPlan::new(&[n], &mut a, &mut b, FFTW_MEASURE).unwrap();
+    let mut r2c = nae::R2CPlan::new(&[n], &mut b, &mut a, FFTW_MEASURE).unwrap();
+    for i in 0..(n / 2 + 1) {
+        a[i] = c64::new(1.0, 0.0);
+    }
+    c2r.c2r(&mut a, &mut b).unwrap();
+    r2c.r2c(&mut b, &mut a).unwrap();
+    for v in a.iter() {
+        let ans = c64::new(n as f64, 0.0);
+        let dif = (v - ans).norm();
+        if dif > 1e-7 {
+            panic!("Large difference: v={}, dif={}", v, dif);
         }
     }
 }
