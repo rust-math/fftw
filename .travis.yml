@@ -2,31 +2,60 @@ language: rust
 dist: trusty
 sudo: false
 
-cache: cargo
-
 script:
   - cargo update
-  - cargo test -vv --no-default-features --features=$FEATURE
+  - cargo build --no-default-features --features=$FEATURE
+  - cargo test --no-default-features --features=$FEATURE
+  - bash ${TRAVIS_BUILD_DIR}/coverage.sh
+
+addons:
+  apt:
+    packages:
+      - make
+      - cmake
+      - gcc
+      - gfortran
+      - binutils-dev # for kcov (following packages)
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - libiberty-dev
+
+env:
+  global:
+    - RUST_BACKTRACE=1
 
 jobs:
   include:
-    - env: RUST_BACKTRACE=1 FEATURE=source
+    - env: FEATURE=source
+    - env: FEATURE=system
       addons:
         apt:
           packages:
-            - cmake
-            - gfortran
             - make
-    - env: RUST_BACKTRACE=1 FEATURE=system
-      addons:
-        apt:
-          packages:
             - cmake
+            - gcc
             - gfortran
             - libfftw3-dev
-    - env: RUST_BACKTRACE=1 FEATURE=intel-mkl
-      addons:
-        apt:
-          packages:
-            - cmake
-            - gfortran
+            - binutils-dev # for kcov (following packages)
+            - libcurl4-openssl-dev
+            - libelf-dev
+            - libdw-dev
+            - libiberty-dev
+    - env: FEATURE=intel-mkl
+
+cache:
+  cargo: []
+  directory:
+    - kcov-master
+    - kcov-build
+
+before_script:
+  - wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz
+  - tar xzf master.tar.gz
+  - cd kcov-master
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - make install DESTDIR=${TRAVIS_BUILD_DIR}/kcov-build
