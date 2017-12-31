@@ -6,6 +6,7 @@ script:
   - cargo update
   - cargo build --no-default-features --features=$FEATURE
   - cargo test --no-default-features --features=$FEATURE
+  - ./coverage.sh
 
 addons:
   apt:
@@ -58,5 +59,3 @@ before_script:
   - cmake ..
   - make
   - make install DESTDIR=${TRAVIS_BUILD_DIR}/kcov-build
-
-after_success: ./coverage.sh
