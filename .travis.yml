@@ -6,7 +6,7 @@ script:
   - cargo update
   - cargo build --no-default-features --features=$FEATURE
   - cargo test --no-default-features --features=$FEATURE
-  - ./coverage.sh
+  - bash ${TRAVIS_BUILD_DIR}/coverage.sh
 
 addons:
   apt:
