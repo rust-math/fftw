@@ -2,58 +2,9 @@ use super::*;
 use error::*;
 use ffi::*;
 
-#[derive(Debug, Clone)]
-struct Alignment {
-    in_: i32,
-    out: i32,
-}
-
-impl Alignment {
-    fn new<A: FFTW, B: FFTW>(in_: &[A], out: &[B]) -> Self {
-        Self {
-            in_: A::alignment_of(in_),
-            out: B::alignment_of(out),
-        }
-    }
-    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) -> Result<()> {
-        if self.in_ != A::alignment_of(in_) || self.out != B::alignment_of(out) {
-            Err(AlignmentMismatchError::new().into())
-        } else {
-            Ok(())
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-struct Shape(Vec<i32>);
-
-impl Shape {
-    fn new(s: &[usize]) -> Self {
-        Shape(s.iter().map(|&n| n as i32).collect())
-    }
-    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) -> Result<()> {
-        let n = self.0.iter().product::<i32>() as usize;
-        if in_.len() != n || out.len() != n {
-            Err(SizeMismatchError::new(n, in_.len(), out.len()).into())
-        } else {
-            Ok(())
-        }
-    }
-}
-
-impl ::std::ops::Deref for Shape {
-    type Target = [i32];
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
 #[derive(Debug)]
 pub struct C2CPlan<C: FFTW> {
     plan: C::Plan,
-    shape: Shape,
-    sign: Sign,
-    flag: FLAG,
     alignment: Alignment,
 }
 
@@ -65,18 +16,13 @@ impl<C: FFTW> Drop for C2CPlan<C> {
 
 impl<C: FFTW<Complex = C>> C2CPlan<C> {
     pub fn new(shape: &[usize], in_: &mut [C], out: &mut [C], sign: Sign, flag: FLAG) -> Result<Self> {
-        let shape = Shape::new(shape);
         Ok(Self {
-            plan: C::plan_c2c(&shape, in_, out, sign, flag)?,
-            shape,
-            sign,
-            flag,
+            plan: C::plan_c2c(&shape.to_cint(), in_, out, sign, flag)?,
             alignment: Alignment::new(in_, out),
         })
     }
     pub fn c2c(&mut self, in_: &mut [C], out: &mut [C]) -> Result<()> {
         self.alignment.check(in_, out)?;
-        self.shape.check(in_, out)?;
         C::exec_c2c(self.plan, in_, out);
         Ok(())
     }
@@ -89,8 +35,6 @@ where
     R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
 {
     plan: C::Plan,
-    shape: Shape,
-    flag: FLAG,
     alignment: Alignment,
 }
 
@@ -110,17 +54,13 @@ where
     R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
 {
     pub fn new(shape: &[usize], in_: &mut [C], out: &mut [R], flag: FLAG) -> Result<Self> {
-        let shape = Shape::new(shape);
         Ok(Self {
-            plan: C::plan_c2r(&shape, in_, out, flag)?,
-            shape,
-            flag,
+            plan: C::plan_c2r(&shape.to_cint(), in_, out, flag)?,
             alignment: Alignment::new(in_, out),
         })
     }
     pub fn c2r(&mut self, in_: &mut [C], out: &mut [R]) -> Result<()> {
         self.alignment.check(in_, out)?;
-        self.shape.check(in_, out)?;
         C::exec_c2r(self.plan, in_, out);
         Ok(())
     }
@@ -133,8 +73,6 @@ where
     R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
 {
     plan: C::Plan,
-    shape: Shape,
-    flag: FLAG,
     alignment: Alignment,
 }
 
@@ -154,17 +92,13 @@ where
     R: FFTW<Real = R, Complex = C, Plan = C::Plan>,
 {
     pub fn new(shape: &[usize], in_: &mut [R], out: &mut [C], flag: FLAG) -> Result<Self> {
-        let shape = Shape::new(shape);
         Ok(Self {
-            plan: C::plan_r2c(&shape, in_, out, flag)?,
-            shape,
-            flag,
+            plan: C::plan_r2c(&shape.to_cint(), in_, out, flag)?,
             alignment: Alignment::new(in_, out),
         })
     }
     pub fn r2c(&mut self, in_: &mut [R], out: &mut [C]) -> Result<()> {
         self.alignment.check(in_, out)?;
-        self.shape.check(in_, out)?;
         C::exec_r2c(self.plan, in_, out);
         Ok(())
     }
@@ -175,9 +109,6 @@ pub type R2RKind = ffi::fftw_r2r_kind;
 #[derive(Debug)]
 pub struct R2RPlan<R: FFTW> {
     plan: R::Plan,
-    shape: Shape,
-    kind: Vec<R2RKind>,
-    flag: FLAG,
     alignment: Alignment,
 }
 
@@ -189,18 +120,13 @@ impl<R: FFTW> Drop for R2RPlan<R> {
 
 impl<R: FFTW<Real = R>> R2RPlan<R> {
     pub fn new(shape: &[usize], in_: &mut [R], out: &mut [R], kinds: &[R2RKind], flag: FLAG) -> Result<Self> {
-        let shape = Shape::new(shape);
         Ok(Self {
-            plan: R::plan_r2r(&shape, in_, out, kinds, flag)?,
-            shape,
-            kind: kinds.to_vec(),
-            flag,
+            plan: R::plan_r2r(&shape.to_cint(), in_, out, kinds, flag)?,
             alignment: Alignment::new(in_, out),
         })
     }
     pub fn r2c(&mut self, in_: &mut [R], out: &mut [R]) -> Result<()> {
         self.alignment.check(in_, out)?;
-        self.shape.check(in_, out)?;
         R::exec_r2r(self.plan, in_, out);
         Ok(())
     }
@@ -342,3 +268,51 @@ impl FFTW for $scalar {
 
 impl_fftwf!(f32);
 impl_fftwf!(c32);
+
+#[derive(Debug)]
+pub struct NAEInputMismatchError {
+    origin: Alignment,
+    args: Alignment,
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+struct Alignment {
+    in_: i32,
+    out: i32,
+    n_in_: usize,
+    n_out: usize,
+}
+
+impl Alignment {
+    fn new<A: FFTW, B: FFTW>(in_: &[A], out: &[B]) -> Self {
+        Self {
+            in_: A::alignment_of(in_),
+            out: B::alignment_of(out),
+            n_in_: in_.len(),
+            n_out: out.len(),
+        }
+    }
+    fn check<A: FFTW, B: FFTW>(&self, in_: &[A], out: &[B]) -> Result<()> {
+        let args = Self::new(in_, out);
+        if *self != args {
+            Err(
+                NAEInputMismatchError {
+                    origin: *self,
+                    args,
+                }.into(),
+            )
+        } else {
+            Ok(())
+        }
+    }
+}
+
+trait ToCInt {
+    fn to_cint(&self) -> Vec<i32>;
+}
+
+impl ToCInt for [usize] {
+    fn to_cint(&self) -> Vec<i32> {
+        self.iter().map(|&x| x as i32).collect()
+    }
+}
