@@ -1,4 +1,4 @@
-use super::FLAG;
+use super::Flag;
 use super::array::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
@@ -14,7 +14,7 @@ use ndarray_linalg::Scalar;
 #[derive(Debug, Clone, Copy, new)]
 pub struct R2C1D {
     n: usize,
-    flag: FLAG,
+    flag: Flag,
 }
 
 /// Utility function to generage 1-dimensional R2C setting

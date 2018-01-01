@@ -1,4 +1,4 @@
-use super::FLAG;
+use super::*;
 use super::array::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
@@ -6,7 +6,6 @@ use super::plan::*;
 use super::traits::*;
 
 use ffi;
-pub use ffi::Sign;
 
 use ndarray::*;
 use ndarray_linalg::Scalar;
@@ -16,14 +15,14 @@ use ndarray_linalg::Scalar;
 pub struct C2C1D {
     n: usize,
     sign: Sign,
-    flag: FLAG,
+    flag: Flag,
 }
 
 /// Utility function to generage 1-dimensional C2C setting
 pub fn c2c_1d(n: usize) -> C2C1D {
     C2C1D {
         n,
-        sign: Sign::FFTW_FORWARD,
+        sign: Sign::Forward,
         flag: ffi::FFTW_MEASURE,
     }
 }
