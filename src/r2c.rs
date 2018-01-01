@@ -1,11 +1,9 @@
-use super::FLAG;
+use super::Flag;
 use super::array::*;
 use super::error::*;
 use super::pair::{Pair, ToPair};
 use super::plan::*;
 use super::traits::*;
-
-use ffi;
 
 use ndarray::*;
 use ndarray_linalg::Scalar;
@@ -14,14 +12,14 @@ use ndarray_linalg::Scalar;
 #[derive(Debug, Clone, Copy, new)]
 pub struct R2C1D {
     n: usize,
-    flag: FLAG,
+    flag: Flag,
 }
 
 /// Utility function to generage 1-dimensional R2C setting
 pub fn r2c_1d(n: usize) -> R2C1D {
     R2C1D {
         n,
-        flag: ffi::FFTW_MEASURE,
+        flag: Flag::Measure,
     }
 }
 
