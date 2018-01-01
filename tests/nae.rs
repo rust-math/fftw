@@ -11,7 +11,7 @@ fn nae_c2c2c_identity() {
     let n = 32;
     let mut a = vec![c64::zero(); n];
     let mut b = vec![c64::zero(); n];
-    let mut plan = nae::C2CPlan::new(&[n], &mut a, &mut b, Sign::FFTW_FORWARD, FFTW_MEASURE).unwrap();
+    let mut plan = nae::C2CPlan::new(&[n], &mut a, &mut b, Sign::Forward, Flag::Measure).unwrap();
     for i in 0..n {
         a[i] = c64::new(1.0, 0.0);
     }
@@ -32,7 +32,7 @@ fn nae_c2c_cos() {
     let n = 32;
     let mut a = vec![c64::zero(); n];
     let mut b = vec![c64::zero(); n];
-    let mut plan = nae::C2CPlan::new(&[n], &mut a, &mut b, Sign::FFTW_FORWARD, FFTW_MEASURE).unwrap();
+    let mut plan = nae::C2CPlan::new(&[n], &mut a, &mut b, Sign::Forward, Flag::Measure).unwrap();
     let pi = ::std::f64::consts::PI;
     for i in 0..n {
         a[i] = c64::new((2.0 * pi * i as f64 / n as f64).cos(), 0.0);
@@ -63,8 +63,8 @@ fn nae_c2r2c_identity() {
     let n = 32;
     let mut a = vec![c64::zero(); n / 2 + 1];
     let mut b = vec![0.0; n];
-    let mut c2r = nae::C2RPlan::new(&[n], &mut a, &mut b, FFTW_MEASURE).unwrap();
-    let mut r2c = nae::R2CPlan::new(&[n], &mut b, &mut a, FFTW_MEASURE).unwrap();
+    let mut c2r = nae::C2RPlan::new(&[n], &mut a, &mut b, Flag::Measure).unwrap();
+    let mut r2c = nae::R2CPlan::new(&[n], &mut b, &mut a, Flag::Measure).unwrap();
     for i in 0..(n / 2 + 1) {
         a[i] = c64::new(1.0, 0.0);
     }
