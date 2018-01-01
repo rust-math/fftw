@@ -1,11 +1,10 @@
-use super::FLAG;
+use super::Flag;
 use super::array::*;
 use super::error::*;
 use super::pair::*;
 use super::plan::*;
 use super::traits::*;
 
-use ffi;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
@@ -47,14 +46,14 @@ fn backward(kind: R2R_KIND) -> R2R_KIND {
 pub struct R2R1D {
     n: usize,
     kind: R2R_KIND,
-    flag: FLAG,
+    flag: Flag,
 }
 
 pub fn r2hc_1d(n: usize) -> R2R1D {
     R2R1D {
         n: n,
         kind: R2R_KIND::FFTW_R2HC,
-        flag: ffi::FFTW_MEASURE,
+        flag: Flag::Measure,
     }
 }
 
