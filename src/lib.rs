@@ -21,12 +21,12 @@ pub mod r2r;
 pub mod r2c;
 pub mod c2c;
 pub mod array;
-pub mod plan;
 pub mod error;
+pub mod plan;
 pub mod nae;
 pub mod traits;
 
-pub type FLAG = u32;
+pub type Flag = u32;
 
 // documented flags
 pub const FFTW_MEASURE: u32 = 0;
@@ -52,3 +52,21 @@ use std::sync::Mutex;
 lazy_static! {
     pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
 }
+
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum Sign {
+    Forward = -1,
+    Backward = 1,
+}
+
+impl ::std::ops::Neg for Sign {
+    type Output = Sign;
+    fn neg(self) -> Self::Output {
+        match self {
+            Sign::Forward => Sign::Backward,
+            Sign::Backward => Sign::Forward,
+        }
+    }
+}
+
