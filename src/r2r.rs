@@ -5,7 +5,6 @@ use super::pair::*;
 use super::plan::*;
 use super::traits::*;
 
-use ffi;
 pub use ffi::fftw_r2r_kind as R2R_KIND;
 
 use ndarray::*;
@@ -54,7 +53,7 @@ pub fn r2hc_1d(n: usize) -> R2R1D {
     R2R1D {
         n: n,
         kind: R2R_KIND::FFTW_R2HC,
-        flag: ffi::FFTW_MEASURE,
+        flag: Flag::Measure,
     }
 }
 

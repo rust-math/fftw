@@ -5,8 +5,6 @@ use super::pair::{Pair, ToPair};
 use super::plan::*;
 use super::traits::*;
 
-use ffi;
-
 use ndarray::*;
 use ndarray_linalg::Scalar;
 
@@ -21,7 +19,7 @@ pub struct R2C1D {
 pub fn r2c_1d(n: usize) -> R2C1D {
     R2C1D {
         n,
-        flag: ffi::FFTW_MEASURE,
+        flag: Flag::Measure,
     }
 }
 
