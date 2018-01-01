@@ -12,8 +12,19 @@ extern crate num_traits;
 // Will be removed if the following PR to num-complex is merged
 // https://github.com/rust-num/num/pull/338
 extern crate ndarray_linalg;
-
 extern crate fftw_sys as ffi;
+
+use std::sync::Mutex;
+lazy_static! {
+    pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
+}
+
+macro_rules! excall {
+    ($call:expr) => {
+        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
+        unsafe { $call }
+    }
+}
 
 pub mod pair;
 pub mod r2r;
@@ -33,11 +44,6 @@ pub use pair::*;
 pub use r2c::*;
 pub use r2r::*;
 pub use traits::*;
-
-use std::sync::Mutex;
-lazy_static! {
-    pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
-}
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

@@ -208,13 +208,6 @@ pub trait FFTW {
     fn alignment_of<T>(&[T]) -> i32;
 }
 
-macro_rules! excall {
-    ($call:expr) => {
-        let _lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        unsafe { $call }
-    }
-}
-
 macro_rules! impl_fftw { ($scalar:ty) => {
 impl FFTW for $scalar {
     type Real = f64;
