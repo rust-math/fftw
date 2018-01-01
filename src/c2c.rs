@@ -5,8 +5,6 @@ use super::pair::{Pair, ToPair};
 use super::plan::*;
 use super::traits::*;
 
-use ffi;
-
 use ndarray::*;
 use ndarray_linalg::Scalar;
 
@@ -23,7 +21,7 @@ pub fn c2c_1d(n: usize) -> C2C1D {
     C2C1D {
         n,
         sign: Sign::Forward,
-        flag: ffi::FFTW_MEASURE,
+        flag: Flag::Measure,
     }
 }
 

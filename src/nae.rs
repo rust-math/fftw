@@ -193,16 +193,16 @@ impl FFTW for $scalar {
         excall!{ fftw_print_plan(p) };
     }
     fn plan_c2c(shape: &[i32], in_: &mut [Self::Complex], out: &mut [Self::Complex], sign: Sign, flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftw_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), sign as i32, flag).check_null() }
+        excall!{ fftw_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), sign as i32, flag.into()).check_null() }
     }
     fn plan_c2r(shape: &[i32], in_: &mut [Self::Complex], out: &mut [Self::Real], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftw_plan_dft_c2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag).check_null() }
+        excall!{ fftw_plan_dft_c2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag.into()).check_null() }
     }
     fn plan_r2c(shape: &[i32], in_: &mut [Self::Real], out: &mut [Self::Complex], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftw_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag).check_null() }
+        excall!{ fftw_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag.into()).check_null() }
     }
     fn plan_r2r(shape: &[i32], in_: &mut [Self::Real], out: &mut [Self::Real], kinds: &[R2RKind], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftw_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), kinds.as_ptr(), flag).check_null() }
+        excall!{ fftw_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), kinds.as_ptr(), flag.into()).check_null() }
     }
     fn exec_c2c(p: Self::Plan, in_: &mut [Self::Complex], out: &mut [Self::Complex]) {
         unsafe { fftw_execute_dft(p, in_.as_mut_ptr(), out.as_mut_ptr()) };
@@ -237,16 +237,16 @@ impl FFTW for $scalar {
         excall!{ fftwf_print_plan(p) };
     }
     fn plan_c2c(shape: &[i32], in_: &mut [Self::Complex], out: &mut [Self::Complex], sign: Sign, flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftwf_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), sign as i32, flag).check_null() }
+        excall!{ fftwf_plan_dft(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), sign as i32, flag.into()).check_null() }
     }
     fn plan_c2r(shape: &[i32], in_: &mut [Self::Complex], out: &mut [Self::Real], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftwf_plan_dft_c2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag).check_null() }
+        excall!{ fftwf_plan_dft_c2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag.into()).check_null() }
     }
     fn plan_r2c(shape: &[i32], in_: &mut [Self::Real], out: &mut [Self::Complex], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftwf_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag).check_null() }
+        excall!{ fftwf_plan_dft_r2c(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), flag.into()).check_null() }
     }
     fn plan_r2r(shape: &[i32], in_: &mut [Self::Real], out: &mut [Self::Real], kinds: &[R2RKind], flag: Flag) -> Result<Self::Plan> {
-        excall!{ fftwf_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), kinds.as_ptr(), flag).check_null() }
+        excall!{ fftwf_plan_r2r(shape.len() as i32, shape.as_ptr(), in_.as_mut_ptr(), out.as_mut_ptr(), kinds.as_ptr(), flag.into()).check_null() }
     }
     fn exec_c2c(p: Self::Plan, in_: &mut [Self::Complex], out: &mut [Self::Complex]) {
         unsafe { fftwf_execute_dft(p, in_.as_mut_ptr(), out.as_mut_ptr()) };
