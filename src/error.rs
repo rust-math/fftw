@@ -1,5 +1,4 @@
 use ndarray::ShapeError;
-pub use ndarray_linalg::error::{MemoryContError, StrideError};
 
 pub type Result<T> = ::std::result::Result<T, Error>;
 
@@ -9,8 +8,6 @@ use super::nae::NAEInputMismatchError;
 pub enum Error {
     InvalidPlanError(InvalidPlanError),
     ShapeError(ShapeError),
-    StrideError(StrideError),
-    MemoryContError(MemoryContError),
     NAEInputMismatchError(NAEInputMismatchError),
 }
 
