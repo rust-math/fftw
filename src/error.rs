@@ -2,7 +2,7 @@ use ndarray::ShapeError;
 
 pub type Result<T> = ::std::result::Result<T, Error>;
 
-use super::nae::NAEInputMismatchError;
+use super::plan::NAEInputMismatchError;
 
 #[derive(Debug, IntoEnum)]
 pub enum Error {

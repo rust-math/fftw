@@ -1,4 +1,4 @@
-use super::*;
+use types::*;
 use error::*;
 use ffi::*;
 
@@ -109,8 +109,6 @@ where
         Ok(())
     }
 }
-
-pub type R2RKind = ffi::fftw_r2r_kind;
 
 #[derive(Debug)]
 pub struct R2RPlan<R: FFTW> {
