@@ -1,4 +1,4 @@
-use super::{c32, c64, FFTW_MUTEX};
+use types::*;
 use error::*;
 use ffi;
 
@@ -147,9 +147,7 @@ impl<T> DerefMut for AlignedVec<T> {
 
 impl<T> Drop for AlignedVec<T> {
     fn drop(&mut self) {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        unsafe { ffi::fftw_free(self.data as *mut c_void) };
-        drop(lock);
+        excall! { ffi::fftw_free(self.data as *mut c_void) };
     }
 }
 
@@ -159,9 +157,7 @@ where
 {
     /// Create array with `fftw_malloc` (`fftw_free` is automatically called when the arrya is `Drop`-ed)
     pub fn new(n: usize) -> Self {
-        let lock = FFTW_MUTEX.lock().expect("Cannot get lock");
-        let ptr = unsafe { T::alloc(n) };
-        drop(lock);
+        let ptr = excall! { T::alloc(n) };
         let mut vec = AlignedVec { n: n, data: ptr };
         for v in vec.iter_mut() {
             *v = T::zero();
