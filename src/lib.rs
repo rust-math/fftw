@@ -6,12 +6,6 @@ extern crate lazy_static;
 extern crate procedurals;
 
 extern crate ndarray;
-extern crate num_complex;
-extern crate num_traits;
-// XXX For ndarray_linalg::Scalar
-// Will be removed if the following PR to num-complex is merged
-// https://github.com/rust-num/num/pull/338
-extern crate ndarray_linalg;
 extern crate fftw_sys as ffi;
 
 use std::sync::Mutex;
@@ -26,24 +20,12 @@ macro_rules! excall {
     }
 }
 
-pub mod pair;
-pub mod r2r;
-pub mod r2c;
-pub mod c2c;
 pub mod array;
 pub mod error;
-pub mod plan;
 pub mod nae;
-pub mod traits;
 
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
-
-pub use c2c::*;
-pub use pair::*;
-pub use r2c::*;
-pub use r2r::*;
-pub use traits::*;
 
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]

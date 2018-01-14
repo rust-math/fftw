@@ -15,12 +15,11 @@ source = ["fftw-sys/source"]
 intel-mkl = ["fftw-sys/intel-mkl"]
 
 [dependencies]
-num-traits = "0.1.37"
-num-complex = "0.1.37"
-lazy_static = "0.2.2"
-derive-new = "0.4"
-ndarray = "0.10"
-ndarray-linalg = "0.7"
+num-traits = "0.1"
+num-complex = "0.1"
+lazy_static = "0.2"
+derive-new = "0.5"
+ndarray = "0.11"
 procedurals = "0.2"
 
 [dependencies.fftw-sys]
