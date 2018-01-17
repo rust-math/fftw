@@ -29,5 +29,4 @@ macro_rules! excall {
 pub mod array;
 pub mod error;
 pub mod types;
-pub mod fftw;
 pub mod plan;

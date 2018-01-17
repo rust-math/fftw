@@ -38,11 +38,7 @@ pub trait C2CPlan: Sized {
     ) -> Result<Self>;
 
     /// Execute complex-to-complex transform
-    fn c2c(
-        &mut self,
-        in_: &mut [Self::Complex],
-        out: &mut [Self::Complex]
-    ) -> Result<()>;
+    fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()>;
 }
 
 pub trait R2CPlan: Sized {
@@ -58,11 +54,7 @@ pub trait R2CPlan: Sized {
     ) -> Result<Self>;
 
     /// Execute real-to-complex transform
-    fn r2c(
-        &mut self,
-        in_: &mut [Self::Real],
-        out: &mut [Self::Complex]
-    ) -> Result<()>;
+    fn r2c(&mut self, in_: &mut [Self::Real], out: &mut [Self::Complex]) -> Result<()>;
 }
 
 pub trait C2RPlan: Sized {
@@ -78,11 +70,7 @@ pub trait C2RPlan: Sized {
     ) -> Result<Self>;
 
     /// Execute complex-to-real transform
-    fn c2r(
-        &mut self,
-        in_: &mut [Self::Complex],
-        out: &mut [Self::Real]
-    ) -> Result<()>;
+    fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()>;
 }
 
 macro_rules! impl_c2c { ($C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
