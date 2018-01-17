@@ -1,3 +1,7 @@
+//! Rust binding of [FFTW]
+//!
+//! [FFTW]: http://www.fftw.org/
+
 #[macro_use]
 extern crate derive_new;
 #[macro_use]
@@ -14,6 +18,10 @@ extern crate num_traits;
 use std::sync::Mutex;
 
 lazy_static! {
+    /// Mutex for FFTW call.
+    ///
+    /// This mutex is necessary because most of calls in FFTW are not thread-safe.
+    /// See the [original document](http://www.fftw.org/fftw3_doc/Thread-safety.html) for detail
     pub static ref FFTW_MUTEX: Mutex<()> = Mutex::new(());
 }
 
