@@ -16,14 +16,22 @@ impl<A, B, P: PlanSpec> Drop for Plan<A, B, P> {
     }
 }
 
-pub trait C2CPlan {
+pub trait C2CPlan: Sized {
     type Complex;
-    fn new(shape: &[usize], in_: &mut [Self::Complex], out: &mut [Self::Complex], sign: Sign, flag: Flag) -> Result<Self>;
-    fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]);
+    fn new(
+        shape: &[usize],
+        in_: &mut [Self::Complex],
+        out: &mut [Self::Complex],
+        sign: Sign,
+        flag: Flag,
+    ) -> Result<Self>;
+    // fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]);
 }
 
 impl C2CPlan for Plan<c64, c64, Plan64> {
-    pub fn new(
+    type Complex = c64;
+
+    fn new(
         shape: &[usize],
         in_: &mut [c64],
         out: &mut [c64],
