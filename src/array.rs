@@ -1,4 +1,4 @@
-use super::{FFTW_MUTEX, c32, c64};
+use super::{c32, c64, FFTW_MUTEX};
 use error::*;
 use ffi;
 

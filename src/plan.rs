@@ -1,4 +1,4 @@
-use super::{FFTW_MUTEX, Flag, R2R_KIND, Sign, c32, c64};
+use super::{Flag, R2R_KIND, Sign, c32, c64, FFTW_MUTEX};
 use super::array::AlignedVec;
 use super::error::*;
 use ffi;
@@ -94,7 +94,13 @@ impl Drop for RawPlan {
 }
 
 pub trait R2R: Sized {
-    unsafe fn r2r_1d(n: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, R2R_KIND, Flag) -> RawPlan;
+    unsafe fn r2r_1d(
+        n: usize,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
+        R2R_KIND,
+        Flag,
+    ) -> RawPlan;
     unsafe fn r2r_2d(
         n0: usize,
         n1: usize,
@@ -117,7 +123,13 @@ pub trait R2R: Sized {
     ) -> RawPlan;
 }
 pub trait C2C: Sized {
-    unsafe fn c2c_1d(n: usize, in_: &mut AlignedVec<Self>, out: &mut AlignedVec<Self>, Sign, Flag) -> RawPlan;
+    unsafe fn c2c_1d(
+        n: usize,
+        in_: &mut AlignedVec<Self>,
+        out: &mut AlignedVec<Self>,
+        Sign,
+        Flag,
+    ) -> RawPlan;
     unsafe fn c2c_2d(
         n0: usize,
         n1: usize,
@@ -140,8 +152,18 @@ pub trait C2C: Sized {
 pub trait R2C {
     type Real: Sized;
     type Complex: Sized;
-    unsafe fn r2c_1d(n: usize, in_: &mut AlignedVec<Self::Real>, out: &mut AlignedVec<Self::Complex>, Flag) -> RawPlan;
-    unsafe fn c2r_1d(n: usize, in_: &mut AlignedVec<Self::Complex>, out: &mut AlignedVec<Self::Real>, Flag) -> RawPlan;
+    unsafe fn r2c_1d(
+        n: usize,
+        in_: &mut AlignedVec<Self::Real>,
+        out: &mut AlignedVec<Self::Complex>,
+        Flag,
+    ) -> RawPlan;
+    unsafe fn c2r_1d(
+        n: usize,
+        in_: &mut AlignedVec<Self::Complex>,
+        out: &mut AlignedVec<Self::Real>,
+        Flag,
+    ) -> RawPlan;
     unsafe fn r2c_2d(
         n0: usize,
         n1: usize,

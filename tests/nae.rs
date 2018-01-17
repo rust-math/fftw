@@ -1,4 +1,3 @@
-
 extern crate fftw;
 extern crate num_traits;
 
@@ -48,10 +47,7 @@ fn nae_c2c_cos() {
         if dif > 1e-7 {
             panic!(
                 "Large difference: v={}, ans={}, dif={}, i={}",
-                v,
-                ans,
-                dif,
-                i
+                v, ans, dif, i
             );
         }
     }

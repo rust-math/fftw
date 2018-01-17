@@ -1,14 +1,13 @@
-
-#[macro_use]
-extern crate lazy_static;
 #[macro_use]
 extern crate derive_new;
 #[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate procedurals;
 
-extern crate num_traits;
-extern crate num_complex;
 extern crate ndarray;
+extern crate num_complex;
+extern crate num_traits;
 // XXX For ndarray_linalg::Scalar
 // Will be removed if the following PR to num-complex is merged
 // https://github.com/rust-num/num/pull/338

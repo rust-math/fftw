@@ -32,14 +32,20 @@ where
     B: Scalar<Real = A::Real> + AlignedAllocable,
 {
     /// Execute `Pair::forward` with `ndarray::ArrayView`
-    pub fn forward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, A, D>) -> ArrayViewMut<'a, B, D> {
+    pub fn forward_array<'a, 'b>(
+        &'a mut self,
+        input: ArrayView<'b, A, D>,
+    ) -> ArrayViewMut<'a, B, D> {
         self.a.as_view_mut().assign(&input);
         self.exec_forward();
         self.b.as_view_mut()
     }
 
     /// Execute `Pair::backward` with `ndarray::ArrayView`
-    pub fn backward_array<'a, 'b>(&'a mut self, input: ArrayView<'b, B, D>) -> ArrayViewMut<'a, A, D> {
+    pub fn backward_array<'a, 'b>(
+        &'a mut self,
+        input: ArrayView<'b, B, D>,
+    ) -> ArrayViewMut<'a, A, D> {
         self.b.as_view_mut().assign(&input);
         self.exec_backward();
         self.a.as_view_mut()
