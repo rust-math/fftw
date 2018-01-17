@@ -4,6 +4,15 @@ use types::*;
 
 use std::marker::PhantomData;
 
+pub type Plan64 = fftw_plan;
+pub type Plan32 = fftwf_plan;
+
+pub trait PlanSpec: Clone + Copy {
+    fn validate(self) -> Result<Self>;
+    fn destroy(self);
+    fn print(self);
+}
+
 pub struct Plan<A, B, Plan: PlanSpec> {
     plan: Plan,
     alignment: Alignment,
@@ -18,6 +27,8 @@ impl<A, B, P: PlanSpec> Drop for Plan<A, B, P> {
 
 pub trait C2CPlan: Sized {
     type Complex;
+
+    /// Create new plan
     fn new(
         shape: &[usize],
         in_: &mut [Self::Complex],
@@ -25,20 +36,26 @@ pub trait C2CPlan: Sized {
         sign: Sign,
         flag: Flag,
     ) -> Result<Self>;
-    // fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]);
+
+    /// Execute complex-to-complex transform
+    fn c2c(
+        &mut self,
+        in_: &mut [Self::Complex],
+        out: &mut [Self::Complex]
+    ) -> Result<()>;
 }
 
-impl C2CPlan for Plan<c64, c64, Plan64> {
-    type Complex = c64;
-
+macro_rules! impl_c2c { ($C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
+impl C2CPlan for Plan<$C, $C, $Plan> {
+    type Complex = $C;
     fn new(
         shape: &[usize],
-        in_: &mut [c64],
-        out: &mut [c64],
+        in_: &mut [Self::Complex],
+        out: &mut [Self::Complex],
         sign: Sign,
         flag: Flag,
     ) -> Result<Self> {
-        let plan = excall!{ fftw_plan_dft(
+        let plan = excall!{ $plan(
             shape.len() as i32,
             shape.to_cint().as_mut_ptr() as *mut _,
             in_.as_mut_ptr(),
@@ -51,18 +68,20 @@ impl C2CPlan for Plan<c64, c64, Plan64> {
             phantom: PhantomData,
         })
     }
+    fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()> {
+        self.alignment.check(in_, out)?;
+        unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
+        Ok(())
+    }
 }
+}} // impl_c2c!
 
-pub type Plan64 = fftw_plan;
-pub type Plan32 = fftwf_plan;
+impl_c2c!(c64, Plan64; fftw_plan_dft, fftw_execute_dft);
+impl_c2c!(c32, Plan32; fftwf_plan_dft, fftwf_execute_dft);
 
-pub trait PlanSpec: Clone + Copy {
-    fn validate(self) -> Result<Self>;
-    fn destroy(self);
-    fn print(self);
-}
-
-impl PlanSpec for Plan64 {
+macro_rules! impl_plan_spec {
+    ($Plan:ty; $destroy_plan:ident, $print_plan:ident) => {
+impl PlanSpec for $Plan {
     fn validate(self) -> Result<Self> {
         if self.is_null() {
             Err(InvalidPlanError::new().into())
@@ -71,28 +90,16 @@ impl PlanSpec for Plan64 {
         }
     }
     fn destroy(self) {
-        excall!{ fftw_destroy_plan(self) }
+        excall!{ $destroy_plan(self) }
     }
     fn print(self) {
-        excall!{ fftw_print_plan(self) }
+        excall!{ $print_plan(self) }
     }
 }
+}} // impl_plan_spec!
 
-impl PlanSpec for Plan32 {
-    fn validate(self) -> Result<Self> {
-        if self.is_null() {
-            Err(InvalidPlanError::new().into())
-        } else {
-            Ok(self)
-        }
-    }
-    fn destroy(self) {
-        excall!{ fftwf_destroy_plan(self) }
-    }
-    fn print(self) {
-        excall!{ fftwf_print_plan(self) }
-    }
-}
+impl_plan_spec!(Plan64; fftw_destroy_plan, fftw_print_plan);
+impl_plan_spec!(Plan32; fftwf_destroy_plan, fftwf_print_plan);
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 struct Alignment {
