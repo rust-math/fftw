@@ -1,6 +1,6 @@
-use types::*;
 use error::*;
 use ffi::*;
+use types::*;
 
 #[derive(Debug)]
 pub struct C2CPlan<C: FFTW> {

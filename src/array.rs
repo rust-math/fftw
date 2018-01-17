@@ -1,6 +1,6 @@
-use types::*;
 use error::*;
 use ffi;
+use types::*;
 
 use ndarray::*;
 use num_traits::Zero;
