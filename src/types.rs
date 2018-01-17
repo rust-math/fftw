@@ -1,10 +1,14 @@
+//! Rusty types for manipulating FFTW
+
 use ffi;
 
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
 
+/// Expose the kinds of real-to-real transformations
 pub type R2RKind = ffi::fftw_r2r_kind;
 
+/// Direction of Complex-to-Complex transformation
 #[repr(i32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum Sign {
@@ -22,6 +26,12 @@ impl ::std::ops::Neg for Sign {
     }
 }
 
+/// Flags for creating plans and wisdom
+///
+/// This will be the most important part for fast FFT.
+/// You should see the [Words of Wisdom] in the original document
+///
+/// [Words of Wisdom]: http://www.fftw.org/fftw3_doc/Words-of-Wisdom_002dSaving-Plans.html
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Flag {
     Measure,

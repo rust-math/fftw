@@ -1,3 +1,5 @@
+//! Array with SIMD alignment
+
 use error::*;
 use ffi;
 use types::*;
@@ -8,6 +10,9 @@ use std::ops::{Deref, DerefMut, Index, IndexMut};
 use std::os::raw::c_void;
 use std::slice::{from_raw_parts, from_raw_parts_mut};
 
+/// Multi-dimensional Array using [AlignedVec]
+///
+/// [AlignedVec]: struct.AlignedVec.html
 #[derive(Debug, Clone)]
 pub struct AlignedArray<A, D>
 where
@@ -67,17 +72,20 @@ impl<A: AlignedAllocable, D: Dimension> AlignedArray<A, D> {
     }
 }
 
-/// Array with SIMD alignment
+/// SIMD-aligned Vector
 ///
-/// This wraps `fftw_alloc` and `fftw_free`for SIMD feature
-/// http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html
+/// A RAII-wrapper of `fftw_alloc` and `fftw_free` with the [SIMD alignment].
+///
+/// [SIMD alignment]: http://www.fftw.org/fftw3_doc/SIMD-alignment-and-fftw_005fmalloc.html
 #[derive(Debug)]
 pub struct AlignedVec<T> {
     n: usize,
     data: *mut T,
 }
 
+/// Allocate SIMD-aligned memory of Real/Complex type
 pub trait AlignedAllocable: Zero {
+    /// Allocate SIMD-aligned memory
     unsafe fn alloc(n: usize) -> *mut Self;
 }
 

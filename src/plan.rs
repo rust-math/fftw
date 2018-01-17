@@ -1,11 +1,13 @@
+//! Plan in FFTW
+//!
+//! See also [Using Plans] in the original document
+//! [Using Plans]: http://www.fftw.org/fftw3_doc/Using-Plans.html
+
 use error::*;
 use ffi::*;
 use types::*;
 
 use std::marker::PhantomData;
-
-pub type Plan64 = fftw_plan;
-pub type Plan32 = fftwf_plan;
 
 pub type C2CPlan64 = Plan<c64, c64, Plan64>;
 pub type C2CPlan32 = Plan<c32, c32, Plan32>;
@@ -14,12 +16,16 @@ pub type R2CPlan32 = Plan<f32, c32, Plan32>;
 pub type C2RPlan64 = Plan<c64, f64, Plan64>;
 pub type C2RPlan32 = Plan<c32, f32, Plan32>;
 
-pub trait PlanSpec: Clone + Copy {
-    fn validate(self) -> Result<Self>;
-    fn destroy(self);
-    fn print(self);
-}
-
+/// Typed wrapper of `fftw_plan`
+///
+/// The plan in FFTW manages the contains all information necessary to compute the transform,
+/// including the pointers to the input and output arrays.
+/// However, this wrapper *does not modify* this pointer once after the plan is created
+/// since it should be *unsafe* in terms of Rust.
+/// Instead, this plan executes a transform for different arrays with [new-array execute functions]
+/// with related associated functions, e.g. `C2CPlan::c2c`.
+///
+/// [new-array execute functions]: http://www.fftw.org/fftw3_doc/New_002darray-Execute-Functions.html
 pub struct Plan<A, B, Plan: PlanSpec> {
     plan: Plan,
     alignment: Alignment,
@@ -32,6 +38,19 @@ impl<A, B, P: PlanSpec> Drop for Plan<A, B, P> {
     }
 }
 
+/// Trait for Plan makers
+pub trait PlanSpec: Clone + Copy {
+    fn validate(self) -> Result<Self>;
+    fn destroy(self);
+    fn print(self);
+}
+
+/// Marker for 64-bit floating point FFT
+pub type Plan64 = fftw_plan;
+/// Marker for 32-bit floating point FFT
+pub type Plan32 = fftwf_plan;
+
+/// Trait for the plan of Complex-to-Complex transformation
 pub trait C2CPlan: Sized {
     type Complex;
 
@@ -48,6 +67,7 @@ pub trait C2CPlan: Sized {
     fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()>;
 }
 
+/// Trait for the plan of Real-to-Complex transformation
 pub trait R2CPlan: Sized {
     type Real;
     type Complex;
@@ -64,6 +84,7 @@ pub trait R2CPlan: Sized {
     fn r2c(&mut self, in_: &mut [Self::Real], out: &mut [Self::Complex]) -> Result<()>;
 }
 
+/// Trait for the plan of Complex-to-Real transformation
 pub trait C2RPlan: Sized {
     type Real;
     type Complex;
