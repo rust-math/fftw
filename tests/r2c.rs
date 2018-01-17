@@ -1,78 +1,28 @@
 extern crate fftw;
-extern crate ndarray;
-#[macro_use]
-extern crate ndarray_linalg;
 extern crate num_traits;
 
-use fftw::*;
-use ndarray::*;
-use ndarray_linalg::*;
+use fftw::plan::*;
+use fftw::types::*;
+use num_traits::Zero;
 
-/// Check successive forward and backward transformation conserves.
-fn test_identity<R, C>(mut pair: Pair<R, C, Ix1>, rtol: R::Real)
-where
-    R: FFTWReal,
-    C: FFTWComplex<Real = R::Real>,
-{
-    let a: Array1<R> = random(pair.a.dim());
-    println!("a = {:?}", &a);
-    let b = pair.forward_array(a.view()).to_owned();
-    println!("b = {:?}", &b);
-    let a2 = pair.backward_array(b.view());
-    println!("a2 = {:?}", &a2);
-    assert_close_l2!(&a2, &a, rtol);
-}
-
-/// Check `cos(k_0 x)` is transformed `b[1] = 1.0 + 0.0i`
-fn test_forward<R, C>(mut pair: Pair<R, C, Ix1>, rtol: C::Real)
-where
-    R: FFTWReal,
-    C: FFTWComplex<Real = R::Real>,
-{
-    let n = pair.a.dim();
-    let pi = ::std::f64::consts::PI;
-    let a: Array1<R> =
-        Array::from_iter((0..n).map(|i| Scalar::from_f64((2.0 * pi * i as f64 / n as f64).cos())));
-    println!("a = {:?}", &a);
-    let b = pair.forward_array(a.view()).to_owned();
-    println!("b = {:?}", &b);
-    let mut ans: Array1<C> = Array::zeros(b.len());
-    ans[1] = Scalar::from_f64(0.5); // cos(x) = 0.5*exp(ix) + c.c.
-    assert_close_l2!(&b, &ans, rtol);
-}
-
-mod r2c_64 {
-    use super::*;
-    const N: usize = 32;
-    const RTOL: f64 = 1e-7;
-
-    #[test]
-    fn identity() {
-        let pair: Pair<f64, c64, Ix1> = r2c_1d(N).to_pair().unwrap();
-        test_identity(pair, RTOL);
+/// Check successive forward and backward transform equals to the identity
+#[test]
+fn c2r2c_identity() {
+    let n = 32;
+    let mut a = vec![c64::zero(); n / 2 + 1];
+    let mut b = vec![0.0; n];
+    let mut c2r: C2RPlan64 = C2RPlan::new(&[n], &mut a, &mut b, Flag::Measure).unwrap();
+    let mut r2c: R2CPlan64 = R2CPlan::new(&[n], &mut b, &mut a, Flag::Measure).unwrap();
+    for i in 0..(n / 2 + 1) {
+        a[i] = c64::new(1.0, 0.0);
     }
-
-    #[test]
-    fn forward() {
-        let pair: Pair<f64, c64, Ix1> = r2c_1d(N).to_pair().unwrap();
-        test_forward(pair, RTOL);
-    }
-}
-
-mod r2c_32 {
-    use super::*;
-    const N: usize = 32;
-    const RTOL: f32 = 1e-4;
-
-    #[test]
-    fn identity() {
-        let pair: Pair<f32, c32, Ix1> = r2c_1d(N).to_pair().unwrap();
-        test_identity(pair, RTOL);
-    }
-
-    #[test]
-    fn forward() {
-        let pair: Pair<f32, c32, Ix1> = r2c_1d(N).to_pair().unwrap();
-        test_forward(pair, RTOL);
+    c2r.c2r(&mut a, &mut b).unwrap();
+    r2c.r2c(&mut b, &mut a).unwrap();
+    for v in a.iter() {
+        let ans = c64::new(n as f64, 0.0);
+        let dif = (v - ans).norm();
+        if dif > 1e-7 {
+            panic!("Large difference: v={}, dif={}", v, dif);
+        }
     }
 }
