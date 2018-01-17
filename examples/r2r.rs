@@ -1,6 +1,5 @@
-
-extern crate fftw_sys as ffi;
 extern crate fftw;
+extern crate fftw_sys as ffi;
 
 use fftw::*;
 
