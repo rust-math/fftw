@@ -7,6 +7,13 @@ use std::marker::PhantomData;
 pub type Plan64 = fftw_plan;
 pub type Plan32 = fftwf_plan;
 
+pub type C2CPlan64 = Plan<c64, c64, Plan64>;
+pub type C2CPlan32 = Plan<c32, c32, Plan32>;
+pub type R2CPlan64 = Plan<f64, c64, Plan64>;
+pub type R2CPlan32 = Plan<f32, c32, Plan32>;
+pub type C2RPlan64 = Plan<c64, f64, Plan64>;
+pub type C2RPlan32 = Plan<c32, f32, Plan32>;
+
 pub trait PlanSpec: Clone + Copy {
     fn validate(self) -> Result<Self>;
     fn destroy(self);
