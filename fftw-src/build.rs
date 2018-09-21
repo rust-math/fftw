@@ -7,9 +7,10 @@ use std::process::Command;
 fn download(uri: &str, filename: &str, out_dir: &Path) {
     let out = out_dir.join(filename);
     let mut f = BufWriter::new(fs::File::create(out).unwrap());
-    let p = Command::new("curl").arg(uri).output().expect(
-        "Failed to start download",
-    );
+    let p = Command::new("curl")
+        .arg(uri)
+        .output()
+        .expect("Failed to start download");
     f.write(&p.stdout).unwrap();
 }
 
@@ -34,20 +35,16 @@ fn expand(archive: &Path, out_dir: &Path) {
 }
 
 fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
-    run(Command::new("./configure").args(flags).current_dir(
-        &src_dir,
-    ));
-    run(
-        Command::new("make")
-            .arg(format!("-j{}", var("NUM_JOBS").unwrap()))
-            .current_dir(&src_dir),
-    );
-    run(
-        Command::new("make")
-            .arg("install")
-            .arg(format!("DESTDIR={}", out_dir.display()))
-            .current_dir(&src_dir),
-    );
+    run(Command::new("./configure")
+        .args(flags)
+        .current_dir(&src_dir));
+    run(Command::new("make")
+        .arg(format!("-j{}", var("NUM_JOBS").unwrap()))
+        .current_dir(&src_dir));
+    run(Command::new("make")
+        .arg("install")
+        .arg(format!("DESTDIR={}", out_dir.display()))
+        .current_dir(&src_dir));
 }
 
 const FFTW: &'static str = "fftw-3.3.6-pl1";
@@ -70,7 +67,11 @@ fn main() {
     }
     expand(&archive_path, &out_dir);
 
-    build_fftw(&["--enable-static", "--with-pic", "--enable-single"], &src_dir, &out_dir);
+    build_fftw(
+        &["--enable-static", "--with-pic", "--enable-single"],
+        &src_dir,
+        &out_dir,
+    );
     build_fftw(&["--enable-static", "--with-pic"], &src_dir, &out_dir);
 
     println!(

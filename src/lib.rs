@@ -27,14 +27,13 @@ lazy_static! {
 
 /// Exclusive call of FFTW interface.
 macro_rules! excall {
-    ($call:expr) => {
-    {
+    ($call:expr) => {{
         let _lock = $crate::FFTW_MUTEX.lock().expect("Cannot get lock");
         unsafe { $call }
-    }
-}} // excall!
+    }};
+} // excall!
 
 pub mod array;
 pub mod error;
-pub mod types;
 pub mod plan;
+pub mod types;

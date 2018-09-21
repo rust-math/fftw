@@ -74,12 +74,10 @@ pub struct fftw_iodim64 {
 }
 
 pub type fftw_write_char_func = ::std::option::Option<
-    unsafe extern "C" fn(c: ::std::os::raw::c_char,
-                         arg1: *mut ::std::os::raw::c_void),
+    unsafe extern "C" fn(c: ::std::os::raw::c_char, arg1: *mut ::std::os::raw::c_void),
 >;
 pub type fftw_read_char_func = ::std::option::Option<
-    unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void)
-                         -> ::std::os::raw::c_int,
+    unsafe extern "C" fn(arg1: *mut ::std::os::raw::c_void) -> ::std::os::raw::c_int,
 >;
 
 #[repr(C)]
@@ -180,7 +178,13 @@ extern "C" {
         flags: ::std::os::raw::c_uint,
     ) -> fftw_plan;
     pub fn fftw_execute_dft(p: fftw_plan, in_: *mut fftw_complex, out: *mut fftw_complex);
-    pub fn fftw_execute_split_dft(p: fftw_plan, ri: *mut f64, ii: *mut f64, ro: *mut f64, io: *mut f64);
+    pub fn fftw_execute_split_dft(
+        p: fftw_plan,
+        ri: *mut f64,
+        ii: *mut f64,
+        ro: *mut f64,
+        io: *mut f64,
+    );
     pub fn fftw_plan_many_dft_r2c(
         rank: ::std::os::raw::c_int,
         n: *const ::std::os::raw::c_int,
@@ -424,14 +428,20 @@ extern "C" {
     pub fn fftw_init_threads() -> ::std::os::raw::c_int;
     pub fn fftw_cleanup_threads();
     pub fn fftw_make_planner_thread_safe();
-    pub fn fftw_export_wisdom_to_filename(filename: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftw_export_wisdom_to_filename(
+        filename: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftw_export_wisdom_to_file(output_file: *mut FILE);
     pub fn fftw_export_wisdom_to_string() -> *mut ::std::os::raw::c_char;
     pub fn fftw_export_wisdom(write_char: fftw_write_char_func, data: *mut ::std::os::raw::c_void);
     pub fn fftw_import_system_wisdom() -> ::std::os::raw::c_int;
-    pub fn fftw_import_wisdom_from_filename(filename: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftw_import_wisdom_from_filename(
+        filename: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftw_import_wisdom_from_file(input_file: *mut FILE) -> ::std::os::raw::c_int;
-    pub fn fftw_import_wisdom_from_string(input_string: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftw_import_wisdom_from_string(
+        input_string: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftw_import_wisdom(
         read_char: fftw_read_char_func,
         data: *mut ::std::os::raw::c_void,
@@ -552,7 +562,13 @@ extern "C" {
         flags: ::std::os::raw::c_uint,
     ) -> fftwf_plan;
     pub fn fftwf_execute_dft(p: fftwf_plan, in_: *mut fftwf_complex, out: *mut fftwf_complex);
-    pub fn fftwf_execute_split_dft(p: fftwf_plan, ri: *mut f32, ii: *mut f32, ro: *mut f32, io: *mut f32);
+    pub fn fftwf_execute_split_dft(
+        p: fftwf_plan,
+        ri: *mut f32,
+        ii: *mut f32,
+        ro: *mut f32,
+        io: *mut f32,
+    );
     pub fn fftwf_plan_many_dft_r2c(
         rank: ::std::os::raw::c_int,
         n: *const ::std::os::raw::c_int,
@@ -796,14 +812,23 @@ extern "C" {
     pub fn fftwf_init_threads() -> ::std::os::raw::c_int;
     pub fn fftwf_cleanup_threads();
     pub fn fftwf_make_planner_thread_safe();
-    pub fn fftwf_export_wisdom_to_filename(filename: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftwf_export_wisdom_to_filename(
+        filename: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftwf_export_wisdom_to_file(output_file: *mut FILE);
     pub fn fftwf_export_wisdom_to_string() -> *mut ::std::os::raw::c_char;
-    pub fn fftwf_export_wisdom(write_char: fftwf_write_char_func, data: *mut ::std::os::raw::c_void);
+    pub fn fftwf_export_wisdom(
+        write_char: fftwf_write_char_func,
+        data: *mut ::std::os::raw::c_void,
+    );
     pub fn fftwf_import_system_wisdom() -> ::std::os::raw::c_int;
-    pub fn fftwf_import_wisdom_from_filename(filename: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftwf_import_wisdom_from_filename(
+        filename: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftwf_import_wisdom_from_file(input_file: *mut FILE) -> ::std::os::raw::c_int;
-    pub fn fftwf_import_wisdom_from_string(input_string: *const ::std::os::raw::c_char) -> ::std::os::raw::c_int;
+    pub fn fftwf_import_wisdom_from_string(
+        input_string: *const ::std::os::raw::c_char,
+    ) -> ::std::os::raw::c_int;
     pub fn fftwf_import_wisdom(
         read_char: fftwf_read_char_func,
         data: *mut ::std::os::raw::c_void,
