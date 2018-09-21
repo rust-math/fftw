@@ -101,126 +101,133 @@ pub trait C2RPlan: Sized {
     fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()>;
 }
 
-macro_rules! impl_c2c { ($C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
-impl C2CPlan for Plan<$C, $C, $Plan> {
-    type Complex = $C;
-    fn new(
-        shape: &[usize],
-        in_: &mut [Self::Complex],
-        out: &mut [Self::Complex],
-        sign: Sign,
-        flag: Flag,
-    ) -> Result<Self> {
-        let plan = excall!{ $plan(
-            shape.len() as i32,
-            shape.to_cint().as_mut_ptr() as *mut _,
-            in_.as_mut_ptr(),
-            out.as_mut_ptr(),
-            sign as i32, flag.into())
-        }.validate()?;
-        Ok(Self {
-            plan,
-            alignment: Alignment::new(in_, out),
-            phantom: PhantomData,
-        })
-    }
-    fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()> {
-        self.alignment.check(in_, out)?;
-        unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
-        Ok(())
-    }
-}
-}} // impl_c2c!
+macro_rules! impl_c2c {
+    ($C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
+        impl C2CPlan for Plan<$C, $C, $Plan> {
+            type Complex = $C;
+            fn new(
+                shape: &[usize],
+                in_: &mut [Self::Complex],
+                out: &mut [Self::Complex],
+                sign: Sign,
+                flag: Flag,
+            ) -> Result<Self> {
+                let plan = excall!{ $plan(
+                    shape.len() as i32,
+                    shape.to_cint().as_mut_ptr() as *mut _,
+                    in_.as_mut_ptr(),
+                    out.as_mut_ptr(),
+                    sign as i32, flag.into())
+                }.validate()?;
+                Ok(Self {
+                    plan,
+                    alignment: Alignment::new(in_, out),
+                    phantom: PhantomData,
+                })
+            }
+            fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()> {
+                self.alignment.check(in_, out)?;
+                unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
+                Ok(())
+            }
+        }
+    };
+} // impl_c2c!
 
 impl_c2c!(c64, Plan64; fftw_plan_dft, fftw_execute_dft);
 impl_c2c!(c32, Plan32; fftwf_plan_dft, fftwf_execute_dft);
 
-macro_rules! impl_r2c { ($R:ty, $C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
-impl R2CPlan for Plan<$R, $C, $Plan> {
-    type Real = $R;
-    type Complex = $C;
-    fn new(
-        shape: &[usize],
-        in_: &mut [Self::Real],
-        out: &mut [Self::Complex],
-        flag: Flag,
-    ) -> Result<Self> {
-        let plan = excall!{ $plan(
-            shape.len() as i32,
-            shape.to_cint().as_mut_ptr() as *mut _,
-            in_.as_mut_ptr(),
-            out.as_mut_ptr(),
-            flag.into())
-        }.validate()?;
-        Ok(Self {
-            plan,
-            alignment: Alignment::new(in_, out),
-            phantom: PhantomData,
-        })
-    }
-    fn r2c(&mut self, in_: &mut [Self::Real], out: &mut [Self::Complex]) -> Result<()> {
-        self.alignment.check(in_, out)?;
-        unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
-        Ok(())
-    }
-}
-}} // impl_r2c!
+macro_rules! impl_r2c {
+    ($R:ty, $C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
+        impl R2CPlan for Plan<$R, $C, $Plan> {
+            type Real = $R;
+            type Complex = $C;
+            fn new(
+                shape: &[usize],
+                in_: &mut [Self::Real],
+                out: &mut [Self::Complex],
+                flag: Flag,
+            ) -> Result<Self> {
+                let plan = excall!{ $plan(
+                    shape.len() as i32,
+                    shape.to_cint().as_mut_ptr() as *mut _,
+                    in_.as_mut_ptr(),
+                    out.as_mut_ptr(),
+                    flag.into())
+                }.validate()?;
+                Ok(Self {
+                    plan,
+                    alignment: Alignment::new(in_, out),
+                    phantom: PhantomData,
+                })
+            }
+            fn r2c(&mut self, in_: &mut [Self::Real], out: &mut [Self::Complex]) -> Result<()> {
+                self.alignment.check(in_, out)?;
+                unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
+                Ok(())
+            }
+        }
+    };
+} // impl_r2c!
 
 impl_r2c!(f64, c64, Plan64; fftw_plan_dft_r2c, fftw_execute_dft_r2c);
 impl_r2c!(f32, c32, Plan32; fftwf_plan_dft_r2c, fftwf_execute_dft_r2c);
 
-macro_rules! impl_c2r { ($R:ty, $C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
-impl C2RPlan for Plan<$C, $R, $Plan> {
-    type Real = $R;
-    type Complex = $C;
-    fn new(
-        shape: &[usize],
-        in_: &mut [Self::Complex],
-        out: &mut [Self::Real],
-        flag: Flag,
-    ) -> Result<Self> {
-        let plan = excall!{ $plan(
-            shape.len() as i32,
-            shape.to_cint().as_mut_ptr() as *mut _,
-            in_.as_mut_ptr(),
-            out.as_mut_ptr(),
-            flag.into())
-        }.validate()?;
-        Ok(Self {
-            plan,
-            alignment: Alignment::new(in_, out),
-            phantom: PhantomData,
-        })
-    }
-    fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()> {
-        self.alignment.check(in_, out)?;
-        unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
-        Ok(())
-    }
-}
-}} // impl_c2r!
+macro_rules! impl_c2r {
+    ($R:ty, $C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
+        impl C2RPlan for Plan<$C, $R, $Plan> {
+            type Real = $R;
+            type Complex = $C;
+            fn new(
+                shape: &[usize],
+                in_: &mut [Self::Complex],
+                out: &mut [Self::Real],
+                flag: Flag,
+            ) -> Result<Self> {
+                let plan = excall!{ $plan(
+                    shape.len() as i32,
+                    shape.to_cint().as_mut_ptr() as *mut _,
+                    in_.as_mut_ptr(),
+                    out.as_mut_ptr(),
+                    flag.into())
+                }.validate()?;
+                Ok(Self {
+                    plan,
+                    alignment: Alignment::new(in_, out),
+                    phantom: PhantomData,
+                })
+            }
+            fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()> {
+                self.alignment.check(in_, out)?;
+                unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
+                Ok(())
+            }
+        }
+    };
+} // impl_c2r!
 
 impl_c2r!(f64, c64, Plan64; fftw_plan_dft_c2r, fftw_execute_dft_c2r);
 impl_c2r!(f32, c32, Plan32; fftwf_plan_dft_c2r, fftwf_execute_dft_c2r);
 
 macro_rules! impl_plan_spec {
     ($Plan:ty; $destroy_plan:ident, $print_plan:ident) => {
-impl PlanSpec for $Plan {
-    fn validate(self) -> Result<Self> {
-        if self.is_null() {
-            Err(InvalidPlanError::new().into())
-        } else {
-            Ok(self)
+        impl PlanSpec for $Plan {
+            fn validate(self) -> Result<Self> {
+                if self.is_null() {
+                    Err(InvalidPlanError::new().into())
+                } else {
+                    Ok(self)
+                }
+            }
+            fn destroy(self) {
+                excall!{ $destroy_plan(self) }
+            }
+            fn print(self) {
+                excall!{ $print_plan(self) }
+            }
         }
-    }
-    fn destroy(self) {
-        excall!{ $destroy_plan(self) }
-    }
-    fn print(self) {
-        excall!{ $print_plan(self) }
-    }
-}
-}} // impl_plan_spec!
+    };
+} // impl_plan_spec!
 
 impl_plan_spec!(Plan64; fftw_destroy_plan, fftw_print_plan);
 impl_plan_spec!(Plan32; fftwf_destroy_plan, fftwf_print_plan);
