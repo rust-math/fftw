@@ -1,25 +1,9 @@
 language: rust
-dist: trusty
-sudo: false
 
 script:
   - cargo update
   - cargo build --no-default-features --features=$FEATURE
   - cargo test --no-default-features --features=$FEATURE
-  - bash ${TRAVIS_BUILD_DIR}/coverage.sh
-
-addons:
-  apt:
-    packages:
-      - make
-      - cmake
-      - gcc
-      - gfortran
-      - binutils-dev # for kcov (following packages)
-      - libcurl4-openssl-dev
-      - libelf-dev
-      - libdw-dev
-      - libiberty-dev
 
 env:
   global:
@@ -27,35 +11,31 @@ env:
 
 jobs:
   include:
-    - env: FEATURE=source
-    - env: FEATURE=system
+    - os: linux
+      dist: trusty
+      sudo: false
+      env: FEATURE=source
       addons:
         apt:
           packages:
-            - make
-            - cmake
             - gcc
-            - gfortran
+            - make
+    - os: linux
+      dist: trusty
+      sudo: false
+      env: FEATURE=system
+      addons:
+        apt:
+          packages:
             - libfftw3-dev
-            - binutils-dev # for kcov (following packages)
-            - libcurl4-openssl-dev
-            - libelf-dev
-            - libdw-dev
-            - libiberty-dev
-    - env: FEATURE=intel-mkl
+    - os: linux
+      dist: trusty
+      sudo: false
+      env: FEATURE=intel-mkl
+    - os: osx
+      env: FEATURE=source
+    - os: osx
+      env: FEATURE=intel-mkl
 
 cache:
   cargo: []
-  directory:
-    - kcov-master
-    - kcov-build
-
-before_script:
-  - wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz
-  - tar xzf master.tar.gz
-  - cd kcov-master
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make
-  - make install DESTDIR=${TRAVIS_BUILD_DIR}/kcov-build

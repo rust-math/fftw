@@ -10,3 +10,6 @@ license = "GPL-2.0"
 
 build = "build.rs"
 links = "fftw3"
+
+[build-dependencies]
+md5 = "0.4"
