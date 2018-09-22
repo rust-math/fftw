@@ -3,7 +3,7 @@
 //! See also [Using Plans] in the original document
 //! [Using Plans]: http://www.fftw.org/fftw3_doc/Using-Plans.html
 
-use array::{alignment_of, Alignment};
+use array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
 use error::*;
 use ffi::*;
 use types::{c32, c64, Flag, Sign};
@@ -72,7 +72,15 @@ pub type Plan32 = fftwf_plan;
 
 /// Trait for the plan of Complex-to-Complex transformation
 pub trait C2CPlan: Sized {
-    type Complex;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], sign: Sign, flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, sign, flag)
+    }
 
     /// Create new plan
     fn new(
@@ -89,8 +97,16 @@ pub trait C2CPlan: Sized {
 
 /// Trait for the plan of Real-to-Complex transformation
 pub trait R2CPlan: Sized {
-    type Real;
-    type Complex;
+    type Real : AlignedAllocable;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, flag)
+    }
 
     /// Create new plan
     fn new(
@@ -106,8 +122,16 @@ pub trait R2CPlan: Sized {
 
 /// Trait for the plan of Complex-to-Real transformation
 pub trait C2RPlan: Sized {
-    type Real;
-    type Complex;
+    type Real: AlignedAllocable;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, flag)
+    }
 
     /// Create new plan
     fn new(
