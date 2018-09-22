@@ -97,14 +97,14 @@ pub trait C2CPlan: Sized {
 
 /// Trait for the plan of Real-to-Complex transformation
 pub trait R2CPlan: Sized {
-    type Real : AlignedAllocable;
+    type Real: AlignedAllocable;
     type Complex: AlignedAllocable;
 
     /// Create new plan with aligned vector
     fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
         let n: usize = shape.iter().product();
         let mut in_ = AlignedVec::new(n);
-        let mut out = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n / 2 + 1);
         Self::new(shape, &mut in_, &mut out, flag)
     }
 
@@ -128,7 +128,7 @@ pub trait C2RPlan: Sized {
     /// Create new plan with aligned vector
     fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
         let n: usize = shape.iter().product();
-        let mut in_ = AlignedVec::new(n);
+        let mut in_ = AlignedVec::new(n / 2 + 1);
         let mut out = AlignedVec::new(n);
         Self::new(shape, &mut in_, &mut out, flag)
     }
