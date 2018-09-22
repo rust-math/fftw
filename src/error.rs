@@ -1,6 +1,6 @@
-pub type Result<T> = ::std::result::Result<T, Error>;
+use array::Alignment;
 
-use super::plan::Alignment;
+pub type Result<T> = ::std::result::Result<T, Error>;
 
 #[derive(Debug, Fail)]
 pub enum Error {
@@ -8,9 +8,22 @@ pub enum Error {
     InvalidPlanError {},
 
     #[fail(
-        display = "Alignment mismatch: origin={:?}, arg={:?}",
-        origin,
-        args
+        display = "Input array mismatch: expect={:?}, actual={:?}",
+        expect,
+        actual
     )]
-    InputMismatchError { origin: Alignment, args: Alignment },
+    InputArrayMismatch {
+        expect: (usize, Alignment),
+        actual: (usize, Alignment),
+    },
+
+    #[fail(
+        display = "Output array mismatch: expect={:?}, actual={:?}",
+        expect,
+        actual
+    )]
+    OutputArrayMismatch {
+        expect: (usize, Alignment),
+        actual: (usize, Alignment),
+    },
 }
