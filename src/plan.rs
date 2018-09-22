@@ -3,9 +3,10 @@
 //! See also [Using Plans] in the original document
 //! [Using Plans]: http://www.fftw.org/fftw3_doc/Using-Plans.html
 
+use array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
 use error::*;
 use ffi::*;
-use types::{c32, c64,Sign, Flag};
+use types::{c32, c64, Flag, Sign};
 
 use std::marker::PhantomData;
 
@@ -28,13 +29,32 @@ pub type C2RPlan32 = Plan<c32, f32, Plan32>;
 /// [new-array execute functions]: http://www.fftw.org/fftw3_doc/New_002darray-Execute-Functions.html
 pub struct Plan<A, B, Plan: PlanSpec> {
     plan: Plan,
-    alignment: Alignment,
+    input: (usize, Alignment),
+    output: (usize, Alignment),
     phantom: PhantomData<(A, B)>,
 }
 
 impl<A, B, P: PlanSpec> Drop for Plan<A, B, P> {
     fn drop(&mut self) {
         self.plan.destroy();
+    }
+}
+
+impl<A, B, P: PlanSpec> Plan<A, B, P> {
+    fn check(&self, in_: &[A], out: &[B]) -> Result<()> {
+        if self.input != slice_info(in_) {
+            return Err(Error::InputArrayMismatch {
+                expect: self.input,
+                actual: slice_info(in_),
+            });
+        }
+        if self.output != slice_info(out) {
+            return Err(Error::OutputArrayMismatch {
+                expect: self.output,
+                actual: slice_info(out),
+            });
+        }
+        Ok(())
     }
 }
 
@@ -52,7 +72,15 @@ pub type Plan32 = fftwf_plan;
 
 /// Trait for the plan of Complex-to-Complex transformation
 pub trait C2CPlan: Sized {
-    type Complex;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], sign: Sign, flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, sign, flag)
+    }
 
     /// Create new plan
     fn new(
@@ -69,8 +97,18 @@ pub trait C2CPlan: Sized {
 
 /// Trait for the plan of Real-to-Complex transformation
 pub trait R2CPlan: Sized {
-    type Real;
-    type Complex;
+    type Real: AlignedAllocable;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let n_d = shape.last().unwrap();
+        let n_sub = (n / n_d) * (n_d / 2 + 1);
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n_sub);
+        Self::new(shape, &mut in_, &mut out, flag)
+    }
 
     /// Create new plan
     fn new(
@@ -86,8 +124,18 @@ pub trait R2CPlan: Sized {
 
 /// Trait for the plan of Complex-to-Real transformation
 pub trait C2RPlan: Sized {
-    type Real;
-    type Complex;
+    type Real: AlignedAllocable;
+    type Complex: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let n_d = shape.last().unwrap();
+        let n_sub = (n / n_d) * (n_d / 2 + 1);
+        let mut in_ = AlignedVec::new(n_sub);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, flag)
+    }
 
     /// Create new plan
     fn new(
@@ -121,12 +169,12 @@ macro_rules! impl_c2c {
                 }.validate()?;
                 Ok(Self {
                     plan,
-                    alignment: Alignment::new(in_, out),
+                    input: slice_info(in_),
+                    output: slice_info(out),
                     phantom: PhantomData,
                 })
             }
             fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()> {
-                self.alignment.check(in_, out)?;
                 unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
                 Ok(())
             }
@@ -157,12 +205,13 @@ macro_rules! impl_r2c {
                 }.validate()?;
                 Ok(Self {
                     plan,
-                    alignment: Alignment::new(in_, out),
+                    input: slice_info(in_),
+                    output: slice_info(out),
                     phantom: PhantomData,
                 })
             }
             fn r2c(&mut self, in_: &mut [Self::Real], out: &mut [Self::Complex]) -> Result<()> {
-                self.alignment.check(in_, out)?;
+                self.check(in_, out)?;
                 unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
                 Ok(())
             }
@@ -193,12 +242,13 @@ macro_rules! impl_c2r {
                 }.validate()?;
                 Ok(Self {
                     plan,
-                    alignment: Alignment::new(in_, out),
+                    input: slice_info(in_),
+                    output: slice_info(out),
                     phantom: PhantomData,
                 })
             }
             fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()> {
-                self.alignment.check(in_, out)?;
+                self.check(in_, out)?;
                 unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
                 Ok(())
             }
@@ -232,41 +282,7 @@ macro_rules! impl_plan_spec {
 impl_plan_spec!(Plan64; fftw_destroy_plan, fftw_print_plan);
 impl_plan_spec!(Plan32; fftwf_destroy_plan, fftwf_print_plan);
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub struct Alignment {
-    in_: i32,
-    out: i32,
-    n_in_: usize,
-    n_out: usize,
-}
-
-fn alignment_of<T>(a: &[T]) -> i32 {
-    unsafe { fftw_alignment_of(a.as_ptr() as *mut _) }
-}
-
-impl Alignment {
-    fn new<A, B>(in_: &[A], out: &[B]) -> Self {
-        Self {
-            in_: alignment_of(in_),
-            out: alignment_of(out),
-            n_in_: in_.len(),
-            n_out: out.len(),
-        }
-    }
-
-    fn check<A, B>(&self, in_: &[A], out: &[B]) -> Result<()> {
-        let args = Self::new(in_, out);
-        if *self != args {
-            Err(Error::InputMismatchError {
-                origin: *self,
-                args,
-            }.into())
-        } else {
-            Ok(())
-        }
-    }
-}
-
+// Convert [usize] -> [i32]
 trait ToCInt {
     fn to_cint(&self) -> Vec<i32>;
 }
@@ -275,4 +291,8 @@ impl ToCInt for [usize] {
     fn to_cint(&self) -> Vec<i32> {
         self.iter().map(|&x| x as i32).collect()
     }
+}
+
+fn slice_info<T>(a: &[T]) -> (usize, Alignment) {
+    (a.len(), alignment_of(a))
 }
