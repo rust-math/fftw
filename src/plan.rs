@@ -214,7 +214,7 @@ macro_rules! impl_plan_spec {
         impl PlanSpec for $Plan {
             fn validate(self) -> Result<Self> {
                 if self.is_null() {
-                    Err(InvalidPlanError::new().into())
+                    Err(Error::InvalidPlanError {})
                 } else {
                     Ok(self)
                 }
@@ -233,7 +233,7 @@ impl_plan_spec!(Plan64; fftw_destroy_plan, fftw_print_plan);
 impl_plan_spec!(Plan32; fftwf_destroy_plan, fftwf_print_plan);
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
-struct Alignment {
+pub struct Alignment {
     in_: i32,
     out: i32,
     n_in_: usize,
@@ -257,7 +257,7 @@ impl Alignment {
     fn check<A, B>(&self, in_: &[A], out: &[B]) -> Result<()> {
         let args = Self::new(in_, out);
         if *self != args {
-            Err(InputMismatchError {
+            Err(Error::InputMismatchError {
                 origin: *self,
                 args,
             }.into())
@@ -265,12 +265,6 @@ impl Alignment {
             Ok(())
         }
     }
-}
-
-#[derive(Debug)]
-pub struct InputMismatchError {
-    origin: Alignment,
-    args: Alignment,
 }
 
 trait ToCInt {
