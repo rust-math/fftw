@@ -5,7 +5,7 @@
 
 use error::*;
 use ffi::*;
-use types::*;
+use types::{c32, c64,Sign, Flag};
 
 use std::marker::PhantomData;
 
@@ -117,7 +117,7 @@ macro_rules! impl_c2c {
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
-                    sign as i32, flag.into())
+                    sign as i32, flag.bits())
                 }.validate()?;
                 Ok(Self {
                     plan,
@@ -153,7 +153,7 @@ macro_rules! impl_r2c {
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
-                    flag.into())
+                    flag.bits())
                 }.validate()?;
                 Ok(Self {
                     plan,
@@ -189,7 +189,7 @@ macro_rules! impl_c2r {
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
-                    flag.into())
+                    flag.bits())
                 }.validate()?;
                 Ok(Self {
                     plan,
