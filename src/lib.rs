@@ -3,17 +3,16 @@
 //! [FFTW]: http://www.fftw.org/
 
 #[macro_use]
-extern crate derive_new;
-#[macro_use]
 extern crate lazy_static;
 #[macro_use]
-extern crate procedurals;
-
-extern crate fftw_sys as ffi;
-
+extern crate failure;
+#[macro_use]
+extern crate bitflags;
 extern crate ndarray;
 extern crate num_complex;
 extern crate num_traits;
+
+extern crate fftw_sys as ffi;
 
 use std::sync::Mutex;
 
