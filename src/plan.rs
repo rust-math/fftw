@@ -103,8 +103,10 @@ pub trait R2CPlan: Sized {
     /// Create new plan with aligned vector
     fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
         let n: usize = shape.iter().product();
+        let n_d = shape.last().unwrap();
+        let n_sub = (n / n_d) * (n_d / 2 + 1);
         let mut in_ = AlignedVec::new(n);
-        let mut out = AlignedVec::new(n / 2 + 1);
+        let mut out = AlignedVec::new(n_sub);
         Self::new(shape, &mut in_, &mut out, flag)
     }
 
@@ -128,7 +130,9 @@ pub trait C2RPlan: Sized {
     /// Create new plan with aligned vector
     fn aligned(shape: &[usize], flag: Flag) -> Result<Self> {
         let n: usize = shape.iter().product();
-        let mut in_ = AlignedVec::new(n / 2 + 1);
+        let n_d = shape.last().unwrap();
+        let n_sub = (n / n_d) * (n_d / 2 + 1);
+        let mut in_ = AlignedVec::new(n_sub);
         let mut out = AlignedVec::new(n);
         Self::new(shape, &mut in_, &mut out, flag)
     }
