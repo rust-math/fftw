@@ -26,6 +26,3 @@ num-traits = "0.2"
 path = "fftw-sys"
 version = "0.3.0"
 default-features = false
-
-[dev-dependencies]
-float-cmp = "0.2.3"
