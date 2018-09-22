@@ -101,3 +101,16 @@ where
         new_vec
     }
 }
+
+pub type Alignment = i32;
+
+/// Check the alignment of slice
+///
+/// ```
+/// # use fftw::array::*;
+/// let a = AlignedVec::<f32>::new(123);
+/// assert_eq!(alignment_of(&a), 0);  // aligned
+/// ```
+pub fn alignment_of<T>(a: &[T]) -> Alignment {
+    unsafe { ffi::fftw_alignment_of(a.as_ptr() as *mut _) }
+}
