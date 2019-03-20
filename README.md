@@ -20,7 +20,7 @@ This repository includes three crates:
 Feature flags
 --------------
 
-- `source`: download and complie FFTW (defualt)
+- `source`: download and compile FFTW (default)
     - You need `curl` to download the source, and C-compiler and `make` to compile FFTW
 - `system`: use system's libfftw3 (experimental)
     - You must install FFTW to your system before building this crate
