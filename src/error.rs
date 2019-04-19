@@ -9,8 +9,7 @@ pub enum Error {
 
     #[fail(
         display = "Input array mismatch: expect={:?}, actual={:?}",
-        expect,
-        actual
+        expect, actual
     )]
     InputArrayMismatch {
         expect: (usize, Alignment),
@@ -19,8 +18,7 @@ pub enum Error {
 
     #[fail(
         display = "Output array mismatch: expect={:?}, actual={:?}",
-        expect,
-        actual
+        expect, actual
     )]
     OutputArrayMismatch {
         expect: (usize, Alignment),
