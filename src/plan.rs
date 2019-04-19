@@ -160,13 +160,14 @@ macro_rules! impl_c2c {
                 sign: Sign,
                 flag: Flag,
             ) -> Result<Self> {
-                let plan = excall!{ $plan(
+                let plan = excall! { $plan(
                     shape.len() as i32,
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
                     sign as i32, flag.bits())
-                }.validate()?;
+                }
+                .validate()?;
                 Ok(Self {
                     plan,
                     input: slice_info(in_),
@@ -196,13 +197,14 @@ macro_rules! impl_r2c {
                 out: &mut [Self::Complex],
                 flag: Flag,
             ) -> Result<Self> {
-                let plan = excall!{ $plan(
+                let plan = excall! { $plan(
                     shape.len() as i32,
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
                     flag.bits())
-                }.validate()?;
+                }
+                .validate()?;
                 Ok(Self {
                     plan,
                     input: slice_info(in_),
@@ -233,13 +235,14 @@ macro_rules! impl_c2r {
                 out: &mut [Self::Real],
                 flag: Flag,
             ) -> Result<Self> {
-                let plan = excall!{ $plan(
+                let plan = excall! { $plan(
                     shape.len() as i32,
                     shape.to_cint().as_mut_ptr() as *mut _,
                     in_.as_mut_ptr(),
                     out.as_mut_ptr(),
                     flag.bits())
-                }.validate()?;
+                }
+                .validate()?;
                 Ok(Self {
                     plan,
                     input: slice_info(in_),
@@ -270,10 +273,10 @@ macro_rules! impl_plan_spec {
                 }
             }
             fn destroy(self) {
-                excall!{ $destroy_plan(self) }
+                excall! { $destroy_plan(self) }
             }
             fn print(self) {
-                excall!{ $print_plan(self) }
+                excall! { $print_plan(self) }
             }
         }
     };
