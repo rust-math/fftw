@@ -35,14 +35,23 @@ impl ::std::ops::Neg for Sign {
 bitflags! {
     #[derive(Default)]
     pub struct Flag: u32 {
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const Measure = 0;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const DestroyInput = 1 ;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const Unaligned = 1 << 1;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const ConserveMemory = 1 << 2;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const Exhausive = 1 << 3;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const PreserveInput = 1 << 4;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const Patient = 1 << 5;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const Estimate = 1 << 6;
+        #[allow(non_upper_case_globals)] // FIXME for compatibility
         const WisdowmOnly = 1 << 21;
     }
 }
