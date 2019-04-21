@@ -1,28 +1,6 @@
-[package]
-name = "fftw"
-version = "0.5.2-alpha.0"
-authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
-
-description = "safe wrapper of FFTW3"
-repository = "https://github.com/termoshtt/rust-fftw3"
-keywords = ["fftw"]
-license = "MIT"
-
-[features]
-default = ["source"]
-system = ["fftw-sys/system"]
-source = ["fftw-sys/source"]
-intel-mkl = ["fftw-sys/intel-mkl"]
-
-[dependencies]
-bitflags = "1"
-failure = "0.1"
-lazy_static = "1"
-ndarray = "0.12"
-num-complex = "0.2"
-num-traits = "0.2"
-
-[dependencies.fftw-sys]
-path = "fftw-sys"
-version = "0.4.0"
-default-features = false
+[workspace]
+members = [
+  "fftw",
+  "fftw-sys",
+  "fftw-src",
+]
