@@ -28,7 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libfftw3-dev
         displayName: apt install
-      - script: cargo test -v --features=$FEATURE --no-default-features
+      - script: cargo test -v --features=system --no-default-features
         displayName: run test
 
   - job: macOS
