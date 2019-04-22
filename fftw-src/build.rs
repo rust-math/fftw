@@ -18,7 +18,7 @@ fn download_archive_unix(out_dir: &Path) -> Fallible<()> {
     }
 
     // Download
-    let uri = format!("http://www.fftw.org/{}", FFTW);
+    let uri = format!("http://www.fftw.org/{}.tar.gz", FFTW);
     let mut res = reqwest::get(&uri)?;
     if !res.status().is_success() {
         bail!(
