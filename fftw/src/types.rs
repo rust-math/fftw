@@ -1,12 +1,10 @@
 //! Rusty types for manipulating FFTW
 
-use ffi;
-
 pub use ffi::fftw_complex as c64;
 pub use ffi::fftwf_complex as c32;
 
 /// Expose the kinds of real-to-real transformations
-pub type R2RKind = ffi::fftw_r2r_kind;
+pub use ffi::fftw_r2r_kind as R2RKind;
 
 /// Direction of Complex-to-Complex transformation
 #[repr(i32)]
