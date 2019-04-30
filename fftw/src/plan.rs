@@ -6,7 +6,7 @@
 use array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
 use error::*;
 use ffi::*;
-use types::{c32, c64, Flag, Sign};
+use types::{c32, c64, Flag, R2RKind, Sign};
 
 use std::marker::PhantomData;
 
@@ -16,6 +16,8 @@ pub type R2CPlan64 = Plan<f64, c64, Plan64>;
 pub type R2CPlan32 = Plan<f32, c32, Plan32>;
 pub type C2RPlan64 = Plan<c64, f64, Plan64>;
 pub type C2RPlan32 = Plan<c32, f32, Plan32>;
+pub type R2RPlan64 = Plan<f64, f64, Plan64>;
+pub type R2RPlan32 = Plan<f32, f32, Plan32>;
 
 /// Typed wrapper of `fftw_plan`
 ///
@@ -149,6 +151,30 @@ pub trait C2RPlan: Sized {
     fn c2r(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Real]) -> Result<()>;
 }
 
+pub trait R2RPlan: Sized {
+    type Real: AlignedAllocable;
+
+    /// Create new plan with aligned vector
+    fn aligned(shape: &[usize], kind: R2RKind, flag: Flag) -> Result<Self> {
+        let n: usize = shape.iter().product();
+        let mut in_ = AlignedVec::new(n);
+        let mut out = AlignedVec::new(n);
+        Self::new(shape, &mut in_, &mut out, kind, flag)
+    }
+
+    /// Create new plan
+    fn new(
+        shape: &[usize],
+        in_: &mut [Self::Real],
+        out: &mut [Self::Real],
+        kind: R2RKind,
+        flag: Flag,
+    ) -> Result<Self>;
+
+    /// Execute complex-to-complex transform
+    fn r2r(&mut self, in_: &mut [Self::Real], out: &mut [Self::Real]) -> Result<()>;
+}
+
 macro_rules! impl_c2c {
     ($C:ty, $Plan:ty; $plan:ident, $exec:ident) => {
         impl C2CPlan for Plan<$C, $C, $Plan> {
@@ -261,6 +287,43 @@ macro_rules! impl_c2r {
 
 impl_c2r!(f64, c64, Plan64; fftw_plan_dft_c2r, fftw_execute_dft_c2r);
 impl_c2r!(f32, c32, Plan32; fftwf_plan_dft_c2r, fftwf_execute_dft_c2r);
+
+macro_rules! impl_r2r {
+    ($R:ty, $Plan:ty; $plan:ident, $exec:ident) => {
+        impl R2RPlan for Plan<$R, $R, $Plan> {
+            type Real = $R;
+            fn new(
+                shape: &[usize],
+                in_: &mut [Self::Real],
+                out: &mut [Self::Real],
+                kind: R2RKind,
+                flag: Flag,
+            ) -> Result<Self> {
+                let plan = excall! { $plan(
+                    shape.len() as i32,
+                    shape.to_cint().as_mut_ptr() as *mut _,
+                    in_.as_mut_ptr(),
+                    out.as_mut_ptr(),
+                    &kind as *const _, flag.bits())
+                }
+                .validate()?;
+                Ok(Self {
+                    plan,
+                    input: slice_info(in_),
+                    output: slice_info(out),
+                    phantom: PhantomData,
+                })
+            }
+            fn r2r(&mut self, in_: &mut [Self::Real], out: &mut [Self::Real]) -> Result<()> {
+                unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
+                Ok(())
+            }
+        }
+    };
+} // impl_r2r!
+
+impl_r2r!(f64, Plan64; fftw_plan_r2r, fftw_execute_r2r);
+impl_r2r!(f32, Plan32; fftwf_plan_r2r, fftwf_execute_r2r);
 
 macro_rules! impl_plan_spec {
     ($Plan:ty; $destroy_plan:ident, $print_plan:ident) => {
