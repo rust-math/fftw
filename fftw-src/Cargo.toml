@@ -12,4 +12,9 @@ build = "build.rs"
 links = "fftw3"
 
 [build-dependencies]
-md5 = "0.4"
+md5 = "0.6"
+reqwest = "0.9"
+failure = "0.1"
+zip = "0.5"
+ftp = "3.0"
+cc = "1.0"
