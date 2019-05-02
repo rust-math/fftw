@@ -55,6 +55,8 @@ jobs:
       matrix:
         source:
           feature: source
+        intel-mkl:
+          feature: intel-mkl
     steps:
       - script: |
           curl -sSf -o rustup-init.exe https://win.rustup.rs
