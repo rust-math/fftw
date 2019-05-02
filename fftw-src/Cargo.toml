@@ -1,6 +1,6 @@
 [package]
 name = "fftw-src"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 description = "Source of FFTW"
