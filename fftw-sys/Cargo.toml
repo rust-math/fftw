@@ -6,7 +6,7 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 description = "unsafe wrapper of FFTW3"
 repository = "https://github.com/termoshtt/rust-fftw3"
 keywords = ["fftw"]
-license = "GPL-2.0"
+license-file = "../LICENSE.md"
 
 [features]
 default = ["source"]
