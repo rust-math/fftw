@@ -1,6 +1,6 @@
 [package]
 name = "fftw-sys"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 description = "unsafe wrapper of FFTW3"
