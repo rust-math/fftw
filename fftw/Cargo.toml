@@ -1,6 +1,6 @@
 [package]
 name = "fftw"
-version = "0.5.2-alpha.0"
+version = "0.6.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
 description = "safe wrapper of FFTW3"
