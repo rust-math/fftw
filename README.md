@@ -26,14 +26,8 @@ Feature flags
 - `system`: use system's libfftw3 (experimental, Linux only)
     - You must install FFTW to your system before building this crate
 - `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
-    - (Linux, macOS) Need `curl` to download MKL archive
-    - (Windows) Not supported
+    - Linux, macOS, and Windows are supported
     
 LICENSE
 --------
-
-The codes in this crate are licensed by MIT-License (see [LICENSE](LICENSE)),
-and the backends are redistributed under following licenses:
-
-- [FFTW](http://www.fftw.org/) is free software and distributed under GPLv2 ([License and Copyright](http://www.fftw.org/fftw3_doc/License-and-Copyright.html))
-- [Intel MKL](https://software.intel.com/en-us/mkl) is distributed under the [Intel Simplified Software License for Intel(R) Math Kernel Library](https://github.com/termoshtt/rust-intel-mkl/blob/master/mkl_lib/license.txt)
+See [LICENSE.md](./LICENSE.md)
