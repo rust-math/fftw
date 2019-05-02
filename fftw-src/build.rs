@@ -1,9 +1,9 @@
+extern crate cc;
 extern crate failure;
+extern crate ftp;
 extern crate md5;
 extern crate reqwest;
 extern crate zip;
-extern crate ftp;
-extern crate cc;
 
 use failure::*;
 use std::env::var;
@@ -35,11 +35,13 @@ fn download_archive_windows(out_dir: &Path) -> Fallible<()> {
     for name in &["fftw3-3", "fftw3f-3"] {
         for ext in &["dll", "def"] {
             let filename = format!("lib{}.{}", name, ext);
-            let mut zf =  zip.by_name(&filename)?;
+            let mut zf = zip.by_name(&filename)?;
             let mut f = fs::File::create(out_dir.join(filename))?;
             copy(&mut zf, &mut f)?;
         }
-        run(cc::windows_registry::find_tool(&target, "lib.exe").unwrap().to_command()
+        run(cc::windows_registry::find_tool(&target, "lib.exe")
+            .unwrap()
+            .to_command()
             .arg("/MACHINE:X64")
             .arg(format!("/DEF:lib{}.def", name))
             .arg(format!("/OUT:lib{}.lib", name))
