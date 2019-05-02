@@ -26,8 +26,7 @@ Feature flags
 - `system`: use system's libfftw3 (experimental, Linux only)
     - You must install FFTW to your system before building this crate
 - `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
-    - (Linux, macOS) Need `curl` to download MKL archive
-    - (Windows) Not supported
+    - Linux, macOS, and Windows are supported
     
 LICENSE
 --------
