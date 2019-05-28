@@ -1,6 +1,6 @@
 rust-fftw3
 ===========
-[![Build Status](https://dev.azure.com/rust-math/rust-fftw3/_apis/build/status/rust-math.rust-fftw3?branchName=master)](https://dev.azure.com/rust-math/rust-fftw3/_build/latest?definitionId=2&branchName=master)
+[![Build Status](https://dev.azure.com/rust-math/rust-fftw3/_apis/build/status/rust-math.fftw?branchName=master)](https://dev.azure.com/rust-math/rust-fftw3/_build/latest?definitionId=5&branchName=master)
 
 FFTW binding for Rust
 
