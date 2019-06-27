@@ -2,6 +2,7 @@
 name = "fftw"
 version = "0.6.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
+edition = "2018"
 
 description = "safe wrapper of FFTW3"
 repository = "https://github.com/termoshtt/rust-fftw3"
