@@ -1,6 +1,3 @@
-extern crate fftw;
-extern crate num_traits;
-
 use fftw::plan::*;
 use fftw::types::*;
 use num_traits::Zero;
