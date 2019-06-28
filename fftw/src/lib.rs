@@ -14,7 +14,7 @@
 //! use std::f64::consts::PI;
 //!
 //! let n = 128;
-//! let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::Measure).unwrap();
+//! let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::MEASURE).unwrap();
 //! let mut a = AlignedVec::new(n);
 //! let mut b = AlignedVec::new(n);
 //! let k0 = 2.0 * PI / n as f64;
@@ -33,7 +33,7 @@
 //! use std::f64::consts::PI;
 //!
 //! let n = 128;
-//! let mut c2r: C2RPlan64 = C2RPlan::aligned(&[n], Flag::Measure).unwrap();
+//! let mut c2r: C2RPlan64 = C2RPlan::aligned(&[n], Flag::MEASURE).unwrap();
 //! let mut a = AlignedVec::new(n / 2 + 1);
 //! let mut b = AlignedVec::new(n);
 //! for i in 0..(n / 2 + 1) {

@@ -19,9 +19,9 @@ fn r2r2r_identity() {
     // Here we use a type-2 DCT, whose inverse is a type-3 DCT, and whose
     // normalization is `factor=2*n`.
     let mut fwd: R2RPlan64 =
-        R2RPlan::new(&[n], &mut a, &mut b, R2RKind::FFTW_REDFT10, Flag::Measure).unwrap();
+        R2RPlan::new(&[n], &mut a, &mut b, R2RKind::FFTW_REDFT10, Flag::MEASURE).unwrap();
     let mut bwd: R2RPlan64 =
-        R2RPlan::new(&[n], &mut b, &mut a, R2RKind::FFTW_REDFT01, Flag::Measure).unwrap();
+        R2RPlan::new(&[n], &mut b, &mut a, R2RKind::FFTW_REDFT01, Flag::MEASURE).unwrap();
     let factor = 2. * n as f64;
 
     // Vector of ones.
