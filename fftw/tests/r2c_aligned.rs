@@ -6,8 +6,8 @@ use fftw::types::*;
 #[test]
 fn c2r2c_identity() {
     let n = 32;
-    let mut c2r: C2RPlan64 = C2RPlan::aligned(&[n], Flag::Measure).unwrap();
-    let mut r2c: R2CPlan64 = R2CPlan::aligned(&[n], Flag::Measure).unwrap();
+    let mut c2r: C2RPlan64 = C2RPlan::aligned(&[n], Flag::MEASURE).unwrap();
+    let mut r2c: R2CPlan64 = R2CPlan::aligned(&[n], Flag::MEASURE).unwrap();
     let mut a = AlignedVec::new(n / 2 + 1);
     let mut b = AlignedVec::new(n);
     for i in 0..(n / 2 + 1) {

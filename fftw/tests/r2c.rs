@@ -8,8 +8,8 @@ fn c2r2c_identity() {
     let n = 32;
     let mut a = vec![c64::zero(); n / 2 + 1];
     let mut b = vec![0.0; n];
-    let mut c2r: C2RPlan64 = C2RPlan::new(&[n], &mut a, &mut b, Flag::Measure).unwrap();
-    let mut r2c: R2CPlan64 = R2CPlan::new(&[n], &mut b, &mut a, Flag::Measure).unwrap();
+    let mut c2r: C2RPlan64 = C2RPlan::new(&[n], &mut a, &mut b, Flag::MEASURE).unwrap();
+    let mut r2c: R2CPlan64 = R2CPlan::new(&[n], &mut b, &mut a, Flag::MEASURE).unwrap();
     for i in 0..(n / 2 + 1) {
         a[i] = c64::new(1.0, 0.0);
     }

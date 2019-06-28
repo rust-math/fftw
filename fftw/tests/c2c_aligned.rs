@@ -6,7 +6,7 @@ use fftw::types::*;
 #[test]
 fn c2c2c_identity() {
     let n = 32;
-    let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::Measure).unwrap();
+    let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::MEASURE).unwrap();
     let mut a = AlignedVec::new(n);
     let mut b = AlignedVec::new(n);
     for i in 0..n {
@@ -27,7 +27,7 @@ fn c2c2c_identity() {
 #[test]
 fn c2c_cos() {
     let n = 32;
-    let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::Measure).unwrap();
+    let mut plan: C2CPlan64 = C2CPlan::aligned(&[n], Sign::Forward, Flag::MEASURE).unwrap();
     let mut a = AlignedVec::new(n);
     let mut b = AlignedVec::new(n);
     let pi = ::std::f64::consts::PI;
