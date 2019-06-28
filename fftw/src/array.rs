@@ -64,6 +64,14 @@ impl<T> AlignedVec<T> {
     {
         ArrayView::from_shape(shape, self.as_slice())
     }
+
+    pub fn as_view_mut<D, Shape>(&mut self, shape: Shape) -> Result<ArrayViewMut<T, D>, ShapeError>
+    where
+        D: Dimension,
+        Shape: Into<StrideShape<D>>,
+    {
+        ArrayViewMut::from_shape(shape, self.as_slice_mut())
+    }
 }
 
 impl<T> Deref for AlignedVec<T> {
