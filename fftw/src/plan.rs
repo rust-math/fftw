@@ -3,10 +3,10 @@
 //! See also [Using Plans] in the original document
 //! [Using Plans]: http://www.fftw.org/fftw3_doc/Using-Plans.html
 
-use array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
-use error::*;
-use ffi::*;
-use types::{c32, c64, Flag, R2RKind, Sign};
+use crate::array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
+use crate::error::*;
+use crate::ffi::*;
+use crate::types::{c32, c64, Flag, R2RKind, Sign};
 
 use std::marker::PhantomData;
 

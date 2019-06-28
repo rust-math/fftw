@@ -1,13 +1,10 @@
 #![allow(non_camel_case_types)]
 
 #[cfg(feature = "source")]
-extern crate fftw_src;
+extern crate fftw_src as ffi;
 
 #[cfg(feature = "intel-mkl")]
-extern crate intel_mkl_src;
-
-extern crate libc;
-extern crate num_complex;
+extern crate intel_mkl_src as ffi;
 
 mod test;
 

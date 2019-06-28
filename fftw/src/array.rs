@@ -1,7 +1,7 @@
 //! Array with SIMD alignment
 
+use crate::types::*;
 use ffi;
-use types::*;
 
 use num_traits::Zero;
 use std::ops::{Deref, DerefMut};

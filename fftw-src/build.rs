@@ -1,10 +1,3 @@
-extern crate cc;
-extern crate failure;
-extern crate ftp;
-extern crate md5;
-extern crate reqwest;
-extern crate zip;
-
 use failure::*;
 use std::env::var;
 use std::fs;
