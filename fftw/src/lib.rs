@@ -42,17 +42,9 @@
 //! c2r.c2r(&mut a, &mut b).unwrap();
 //! ```
 
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate failure;
-#[macro_use]
-extern crate bitflags;
-extern crate num_complex;
-extern crate num_traits;
-
 extern crate fftw_sys as ffi;
 
+use lazy_static::lazy_static;
 use std::sync::Mutex;
 
 lazy_static! {
