@@ -2,6 +2,7 @@
 
 use crate::types::*;
 use ffi;
+use ndarray::*;
 
 use num_traits::Zero;
 use std::ops::{Deref, DerefMut};
@@ -54,6 +55,14 @@ impl<T> AlignedVec<T> {
 
     pub fn as_slice_mut(&mut self) -> &mut [T] {
         unsafe { from_raw_parts_mut(self.data, self.n) }
+    }
+
+    pub fn as_view<D, Shape>(&self, shape: Shape) -> Result<ArrayView<T, D>, ShapeError>
+    where
+        D: Dimension,
+        Shape: Into<StrideShape<D>>,
+    {
+        ArrayView::from_shape(shape, self.as_slice())
     }
 }
 
