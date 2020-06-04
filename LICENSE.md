@@ -5,8 +5,8 @@ License of fftw, fftw-sys crates
 
 FFTW
 ------
-FFTW is free software and distributed under [GNU General Public License version 2 (GPLv2)](https://www.gnu.org/licenses/gpl-2.0.html),
-and FFI codes (`fftw-sys` crate) and Rust binding (`fftw` crate) are also distributed under GPLv2.
+FFTW is free software and distributed under [GNU General Public License version 2 (GPLv2)](https://www.gnu.org/licenses/gpl-2.0.html) or (at your option) any later version,
+and FFI codes (`fftw-sys` crate) and Rust binding (`fftw` crate) are also distributed under GPLv2 or later.
 
 Intel MKL
 ---------
