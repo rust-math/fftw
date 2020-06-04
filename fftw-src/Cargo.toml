@@ -7,7 +7,7 @@ edition = "2018"
 description = "Source of FFTW"
 repository = "https://github.com/termoshtt/rust-fftw3"
 keywords = ["fftw"]
-license = "GPL-2.0"
+license = "GPL-2.0-or-later"
 
 build = "build.rs"
 links = "fftw3"
