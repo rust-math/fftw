@@ -97,7 +97,7 @@ fn download_archive_unix(out_dir: &Path) -> Fallible<()> {
 }
 
 fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
-    run(Command::new("./configure")
+    run(Command::new(fs::canonicalize(src_dir.join("configure")).unwrap())
         .arg("--with-pic")
         .arg("--enable-static")
         .arg(format!("--prefix={}", out_dir.display()))
