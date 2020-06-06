@@ -27,7 +27,13 @@ Feature flags
     - You must install FFTW to your system before building this crate
 - `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
     - Linux, macOS, and Windows are supported
-    
+
+|Feature  | Linux | Windows | macOS |
+|:--------|:-----:|:-------:|:-----:|
+|source   |✔️      |✔️        |✔️      |
+|system   |✔️      |-        |-      |
+|intel-mkl|✔️      |✔️        |✔️      |
+
 LICENSE
 --------
 See [LICENSE.md](./LICENSE.md)
