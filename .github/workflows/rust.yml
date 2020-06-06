@@ -1,0 +1,56 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+
+jobs:
+  windows:
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        feature: ["intel-mkl", "system", "source"]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --features=${{ matrix.feature }} --no-default-features
+      working-directory: fftw
+
+  macos:
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        feature: ["intel-mkl", "system", "source"]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --features=${{ matrix.feature }} --no-default-features
+      working-directory: fftw
+
+  linux:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        feature: ["intel-mkl", "system", "source"]
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --features=${{ matrix.feature }} --no-default-features
+      working-directory: fftw
+
+  check-format:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: -- --check
