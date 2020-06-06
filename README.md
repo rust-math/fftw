@@ -31,7 +31,7 @@ Feature flags
 |Feature  | Linux | Windows | macOS |
 |:--------|:-----:|:-------:|:-----:|
 |source   |✔️      |✔️        |✔️      |
-|system   |✔️      |-        |-      |
+|system   |✔️      |-        |✔️      |
 |intel-mkl|✔️      |✔️        |✔️      |
 
 LICENSE
