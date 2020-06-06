@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - "pr/*"
   pull_request: {}
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
     runs-on: macos-10.15
     strategy:
       matrix:
-        feature: ["intel-mkl"]
+        feature: ["intel-mkl", "source"]
     steps:
     - uses: actions/checkout@v1
     - uses: actions-rs/cargo@v1
