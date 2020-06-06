@@ -36,12 +36,15 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        feature: ["intel-mkl", "system", "source"]
+        feature: ["intel-mkl", "intel-mkl-system", "system", "source"]
     steps:
     - uses: actions/checkout@v1
     - name: Install system FFTW
       run: sudo apt update && sudo apt install -y libfftw3-dev
       if: ${{ matrix.feature == 'system' }}
+    - name: Install Intel-MKL by apt
+      run: ./intel-mkl-apt.sh
+      if: ${{ matrix.feature == 'intel-mkl-system' }}
     - uses: actions-rs/cargo@v1
       with:
         command: test
