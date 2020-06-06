@@ -43,7 +43,7 @@ jobs:
       run: sudo apt update && sudo apt install -y libfftw3-dev
       if: ${{ matrix.feature == 'system' }}
     - name: Install Intel-MKL by apt
-      run: ./intel-mkl-apt.sh
+      run: sudo ./intel-mkl-apt.sh
       if: ${{ matrix.feature == 'intel-mkl-system' }}
     - uses: actions-rs/cargo@v1
       with:
