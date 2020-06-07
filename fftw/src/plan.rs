@@ -202,6 +202,7 @@ macro_rules! impl_c2c {
                 })
             }
             fn c2c(&mut self, in_: &mut [Self::Complex], out: &mut [Self::Complex]) -> Result<()> {
+                self.check(in_, out)?;
                 unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
                 Ok(())
             }
@@ -315,6 +316,7 @@ macro_rules! impl_r2r {
                 })
             }
             fn r2r(&mut self, in_: &mut [Self::Real], out: &mut [Self::Real]) -> Result<()> {
+                self.check(in_, out)?;
                 unsafe { $exec(self.plan, in_.as_mut_ptr(), out.as_mut_ptr()) };
                 Ok(())
             }
