@@ -24,9 +24,12 @@ jobs:
     runs-on: macos-10.15
     strategy:
       matrix:
-        feature: ["intel-mkl", "source"]
+        feature: ["intel-mkl", "source", "system"]
     steps:
     - uses: actions/checkout@v1
+    - name: Install system FFTW
+      run: brew install fftw
+      if: ${{ matrix.feature == 'system' }}
     - uses: actions-rs/cargo@v1
       with:
         command: test
