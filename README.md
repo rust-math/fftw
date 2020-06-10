@@ -23,15 +23,18 @@ Feature flags
 - `source`: download and compile FFTW (default)
     - (Linux, macOS) Needs C-compiler and `make` command to compile FFTW
     - (Windows) Download precompiled binary from [FFTW page](http://www.fftw.org/install/windows.html)
-- `system`: use system's libfftw3 (experimental, Linux only)
+- `system`: use system's libfftw3 (experimental)
     - You must install FFTW to your system before building this crate
+    - For Linux system, e.g. Ubuntu or Debian, please run `apt install libfftw3-dev`
+    - For macOS, please run `brew install fftw` by using [homebrew](https://github.com/Homebrew/brew) 
+    - For Windows, this feature is not tested.
 - `intel-mkl` use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
     - Linux, macOS, and Windows are supported
 
 |Feature  | Linux | Windows | macOS |
 |:--------|:-----:|:-------:|:-----:|
 |source   |✔️      |✔️        |✔️      |
-|system   |✔️      |-        |-      |
+|system   |✔️      |-        |✔️      |
 |intel-mkl|✔️      |✔️        |✔️      |
 
 LICENSE
