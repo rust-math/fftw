@@ -8,13 +8,18 @@ fn c2c2c_identity() {
     let n = 32;
     let mut a = vec![c64::zero(); n];
     let mut b = vec![c64::zero(); n];
-    let mut plan: C2CPlan64 =
+
+    let mut plan_ab: C2CPlan64 =
         C2CPlan::new(&[n], &mut a, &mut b, Sign::Forward, Flag::MEASURE).unwrap();
+    let mut plan_ba: C2CPlan64 =
+        C2CPlan::new(&[n], &mut b, &mut a, Sign::Forward, Flag::MEASURE).unwrap();
+
     for i in 0..n {
         a[i] = c64::new(1.0, 0.0);
     }
-    plan.c2c(&mut a, &mut b).unwrap();
-    plan.c2c(&mut b, &mut a).unwrap();
+
+    plan_ab.c2c(&mut a, &mut b).unwrap();
+    plan_ba.c2c(&mut b, &mut a).unwrap();
     for v in a.iter() {
         let ans = c64::new(n as f64, 0.0);
         let dif = (v - ans).norm();
