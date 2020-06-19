@@ -25,7 +25,9 @@ fn r2r2r_identity() {
     let factor = 2. * n as f64;
 
     // Vector of ones.
-    a = vec![1.0f64; n];
+    for a_i in a.iter_mut() {
+        *a_i = 1.0;
+    }
 
     // Forward pass.
     fwd.r2r(&mut a, &mut b).unwrap();
