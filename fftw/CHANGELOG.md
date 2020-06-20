@@ -4,6 +4,12 @@ Changelog for fftw crate
 Unreleased
 ----------
 
+0.6.2 - 2020-06-20
+-------------------
+
+### Change
+- Fix docs.rs setting https://github.com/rust-math/fftw/pull/87
+
 0.6.1 - 2020-06-20
 -------------------
 
