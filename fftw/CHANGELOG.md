@@ -4,6 +4,9 @@ Changelog for fftw crate
 Unreleased
 ----------
 
+0.6.1 - 2020-06-20
+-------------------
+
 ### Change
 - Add alignment and size check for C2C, R2R https://github.com/rust-math/fftw/pull/84
 - Switch to Rust 2018 https://github.com/rust-math/fftw/pull/69
