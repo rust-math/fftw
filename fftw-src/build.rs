@@ -43,12 +43,15 @@ fn download_archive_windows(out_dir: &Path) -> Fallible<()> {
     Ok(())
 }
 
-fn download_archive_unix(out_dir: &Path) -> Fallible<()> {
-    // Build FFTW
+fn build_unix(out_dir: &Path) -> Fallible<()> {
     let root_dir = PathBuf::from(var("CARGO_MANIFEST_DIR").unwrap());
     let archive_dir = root_dir.join("fftw-3.3.8");
-    build_fftw(&["--enable-single"], &archive_dir, &out_dir);
-    build_fftw(&[], &archive_dir, &out_dir);
+    if !out_dir.join("lib/libfftw3.a").exists() {
+        build_fftw(&[], &archive_dir, &out_dir);
+    }
+    if !out_dir.join("lib/libfftw3f.a").exists() {
+        build_fftw(&["--enable-single"], &archive_dir, &out_dir);
+    }
     Ok(())
 }
 
@@ -90,7 +93,7 @@ fn main() -> Fallible<()> {
         println!("cargo:rustc-link-lib=libfftw3-3");
         println!("cargo:rustc-link-lib=libfftw3f-3");
     } else {
-        download_archive_unix(&out_dir)?;
+        build_unix(&out_dir)?;
         println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
         println!("cargo:rustc-link-lib=static=fftw3");
         println!("cargo:rustc-link-lib=static=fftw3f");
