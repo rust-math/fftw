@@ -4,6 +4,10 @@ Changelog for fftw-src crate
 Unreleased
 ----------
 
+### Add
+
+- Bundle generated source code of FFTW-3.3.8 https://github.com/rust-math/fftw/pull/88
+
 0.3.1 - 2020-05-25
 -------------------
 
