@@ -9,3 +9,6 @@ rusty-tags.*
 
 # cargo fmt
 *.bk
+
+# Build artifacts
+fftw-src/fftw-*/
