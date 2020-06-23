@@ -1,4 +1,4 @@
-use failure::*;
+use anyhow::Result;
 use std::env::var;
 use std::fs;
 use std::io::*;
@@ -6,7 +6,7 @@ use std::path::*;
 use std::process::Command;
 use zip::ZipArchive;
 
-fn download_archive_windows(out_dir: &Path) -> Fallible<()> {
+fn download_archive_windows(out_dir: &Path) -> Result<()> {
     if out_dir.join("libfftw3.dll").exists() && out_dir.join("libfftw3f.dll").exists() {
         return Ok(());
     }
