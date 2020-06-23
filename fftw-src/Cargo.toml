@@ -13,7 +13,7 @@ build = "build.rs"
 links = "fftw3"
 
 [build-dependencies]
-failure = "0.1"
+anyhow = "1.0.31"
 zip = "0.5"
 ftp = "3.0"
 cc = "1.0"
