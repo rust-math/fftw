@@ -5,7 +5,7 @@ authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 edition = "2018"
 
 description = "Source of FFTW"
-repository = "https://github.com/termoshtt/rust-fftw3"
+repository = "https://github.com/rust-math/fftw"
 keywords = ["fftw"]
 license = "GPL-2.0-or-later"
 
