@@ -84,10 +84,10 @@ fn run(command: &mut Command) {
     }
 }
 
-fn main() -> Fallible<()> {
+fn main() {
     let out_dir = PathBuf::from(var("OUT_DIR").unwrap());
     if cfg!(target_os = "windows") {
-        download_archive_windows(&out_dir)?;
+        download_archive_windows(&out_dir).unwrap();
         println!("cargo:rustc-link-search={}", out_dir.display());
         println!("cargo:rustc-link-lib=libfftw3-3");
         println!("cargo:rustc-link-lib=libfftw3f-3");
@@ -97,5 +97,4 @@ fn main() -> Fallible<()> {
         println!("cargo:rustc-link-lib=static=fftw3");
         println!("cargo:rustc-link-lib=static=fftw3f");
     }
-    Ok(())
 }
