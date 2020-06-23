@@ -44,53 +44,9 @@ fn download_archive_windows(out_dir: &Path) -> Fallible<()> {
 }
 
 fn download_archive_unix(out_dir: &Path) -> Fallible<()> {
-    const FFTW: &'static str = "fftw-3.3.6-pl1";
-    const MD5SUM: &'static str = "682a0e78d6966ca37c7446d4ab4cc2a1";
-
-    if out_dir.join("lib/libfftw3.a").exists() && out_dir.join("lib/libfftw3f.a").exists() {
-        return Ok(());
-    }
-
-    // Download
-    let uri = format!("http://www.fftw.org/{}.tar.gz", FFTW);
-    let mut res = reqwest::get(&uri)?;
-    if !res.status().is_success() {
-        bail!(
-            "HTTP access to {} is failed with status = {}",
-            uri,
-            res.status()
-        );
-    }
-    let mut buf = Vec::new();
-    res.copy_to(&mut buf)?;
-
-    // Verify downloaded archive by md5sum
-    let md5_sum = format!("{:x}", md5::compute(&buf));
-    if md5_sum != MD5SUM {
-        bail!(
-            "md5sum of downloaded archive is different: actual={}, correct={}",
-            md5_sum,
-            MD5SUM
-        );
-    }
-
-    // Write down to archive
-    let archive_file = out_dir.join(format!("{}.tar.gz", FFTW));
-    let mut f = BufWriter::new(fs::File::create(&archive_file)?);
-    f.write(&buf)?;
-
-    // Expand
-    let st = Command::new("tar")
-        .arg("xf")
-        .arg(&archive_file)
-        .current_dir(&out_dir)
-        .status()?;
-    if !st.success() {
-        bail!("Failed to expand archive");
-    }
-
     // Build FFTW
-    let archive_dir = out_dir.join(FFTW);
+    let root_dir = PathBuf::from(var("CARGO_MANIFEST_DIR").unwrap());
+    let archive_dir = root_dir.join("fftw-3.3.8");
     build_fftw(&["--enable-single"], &archive_dir, &out_dir);
     build_fftw(&[], &archive_dir, &out_dir);
     Ok(())
@@ -101,6 +57,7 @@ fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
         Command::new(fs::canonicalize(src_dir.join("configure")).unwrap())
             .arg("--with-pic")
             .arg("--enable-static")
+            .arg("--disable-doc")
             .arg(format!("--prefix={}", out_dir.display()))
             .args(flags)
             .current_dir(&src_dir),
