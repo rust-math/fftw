@@ -1,8 +1,8 @@
 use anyhow::Result;
 use std::env::var;
-use std::fs;
-use std::io::*;
-use std::path::*;
+use std::fs::{canonicalize, File};
+use std::io::{copy, Write};
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use zip::ZipArchive;
 
@@ -19,17 +19,17 @@ fn download_archive_windows(out_dir: &Path) -> Result<()> {
         conn.cwd("pub/fftw")?;
         let buf = conn.simple_retr("fftw-3.3.5-dll64.zip")?.into_inner();
         // TODO calc checksum
-        let mut f = fs::File::create(&archive)?;
+        let mut f = File::create(&archive)?;
         f.write(&buf)?;
     }
-    let f = fs::File::open(&archive)?;
+    let f = File::open(&archive)?;
     let mut zip = ZipArchive::new(f)?;
     let target = var("TARGET").unwrap();
     for name in &["fftw3-3", "fftw3f-3"] {
         for ext in &["dll", "def"] {
             let filename = format!("lib{}.{}", name, ext);
             let mut zf = zip.by_name(&filename)?;
-            let mut f = fs::File::create(out_dir.join(filename))?;
+            let mut f = File::create(out_dir.join(filename))?;
             copy(&mut zf, &mut f)?;
         }
         run(cc::windows_registry::find_tool(&target, "lib.exe")
@@ -56,7 +56,7 @@ fn build_unix(out_dir: &Path) {
 
 fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
     run(
-        Command::new(fs::canonicalize(src_dir.join("configure")).unwrap())
+        Command::new(canonicalize(src_dir.join("configure")).unwrap())
             .arg("--with-pic")
             .arg("--enable-static")
             .arg("--disable-doc")
