@@ -10,4 +10,9 @@ use libc::FILE;
 pub use num_complex::Complex32 as fftwf_complex;
 pub use num_complex::Complex64 as fftw_complex;
 
+#[cfg_attr(feature = "system", link(name = "fftw3"))]
+extern "C" {}
+#[cfg_attr(feature = "system", link(name = "fftw3f"))]
+extern "C" {}
+
 include!("fftw.rs");
