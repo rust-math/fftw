@@ -11,6 +11,7 @@ jobs:
   windows:
     runs-on: windows-2019
     strategy:
+      fail-fast: false
       matrix:
         feature: ["intel-mkl", "source"]
     steps:
@@ -23,6 +24,7 @@ jobs:
   macos:
     runs-on: macos-10.15
     strategy:
+      fail-fast: false
       matrix:
         feature: ["intel-mkl", "source", "system"]
     steps:
@@ -38,6 +40,7 @@ jobs:
   linux:
     runs-on: ubuntu-18.04
     strategy:
+      fail-fast: false
       matrix:
         feature: ["intel-mkl", "system", "source"]
     steps:
