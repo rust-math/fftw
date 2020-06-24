@@ -7,6 +7,7 @@ Unreleased
 ### Add
 
 - Bundle generated source code of FFTW-3.3.8 https://github.com/rust-math/fftw/pull/88
+  - build in OUT_DIR https://github.com/rust-math/fftw/pull/93
 
 ### Change
 - failure -> anyhow https://github.com/rust-math/fftw/pull/91
