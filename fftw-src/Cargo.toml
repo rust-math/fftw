@@ -14,6 +14,7 @@ links = "fftw3"
 
 [build-dependencies]
 anyhow = "1.0.31"
-zip = "0.5"
-ftp = "3.0"
 cc = "1.0"
+fs_extra = "1.1"
+ftp = "3.0"
+zip = "0.5"
