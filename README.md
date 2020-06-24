@@ -35,7 +35,7 @@ Feature flags
 |:--------|:-----:|:-------:|:-----:|
 |source   |✔️      |✔️        |✔️      |
 |system   |✔️      |-        |✔️      |
-|intel-mkl|✔️      |✔️        |✔️      |
+|intel-mkl|✔️      |✔️        |-      |
 
 LICENSE
 --------
