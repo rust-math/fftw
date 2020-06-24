@@ -16,12 +16,12 @@ source = ["fftw-sys/source"]
 intel-mkl = ["fftw-sys/intel-mkl"]
 
 [dependencies]
-bitflags = "1"
-failure = "0.1"
-lazy_static = "1"
-ndarray = "0.12"
-num-complex = "0.2"
-num-traits = "0.2"
+bitflags = "1.2.1"
+lazy_static = "1.4.0"
+ndarray = "0.13.1"
+num-complex = "0.3.0"
+num-traits = "0.2.12"
+thiserror = "1.0.20"
 
 [dependencies.fftw-sys]
 path = "../fftw-sys"
