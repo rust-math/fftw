@@ -4,6 +4,9 @@ Changelog for fftw-sys crate
 Unreleased
 ----------
 
+0.6.0 - 2019-06-24
+===================
+
 ### Deleted
 - `intel-mkl` feature is not supported for macOS https://github.com/rust-math/fftw/pull/95
 
