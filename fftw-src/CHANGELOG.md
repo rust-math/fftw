@@ -8,6 +8,12 @@ Unreleased
 
 - Bundle generated source code of FFTW-3.3.8 https://github.com/rust-math/fftw/pull/88
 
+### Change
+- failure -> anyhow https://github.com/rust-math/fftw/pull/91
+
+### Delete
+- Drop reqwest, md5 crates https://github.com/rust-math/fftw/pull/91
+
 0.3.1 - 2020-05-25
 -------------------
 
