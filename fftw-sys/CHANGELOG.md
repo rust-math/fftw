@@ -4,6 +4,9 @@ Changelog for fftw-sys crate
 Unreleased
 ----------
 
+### Change
+- Regenerate binding based on FFTW 3.3.8 https://github.com/rust-math/fftw/pull/94
+
 0.5.0 - 2019-05-02
 ===================
 
