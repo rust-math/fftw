@@ -44,13 +44,25 @@ fn download_archive_windows(out_dir: &Path) -> Result<()> {
 }
 
 fn build_unix(out_dir: &Path) {
-    let root_dir = PathBuf::from(var("CARGO_MANIFEST_DIR").unwrap());
-    let archive_dir = root_dir.join("fftw-3.3.8");
+    let src_dir = PathBuf::from(var("CARGO_MANIFEST_DIR").unwrap()).join("fftw-3.3.8");
+    let out_src_dir = out_dir.join("src");
+    fs_extra::dir::copy(
+        src_dir,
+        &out_src_dir,
+        &fs_extra::dir::CopyOptions {
+            overwrite: true,
+            skip_exist: false,
+            buffer_size: 64000,
+            copy_inside: true,
+            depth: 0,
+        },
+    )
+    .unwrap();
     if !out_dir.join("lib/libfftw3.a").exists() {
-        build_fftw(&[], &archive_dir, &out_dir);
+        build_fftw(&[], &out_src_dir, &out_dir);
     }
     if !out_dir.join("lib/libfftw3f.a").exists() {
-        build_fftw(&["--enable-single"], &archive_dir, &out_dir);
+        build_fftw(&["--enable-single"], &out_src_dir, &out_dir);
     }
 }
 
