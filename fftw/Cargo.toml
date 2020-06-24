@@ -1,6 +1,6 @@
 [package]
 name = "fftw"
-version = "0.6.2"
+version = "0.7.0-alpha.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 edition = "2018"
 
@@ -25,7 +25,7 @@ num-traits = "0.2"
 
 [dependencies.fftw-sys]
 path = "../fftw-sys"
-version = "0.5.0"
+version = "0.6.0"
 default-features = false
 
 [package.metadata.docs.rs]
