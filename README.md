@@ -26,12 +26,12 @@ Feature flags
 - `system`: Use the system's libfftw3 (experimental)
     - You must install FFTW before building this crate
     - For Linux systems, please install FFTW using your package manager, e.g. in Debian or Ubuntu run `apt install libfftw3-dev`
-    - For MacOS, please run `brew install fftw` by using [homebrew](https://github.com/Homebrew/brew)
+    - For macOS, please run `brew install fftw` by using [homebrew](https://github.com/Homebrew/brew)
     - This feature is unsupported on Windows
 - `intel-mkl` Use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
     - Only Linux and Windows are supported
 
-|Feature  | Linux | Windows | MacOS |
+|Feature  | Linux | Windows | macOS |
 |:--------|:-----:|:-------:|:-----:|
 |source   |✔️      |✔️        |✔️      |
 |system   |✔️      |-        |✔️      |
