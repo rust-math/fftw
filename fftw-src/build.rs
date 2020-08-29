@@ -55,6 +55,7 @@ fn build_unix(out_dir: &Path) {
             buffer_size: 64000,
             copy_inside: true,
             depth: 0,
+            content_only: false,
         },
     )
     .unwrap();
