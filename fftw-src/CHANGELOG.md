@@ -4,6 +4,13 @@ Changelog for fftw-src crate
 Unreleased
 ----------
 
+0.3.3 - 2020-09-05
+-------------------
+
+### Change
+
+- Fix `fs_extra` crate version to `~1.2.0`
+
 0.3.2 - 2020-06-24
 -------------------
 
