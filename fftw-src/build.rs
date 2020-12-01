@@ -65,6 +65,9 @@ fn build_unix(out_dir: &Path, flags: &[&str]) {
     if !out_dir.join("lib/libfftw3f.a").exists() {
         let mut flags = flags.to_vec();
         flags.push("--enable-single");
+        if var("CARGO_CFG_TARGET_ARCH").unwrap().starts_with("armv7") {
+            flags.push("--enable-neon");
+        }
         build_fftw(&flags, &out_src_dir, &out_dir);
     }
 }
