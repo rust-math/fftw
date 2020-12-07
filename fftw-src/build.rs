@@ -78,6 +78,8 @@ fn build_fftw(flags: &[&str], src_dir: &Path, out_dir: &Path) {
             .arg("--with-pic")
             .arg("--enable-static")
             .arg("--disable-doc")
+            .arg("--enable-threads")
+            .arg("--with-combined-threads")
             .arg(format!("--prefix={}", out_dir.display()))
             .args(flags)
             .current_dir(&src_dir),
