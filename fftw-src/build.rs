@@ -166,6 +166,7 @@ fn main() {
                 .map_err(|_| var("ANDROID_NDK_HOME"))
                 .expect("ndk not found, please set ANDROID_NDK_ROOT to where ndk installed.")
                 .into();
+            let mut sysroot: String = "".to_string();
             if cc.is_none() {
                 let host = var("HOST").unwrap();
                 let triple = host.split("-").collect::<Vec<_>>();
@@ -192,6 +193,10 @@ fn main() {
                                 .join("aarch64-linux-android21-clang")
                                 .into_os_string(),
                         );
+                        sysroot = format!(
+                            "--with-sysroot={}/platforms/android-21/arch-arm64",
+                            ndk_root.display()
+                        );
                     }
                     "armv7-linux-androideabi" => {
                         set_var("AR", toolchain.join("arm-linux-androideabi-ar"));
@@ -204,6 +209,10 @@ fn main() {
                                 .join("armv7a-linux-androideabi21-clang")
                                 .into_os_string(),
                         );
+                        sysroot = format!(
+                            "--with-sysroot={}/platforms/android-21/arch-arm",
+                            ndk_root.display()
+                        );
                     }
                     &_ => {
                         unimplemented!();
@@ -213,10 +222,6 @@ fn main() {
             set_var("CFLAGS", tool.cflags_env());
             set_var("CC", cc.unwrap());
             let cross = format!("--host={}", target);
-            let sysroot = format!(
-                "--with-sysroot={}/platforms/android-21/arch-arm",
-                ndk_root.display()
-            );
             if target.starts_with("arm") {
                 build_unix(&out_dir, &[cross.as_str(), sysroot.as_str()]);
             } else {
