@@ -31,3 +31,6 @@ optional = true
 [package.metadata.docs.rs]
 no-default-features = true
 features = ["system"]
+
+[package.metadata.release]
+no-dev-version = true
