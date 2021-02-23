@@ -1,6 +1,6 @@
 [package]
 name = "fftw"
-version = "0.7.0-alpha.0"
+version = "0.7.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 edition = "2018"
 
