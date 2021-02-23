@@ -4,6 +4,10 @@ Changelog for fftw crate
 Unreleased
 ----------
 
+### Change
+
+- Update ndarray to 0.14.0 https://github.com/rust-math/fftw/pull/109
+
 0.6.2 - 2020-06-20
 -------------------
 
