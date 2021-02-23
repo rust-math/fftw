@@ -4,6 +4,9 @@ Changelog for fftw crate
 Unreleased
 ----------
 
+0.7.0 - 2021-02-23
+-------------------
+
 ### Change
 
 - Add Send + Sync markers for AlignedVec, Send for Plan https://github.com/rust-math/fftw/pull/106
