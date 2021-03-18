@@ -53,8 +53,23 @@ jobs:
       run: rustup target install aarch64-apple-ios
     - uses: actions-rs/cargo@v1
       with:
-        command: build
-        args: --manifest-path=fftw/Cargo.toml --target aarch64-apple-ios --features=source --no-default-features
+        command: test
+        args: --manifest-path=fftw/Cargo.toml --target aarch64-apple-ios --features=source --no-default-features --no-run
+
+  android:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        targets: ["aarch64-linux-android", "armv7-linux-androideabi"]
+    steps:
+    - uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r21d
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --manifest-path=fftw/Cargo.toml --target ${{ matrix.targets }} --features=source --no-default-features --no-run
 
   linux:
     runs-on: ubuntu-18.04
