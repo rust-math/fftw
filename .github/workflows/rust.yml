@@ -41,6 +41,21 @@ jobs:
         command: test
         args: --manifest-path=fftw/Cargo.toml --features=${{ matrix.feature }} --no-default-features
 
+  ios:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v1
+    - name: Force XCode
+      run: sudo xcode-select -switch /Applications/Xcode.app
+    - name: Install targets
+      run: rustup target install aarch64-apple-ios
+    - uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --manifest-path=fftw/Cargo.toml --target aarch64-apple-ios --features=source --no-default-features
+
   linux:
     runs-on: ubuntu-18.04
     strategy:

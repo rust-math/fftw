@@ -102,6 +102,9 @@ where
     }
 }
 
+unsafe impl<T: Send> Send for AlignedVec<T> {}
+unsafe impl<T: Sync> Sync for AlignedVec<T> {}
+
 pub type Alignment = i32;
 
 /// Check the alignment of slice

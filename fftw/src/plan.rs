@@ -36,6 +36,9 @@ pub struct Plan<A, B, Plan: PlanSpec> {
     phantom: PhantomData<(A, B)>,
 }
 
+unsafe impl<A: Send, B: Send> Send for Plan<A, B, Plan32> {}
+unsafe impl<A: Send, B: Send> Send for Plan<A, B, Plan64> {}
+
 impl<A, B, P: PlanSpec> Drop for Plan<A, B, P> {
     fn drop(&mut self) {
         self.plan.destroy();

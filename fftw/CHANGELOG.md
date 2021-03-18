@@ -4,6 +4,14 @@ Changelog for fftw crate
 Unreleased
 ----------
 
+0.7.0 - 2021-02-23
+-------------------
+
+### Change
+
+- Add Send + Sync markers for AlignedVec, Send for Plan https://github.com/rust-math/fftw/pull/106
+- Update ndarray to 0.14.0 https://github.com/rust-math/fftw/pull/109
+
 0.6.2 - 2020-06-20
 -------------------
 

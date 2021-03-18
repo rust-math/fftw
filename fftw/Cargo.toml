@@ -1,6 +1,6 @@
 [package]
 name = "fftw"
-version = "0.7.0-alpha.0"
+version = "0.7.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 edition = "2018"
 
@@ -16,12 +16,12 @@ source = ["fftw-sys/source"]
 intel-mkl = ["fftw-sys/intel-mkl"]
 
 [dependencies]
-bitflags = "1.2.1"
-lazy_static = "1.4.0"
-ndarray = "0.13"
+bitflags = "1.2"
+lazy_static = "1.4"
+ndarray = "0.14"
 num-complex = "0.3"
 num-traits = "0.2"
-thiserror = "1.0.20"
+thiserror = "1.0"
 
 [dependencies.fftw-sys]
 path = "../fftw-sys"
@@ -31,3 +31,6 @@ default-features = false
 [package.metadata.docs.rs]
 no-default-features = true
 features = ["system"]
+
+[package.metadata.release]
+no-dev-version = true
