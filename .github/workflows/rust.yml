@@ -41,6 +41,60 @@ jobs:
         command: test
         args: --manifest-path=fftw/Cargo.toml --features=${{ matrix.feature }} --no-default-features
 
+  ios:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v1
+    - name: Force XCode
+      run: sudo xcode-select -switch /Applications/Xcode.app
+    - name: Install targets
+      run: rustup target install aarch64-apple-ios
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: >
+          --all-targets
+          --manifest-path=fftw/Cargo.toml
+          --target aarch64-apple-ios
+          --features=source
+          --no-default-features
+          --no-run
+
+  android:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        targets: ["aarch64-linux-android", "armv7-linux-androideabi"]
+    steps:
+    - uses: nttld/setup-ndk@v1
+      with:
+        ndk-version: r21d
+    - name: Show env
+      env:
+        OUTPUT_NDK_PATH: ${{ steps.setup-ndk.outputs.ndk-path }}
+      run: >
+        ls /usr/local/lib/android/sdk/ndk/;
+        echo ANDROID_NDK_ROOT=$ANDROID_NDK_ROOT;
+        echo ${{ steps.setup-ndk.outputs.ndk-path }};
+        echo output-ndk-path=$OUTPUT_NDK_PATH;
+    - uses: actions/checkout@v1
+    - name: Install targets
+      run: rustup target install aarch64-linux-android armv7-linux-androideabi
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: >
+          --all-targets
+          --manifest-path=fftw/Cargo.toml
+          --target ${{ matrix.targets }}
+          --features=source
+          --no-default-features
+          --no-run
+          --verbose
+
   linux:
     runs-on: ubuntu-18.04
     strategy:
