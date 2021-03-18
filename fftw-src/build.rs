@@ -1,5 +1,6 @@
 use anyhow::Result;
-use std::env::{var, set_var};
+use cc;
+use std::env::{set_var, var};
 use std::fs::{canonicalize, File};
 use std::io::{copy, Write};
 use std::path::{Path, PathBuf};
@@ -95,10 +96,16 @@ fn run(command: &mut Command) -> String {
     match command.output() {
         Ok(output) => {
             if !output.status.success() {
-                panic!("`{:?}` failed: {}", command, output.status);
+                panic!(
+                    "`{:?}` failed: {}\nstdout:\n{}\nstderr:\n{}",
+                    command,
+                    output.status,
+                    unsafe { String::from_utf8_unchecked(output.stdout) },
+                    unsafe { String::from_utf8_unchecked(output.stderr) }
+                );
             }
-            return String::from_utf8(output.stdout).unwrap()
-        },
+            return String::from_utf8(output.stdout).unwrap();
+        }
         Err(error) => {
             panic!("failed to execute `{:?}`: {}", command, error);
         }
@@ -121,18 +128,109 @@ fn main() {
     };
     match target_os.as_ref() {
         "ios" => {
-            let cc = run(Command::new("xcrun").args(&["--sdk", "iphoneos", "-f", "clang"]));
-            set_var("CC", cc.trim());
-            let sysroot = run(Command::new("xcrun").args(&["--sdk", "iphoneos", "--show-sdk-path"]));
-            set_var("CFLAGS", format!("-O3 -pipe -isysroot {} -arch {} -miphoneos-version-min=9.0", sysroot.trim(), arch));
-            let flags = &[&format!("--with-sysroot={}", sysroot.trim()), "--host=arm-apple-darwin"];
-            build_unix(&out_dir, flags);
+            let tool = cc::Build::new()
+                .target(&target)
+                .flag_if_supported(&format!("-march={}", arch))
+                .get_compiler();
+            set_var("CC", tool.cc_env());
+            set_var("CFLAGS", tool.cflags_env());
+            let sysroot =
+                run(Command::new("xcrun").args(&["--sdk", "iphoneos", "--show-sdk-path"]));
+            let args = &[
+                &format!("--with-sysroot={}", sysroot.trim()),
+                "--host=arm-apple-darwin",
+            ];
+            build_unix(&out_dir, args);
             println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
             println!("cargo:rustc-link-lib=static=fftw3");
             println!("cargo:rustc-link-lib=static=fftw3f");
         }
         "android" => {
-        },
+            let tool = cc::Build::new()
+                .target(&target)
+                .flag_if_supported("-mfloat-abi=softfp")
+                .flag_if_supported("-mfpu=neon")
+                .get_compiler();
+            let mut cc = Command::new(tool.cc_env())
+                .arg("--version")
+                .status()
+                .ok()
+                .and_then(|status| {
+                    if status.success() {
+                        Some(tool.cc_env())
+                    } else {
+                        None
+                    }
+                });
+            let ndk_root: PathBuf = var("ANDROID_NDK_ROOT")
+                .map_err(|_| var("ANDROID_NDK_HOME"))
+                .expect("ndk not found, please set ANDROID_NDK_ROOT to where ndk installed.")
+                .into();
+            let mut sysroot: String = "".to_string();
+            if cc.is_none() {
+                let host = var("HOST").unwrap();
+                let triple = host.split("-").collect::<Vec<_>>();
+                let toolchain = ndk_root
+                    .join("toolchains/llvm/prebuilt")
+                    .join(&format!("{}-{}", triple[2], triple[0]))
+                    .join("bin");
+                if !toolchain.exists() {
+                    panic!(format!(
+                        "Unsupported platform {}, ndk toolchain dose not exists, {}!",
+                        host,
+                        toolchain.display()
+                    ));
+                };
+                match target.as_str() {
+                    "aarch64-linux-android" => {
+                        set_var("AR", toolchain.join("aarch64-linux-android-ar"));
+                        set_var("AS", toolchain.join("aarch64-linux-android-as"));
+                        set_var("LD", toolchain.join("aarch64-linux-android-ld"));
+                        set_var("STRIP", toolchain.join("aarch64-linux-android-strip"));
+                        set_var("RANLIB", toolchain.join("aarch64-linux-android-ranlib"));
+                        cc = Some(
+                            toolchain
+                                .join("aarch64-linux-android21-clang")
+                                .into_os_string(),
+                        );
+                        sysroot = format!(
+                            "--with-sysroot={}/platforms/android-21/arch-arm64",
+                            ndk_root.display()
+                        );
+                    }
+                    "armv7-linux-androideabi" => {
+                        set_var("AR", toolchain.join("arm-linux-androideabi-ar"));
+                        set_var("AS", toolchain.join("arm-linux-androideabi-as"));
+                        set_var("LD", toolchain.join("arm-linux-androideabi-ld"));
+                        set_var("STRIP", toolchain.join("arm-linux-androideabi-strip"));
+                        set_var("RANLIB", toolchain.join("arm-linux-androideabi-ranlib"));
+                        cc = Some(
+                            toolchain
+                                .join("armv7a-linux-androideabi21-clang")
+                                .into_os_string(),
+                        );
+                        sysroot = format!(
+                            "--with-sysroot={}/platforms/android-21/arch-arm",
+                            ndk_root.display()
+                        );
+                    }
+                    &_ => {
+                        unimplemented!();
+                    }
+                };
+            };
+            set_var("CFLAGS", tool.cflags_env());
+            set_var("CC", cc.unwrap());
+            let cross = format!("--host={}", target);
+            if target.starts_with("arm") {
+                build_unix(&out_dir, &[cross.as_str(), sysroot.as_str()]);
+            } else {
+                build_unix(&out_dir, &[cross.as_str(), sysroot.as_str()]);
+            }
+            println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
+            println!("cargo:rustc-link-lib=static=fftw3");
+            println!("cargo:rustc-link-lib=static=fftw3f");
+        }
         "windows" => {
             download_archive_windows(&out_dir).unwrap();
             println!("cargo:rustc-link-search={}", out_dir.display());
