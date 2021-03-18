@@ -31,11 +31,11 @@ Feature flags
 - `intel-mkl` Use Intel MKL backend through [intel-mkl-src](https://github.com/termoshtt/rust-intel-mkl)
     - Only Linux and Windows are supported
 
-|Feature  | Linux | Windows | macOS |
-|:--------|:-----:|:-------:|:-----:|
-|source   |✔️      |✔️        |✔️      |
-|system   |✔️      |-        |✔️      |
-|intel-mkl|✔️      |✔️        |-      |
+|Feature  | Linux | Windows | macOS | iOS(arm64) | Android(armv7a/arm64) |
+|:--------|:-----:|:-------:|:-----:|:----------:|:---------------------:|
+|source   |✔️      |✔️        |✔️      |✔️           |✔️                      |
+|system   |✔️      |-        |✔️      |-           |-                      |
+|intel-mkl|✔️      |✔️        |-      |-           |-                      |
 
 LICENSE
 --------

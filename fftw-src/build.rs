@@ -175,11 +175,11 @@ fn main() {
                     .join(&format!("{}-{}", triple[2], triple[0]))
                     .join("bin");
                 if !toolchain.exists() {
-                    panic!(format!(
+                    panic!(
                         "Unsupported platform {}, ndk toolchain dose not exists, {}!",
                         host,
                         toolchain.display()
-                    ));
+                    );
                 };
                 match target.as_str() {
                     "aarch64-linux-android" => {
