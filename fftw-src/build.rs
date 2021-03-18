@@ -127,6 +127,9 @@ fn main() {
             set_var("CFLAGS", format!("-O3 -pipe -isysroot {} -arch {} -miphoneos-version-min=9.0", sysroot.trim(), arch));
             let flags = &[&format!("--with-sysroot={}", sysroot.trim()), "--host=arm-apple-darwin"];
             build_unix(&out_dir, flags);
+            println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
+            println!("cargo:rustc-link-lib=static=fftw3");
+            println!("cargo:rustc-link-lib=static=fftw3f");
         }
         "android" => {
         },
