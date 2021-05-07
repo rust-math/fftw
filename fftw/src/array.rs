@@ -183,4 +183,47 @@ mod serde{
             deserializer.deserialize_seq(AlignedVecVisitor(PhantomData))
         }
     }
+
+    #[cfg(test)]
+    mod test {
+        use super::AlignedVec;
+        use serde_test::{Token, assert_tokens};
+        use num_complex::Complex64;
+
+        #[test]
+        fn test_ser_de_empty() {
+            let vec: AlignedVec<Complex64> = AlignedVec::new(0);
+
+            assert_tokens(&vec, &[
+                Token::Seq { len: Some(0) },
+                Token::SeqEnd,
+            ]);
+        }
+
+        #[test]
+        fn test_ser_de() {
+            let mut vec = AlignedVec::new(3);
+            vec[0] = Complex64::new(1., 2.);
+            vec[1] = Complex64::new(3., 4.);
+            vec[2] = Complex64::new(5., 6.);
+
+            assert_tokens(&vec, &[
+                Token::Seq { len: Some(3) },
+                Token::Tuple {len: 2},
+                Token::F64(1.),
+                Token::F64(2.),
+                Token::TupleEnd,
+                Token::Tuple {len: 2},
+                Token::F64(3.),
+                Token::F64(4.),
+                Token::TupleEnd,
+                Token::Tuple {len: 2},
+                Token::F64(5.),
+                Token::F64(6.),
+                Token::TupleEnd,
+                Token::SeqEnd,
+            ]);
+        }
+
+    }
 }
