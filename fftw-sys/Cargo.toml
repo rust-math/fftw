@@ -16,8 +16,8 @@ source = ["fftw-src"]
 intel-mkl = ["intel-mkl-src"]
 
 [dependencies]
-libc = "0.2.71"
-num-complex = "0.3.0"
+libc = "0.2.142"
+num-complex = "0.4.3"
 
 [dependencies.fftw-src]
 path = "../fftw-src"
