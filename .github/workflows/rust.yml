@@ -7,16 +7,16 @@ on:
   pull_request: {}
 
 jobs:
-  windows:
+  windows-mkl:
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        feature: ["intel-mkl", "source"]
+        download: ["nuget", "ocipkg"]
     steps:
     - uses: actions/checkout@v1
     - name: Get MKL using NuGet
-      if: ${{ matrix.feature == 'intel-mkl' }}
+      if: ${{ matrix.download == 'nuget' }}
       run: |
         nuget install intelmkl.devel.cluster.win-x64  -Version 2022.0.3.171
         nuget install intelmkl.static.cluster.win-x64 -Version 2022.0.3.171
@@ -28,7 +28,20 @@ jobs:
         args: >
           --all-targets
           --manifest-path=fftw/Cargo.toml
-          --features=${{ matrix.feature }}
+          --features=intel-mkl
+          --no-default-features
+
+  windows-source:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: >
+          --all-targets
+          --manifest-path=fftw/Cargo.toml
+          --features=source
           --no-default-features
 
   macos:
