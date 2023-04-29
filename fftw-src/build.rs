@@ -102,8 +102,8 @@ fn main() {
     if cfg!(target_os = "windows") {
         download_archive_windows(&out_dir).unwrap();
         println!("cargo:rustc-link-search={}", out_dir.display());
-        println!("cargo:rustc-link-lib=libfftw3-3");
-        println!("cargo:rustc-link-lib=libfftw3f-3");
+        println!("cargo:rustc-link-lib=static=libfftw3-3");
+        println!("cargo:rustc-link-lib=static=libfftw3f-3");
     } else {
         build_unix(&out_dir);
         println!("cargo:rustc-link-search={}", out_dir.join("lib").display());
