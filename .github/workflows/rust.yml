@@ -4,12 +4,11 @@ on:
   push:
     branches:
       - master
-      - "pr/*"
   pull_request: {}
 
 jobs:
   windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
@@ -26,7 +25,7 @@ jobs:
           --no-default-features
 
   macos:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -42,7 +41,7 @@ jobs:
         args: --manifest-path=fftw/Cargo.toml --features=${{ matrix.feature }} --no-default-features
 
   linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -58,7 +57,7 @@ jobs:
         args: --manifest-path=fftw/Cargo.toml --features=${{ matrix.feature }} --no-default-features
 
   check-format:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
     - uses: actions-rs/cargo@v1
