@@ -6,13 +6,13 @@ Rust bindings for the [FFTW C-library](http://www.fftw.org/) for computing discr
 
 This repository includes three crates:
 
-- [![Crate](http://meritbadge.herokuapp.com/fftw)](https://crates.io/crates/fftw)
+- [![Crate](https://img.shields.io/crates/v/fftw.svg)](https://crates.io/crates/fftw)
   [![docs.rs](https://docs.rs/fftw/badge.svg)](https://docs.rs/fftw)
   `fftw`: A safe wrapper in Rust
-- [![Crate](http://meritbadge.herokuapp.com/fftw-sys)](https://crates.io/crates/fftw-sys)
+- [![Crate](https://img.shields.io/crates/v/fftw-sys.svg)](https://crates.io/crates/fftw-sys)
   [![docs.rs](https://docs.rs/fftw-sys/badge.svg)](https://docs.rs/fftw-sys)
   `fftw-sys`: An unsafe wrapper in Rust
-- [![Crate](http://meritbadge.herokuapp.com/fftw-src)](https://crates.io/crates/fftw-src)
+- [![Crate](https://img.shields.io/crates/v/fftw-src.svg)](https://crates.io/crates/fftw-src)
   [![docs.rs](https://docs.rs/fftw-src/badge.svg)](https://docs.rs/fftw-src)
   `fftw-src`: A crate for downloading and compiling the FFTW library
 
