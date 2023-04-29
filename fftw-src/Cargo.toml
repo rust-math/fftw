@@ -13,11 +13,11 @@ build = "build.rs"
 links = "fftw3"
 
 [build-dependencies]
-anyhow = "1.0.31"
+anyhow = "1.0.70"
 cc = "1.0"
-fs_extra = "~1.2.0"
+fs_extra = "~1.3.0"
 ftp = "3.0"
-zip = "0.5"
+zip = "0.6"
 
 [package.metadata.release]
 no-dev-version = true
