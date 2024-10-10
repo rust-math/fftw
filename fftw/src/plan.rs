@@ -1,7 +1,7 @@
 //! Plan in FFTW
 //!
-//! See also [Using Plans] in the original document
-//! [Using Plans]: http://www.fftw.org/fftw3_doc/Using-Plans.html
+//! See also [Using Plans](http://www.fftw.org/fftw3_doc/Using-Plans.html)
+//! in the original document
 
 use crate::array::{alignment_of, AlignedAllocable, AlignedVec, Alignment};
 use crate::error::*;
